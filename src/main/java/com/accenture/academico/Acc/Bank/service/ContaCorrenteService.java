@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrentePostPutRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.ContaCorrentePostRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaComSaldoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoExisteException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
+import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -29,7 +29,8 @@ public class ContaCorrenteService {
 	@Autowired
 	private ClienteRepository clienteRepository;
 	
-	public ContaCorrente criarContaCorrente(ContaCorrentePostPutRequestDTO contaDTO) {
+	@Transactional
+	public ContaCorrente criarContaCorrente(ContaCorrentePostRequestDTO contaDTO) {
 		Agencia agencia = agenciaRepository.findById(contaDTO.getIdAgencia())
 				.orElseThrow(() -> new IllegalArgumentException("Agencia não existe."));
 		
@@ -38,6 +39,7 @@ public class ContaCorrenteService {
 		
 		ContaCorrente conta = ContaCorrente.builder()
 				.numero(gerarNumeroContaCorrente())
+				.saldo(BigDecimal.ZERO)
 				.agencia(agencia)
 				.cliente(cliente)
 				.build();
@@ -49,50 +51,48 @@ public class ContaCorrenteService {
 		return Long.toString(contaCorrenteRepository.count() + 1);
 	}
 
-	public void deletarContaCorrente(Long id) {
-		contaCorrenteRepository.deleteById(id);
-	}
-	
 	public ContaCorrente buscarContaCorrente(Long id) {
 		return contaCorrenteRepository.findById(id)
 				.orElseThrow(() -> new ContaCorrenteNaoExisteException(id));
 	}
 	
+	public void deletarContaCorrente(Long id) {
+		ContaCorrente conta = buscarContaCorrente(id);
+		
+		if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) 
+			throw new ContaComSaldoException();
+		
+		contaCorrenteRepository.delete(conta);
+	}
+	
 	@Transactional
     public void sacar(Long id, BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) <= 0)
-            throw new ValorInvalidoException();
-		
 		ContaCorrente conta = buscarContaCorrente(id);
-        
-        if (conta.getSaldo().compareTo(valor) < 0)
-            throw new SaldoInsuficienteException();
-        
-        conta.setSaldo(conta.getSaldo().subtract(valor));
+		
+		conta.sacar(valor);
+		contaCorrenteRepository.save(conta);
     }
 
     @Transactional
     public void depositar(Long id, BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) 
-            throw new ValorInvalidoException();
-    	
     	ContaCorrente conta = buscarContaCorrente(id);
     	
-        conta.setSaldo(conta.getSaldo().add(valor));
+    	conta.depositar(valor);
+    	contaCorrenteRepository.save(conta);
     }
 
     @Transactional
 	public void transferir(Long idOrigem, Long idDestino, BigDecimal valor) {
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) 
-            throw new ValorInvalidoException();
-        
+    	if (idOrigem == idDestino)
+    		throw new TransferenciaEntreContasIguaisException();
+    	
         ContaCorrente contaOrigem = buscarContaCorrente(idOrigem);
         ContaCorrente contaDestino = buscarContaCorrente(idDestino);
         
-        if (contaOrigem.getSaldo().compareTo(valor) < 0)
-            throw new SaldoInsuficienteException();
+        contaOrigem.sacar(valor);
+        contaDestino.depositar(valor);
         
-        contaOrigem.setSaldo(contaOrigem.getSaldo().subtract(valor));
-        contaDestino.setSaldo(contaDestino.getSaldo().add(valor));        
+        contaCorrenteRepository.save(contaOrigem);
+        contaCorrenteRepository.save(contaDestino);
 	}
 }
