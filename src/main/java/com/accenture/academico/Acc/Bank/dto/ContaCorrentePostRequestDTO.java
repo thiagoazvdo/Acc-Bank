@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContaCorrentePostPutRequestDTO {
+public class ContaCorrentePostRequestDTO {
 
     @JsonProperty("idCliente")
     @NotBlank(message = "Campo idCliente obrigatorio")
