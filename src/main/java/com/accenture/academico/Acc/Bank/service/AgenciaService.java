@@ -18,10 +18,10 @@ public class AgenciaService {
 
     public Agencia atualizarAgencia(Long agenciaId, Agencia agencia){
         Agencia agenciaAtual = buscarAgencia(agenciaId);
-        agenciaAtual.setNome(agencia.getNome());
-        agenciaAtual.setEndereco(agencia.getEndereco());
-        agenciaAtual.setTelefone(agencia.getTelefone());
-        return agenciaRepository.save(agenciaAtual);
+        if (agencia.getNome() == null) agencia.setNome(agenciaAtual.getNome());
+        if (agencia.getEndereco() == null) agencia.setEndereco(agenciaAtual.getEndereco());
+        if (agencia.getTelefone() == null) agencia.setTelefone(agenciaAtual.getTelefone());
+        return agenciaRepository.save(agencia);
     }
 
     public Agencia criarAgencia(Agencia agencia) {
