@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrentePostRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaComSaldoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoExisteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
@@ -30,12 +31,12 @@ public class ContaCorrenteService {
 	private ClienteRepository clienteRepository;
 	
 	@Transactional
-	public ContaCorrente criarContaCorrente(ContaCorrentePostRequestDTO contaDTO) {
+	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
 		Agencia agencia = agenciaRepository.findById(contaDTO.getIdAgencia())
 				.orElseThrow(() -> new IllegalArgumentException("Agencia não existe."));
 		
 		Cliente cliente = clienteRepository.findById(contaDTO.getIdCliente())
-				.orElseThrow(() -> new IllegalArgumentException("Cliente não existe."));
+				.orElseThrow(() -> new ClienteNaoEncontradoException());
 		
 		ContaCorrente conta = ContaCorrente.builder()
 				.numero(gerarNumeroContaCorrente())

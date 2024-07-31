@@ -1,7 +1,8 @@
 package com.accenture.academico.Acc.Bank.exception;
 
 public class BancoException extends RuntimeException {
-    public BancoException() {
+    
+	public BancoException() {
         super("Erro inesperado no Acc Bank!");
     }
 
