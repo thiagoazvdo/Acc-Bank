@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
-import com.accenture.academico.Acc.Bank.exception.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaComSaldoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoExisteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;

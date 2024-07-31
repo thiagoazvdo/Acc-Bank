@@ -1,7 +1,6 @@
-package com.accenture.academico.Acc.Bank.expection;
+package com.accenture.academico.Acc.Bank.exception.cliente;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.accenture.academico.Acc.Bank.exception.BancoException;
 
 public class ClienteNaoEncontradoException extends BancoException {
 

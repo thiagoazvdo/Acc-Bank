@@ -1,7 +1,7 @@
 package com.accenture.academico.Acc.Bank.service;
 
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
-import com.accenture.academico.Acc.Bank.expection.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
