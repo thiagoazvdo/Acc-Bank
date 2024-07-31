@@ -1,6 +1,7 @@
 package com.accenture.academico.Acc.Bank.controller;
-import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.service.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class ClienteController {
 
     @GetMapping
     public ResponseEntity<?> listar() {
-        return ResponseEntity.status(HttpStatus.OK).body(clienteService.listar());
+        return ResponseEntity.status(HttpStatus.OK).body(clienteService.listarClientes());
     }
 
     @GetMapping("/{id}")
@@ -30,21 +31,21 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.OK).body(clienteService.buscarCliente(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> adicionar(@RequestBody Cliente cliente){
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.salvar(cliente));
-
-    }
 
     @PutMapping("/{clienteId}")
-    public ResponseEntity<?> atualizar(@PathVariable Long clienteId, @RequestBody Cliente cliente) {
-        return ResponseEntity.status(HttpStatus.OK).body(clienteService.atualizar(clienteId, cliente));
+    public ResponseEntity<?> atualizar(@PathVariable Long clienteId, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(clienteService.atualizar(clienteId, clienteRequestDTO));
     }
 
+    @PostMapping
+    public ResponseEntity<?> adicionar(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.criarCliente(clienteRequestDTO));
+
+    }
 
     @DeleteMapping("/{clienteId}")
     public ResponseEntity<?> remover(@PathVariable Long clienteId){
-        clienteService.excluir(clienteId);
+        clienteService.removerCliente(clienteId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
