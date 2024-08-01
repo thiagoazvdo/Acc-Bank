@@ -1,5 +1,5 @@
 package com.accenture.academico.Acc.Bank.service;
-import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ public class AgenciaService {
     private AgenciaRepository agenciaRepository;
 
     public Agencia buscarAgencia(Long agenciaId) {
-        return agenciaRepository.findById(agenciaId).orElseThrow(() -> new AgenciaNaoEncontradoException());
+        return agenciaRepository.findById(agenciaId).orElseThrow(() -> new AgenciaNaoEncontradaException(agenciaId));
     }
 
     public Agencia atualizarAgencia(Long agenciaId, Agencia agencia){

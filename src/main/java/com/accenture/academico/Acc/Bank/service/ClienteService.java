@@ -16,7 +16,7 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     public Cliente buscarCliente(Long clienteId) {
-        return clienteRepository.findById(clienteId).orElseThrow(() -> new ClienteNaoEncontradoException());
+        return clienteRepository.findById(clienteId).orElseThrow(() -> new ClienteNaoEncontradoException(clienteId));
     }
 
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){

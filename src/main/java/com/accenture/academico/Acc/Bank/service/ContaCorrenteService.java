@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaComSaldoException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoExisteException;
+import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
@@ -33,10 +34,10 @@ public class ContaCorrenteService {
 	@Transactional
 	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
 		Agencia agencia = agenciaRepository.findById(contaDTO.getIdAgencia())
-				.orElseThrow(() -> new IllegalArgumentException("Agencia não existe."));
+				.orElseThrow(() -> new AgenciaNaoEncontradaException(contaDTO.getIdAgencia()));
 		
 		Cliente cliente = clienteRepository.findById(contaDTO.getIdCliente())
-				.orElseThrow(() -> new ClienteNaoEncontradoException());
+				.orElseThrow(() -> new ClienteNaoEncontradoException(contaDTO.getIdCliente()));
 		
 		ContaCorrente conta = ContaCorrente.builder()
 				.numero(gerarNumeroContaCorrente())
@@ -54,10 +55,10 @@ public class ContaCorrenteService {
 
 	public ContaCorrente buscarContaCorrente(Long id) {
 		return contaCorrenteRepository.findById(id)
-				.orElseThrow(() -> new ContaCorrenteNaoExisteException(id));
+				.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(id));
 	}
 	
-	public void deletarContaCorrente(Long id) {
+	public void removerContaCorrente(Long id) {
 		ContaCorrente conta = buscarContaCorrente(id);
 		
 		if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) 
