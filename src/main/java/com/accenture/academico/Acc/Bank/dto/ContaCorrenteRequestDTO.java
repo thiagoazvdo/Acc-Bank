@@ -3,6 +3,7 @@ package com.accenture.academico.Acc.Bank.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +16,11 @@ import lombok.NoArgsConstructor;
 public class ContaCorrenteRequestDTO {
 
     @JsonProperty("idCliente")
-    @NotBlank(message = "Campo idCliente obrigatorio")
+    @NotNull(message = "Campo idCliente obrigatorio")
 	private Long idCliente;
     
     @JsonProperty("idAgencia")
-    @NotBlank(message = "Campo idAgencia obrigatorio")
+    @NotNull(message = "Campo idAgencia obrigatorio")
 	private Long idAgencia;
 
 }
