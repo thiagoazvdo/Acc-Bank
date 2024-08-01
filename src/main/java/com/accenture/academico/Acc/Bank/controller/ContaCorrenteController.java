@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
+import com.accenture.academico.Acc.Bank.handler.ResponseHandler;
+import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 
 import jakarta.validation.Valid;
@@ -29,35 +31,37 @@ public class ContaCorrenteController {
 	
 	@PostMapping
 	public ResponseEntity<?> criarContaCorrente(@Valid @RequestBody ContaCorrenteRequestDTO contaDTO){
-		return ResponseEntity.status(HttpStatus.CREATED).body(contaCorrenteService.criarContaCorrente(contaDTO));
+		ContaCorrente contaCorrente = contaCorrenteService.criarContaCorrente(contaDTO);
+		return ResponseHandler.success("Conta Corrente criada com sucesso.", contaCorrente, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscarContaCorrente(@PathVariable Long id){
-		return ResponseEntity.status(HttpStatus.OK).body(contaCorrenteService.buscarContaCorrente(id));
+		ContaCorrente contaCorrente = contaCorrenteService.buscarContaCorrente(id);
+		return ResponseHandler.success("Conta Corrente encontrada com sucesso.", contaCorrente, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deletarContaCorrente(@PathVariable Long id){
-		contaCorrenteService.deletarContaCorrente(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	public ResponseEntity<?> removerContaCorrente(@PathVariable Long id){
+		contaCorrenteService.removerContaCorrente(id);
+		return ResponseHandler.success("Conta Corrente removida com sucesso.", HttpStatus.NO_CONTENT);
 	}
 	
 	 @PutMapping("/{id}/sacar")
 	 public ResponseEntity<?> sacar(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		 contaCorrenteService.sacar(id, valor);
-		 return ResponseEntity.status(HttpStatus.OK).build();
+		 return ResponseHandler.success("Saque realizado com sucesso.", HttpStatus.OK);
 	 }
 	 
 	 @PutMapping("/{id}/depositar")
 	 public ResponseEntity<?> depositar(@PathVariable Long id, @RequestParam BigDecimal valor) {
 		 contaCorrenteService.depositar(id, valor);
-		 return ResponseEntity.status(HttpStatus.OK).build();
+		 return ResponseHandler.success("Deposito realizado com sucesso.", HttpStatus.OK);
 	 }
 	 
 	 @PutMapping("/{idOrigem}/transferir")
 	 public ResponseEntity<?> transferir(@PathVariable Long idOrigem, @RequestParam Long idDestino, @RequestParam BigDecimal valor) {
 		 contaCorrenteService.transferir(idOrigem, idDestino, valor);
-		 return ResponseEntity.status(HttpStatus.OK).build();
+		 return ResponseHandler.success("Transferência realizada com sucesso.", HttpStatus.OK);
 	 }
 }
