@@ -1,12 +1,15 @@
 package com.accenture.academico.Acc.Bank.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaComSaldoException;
@@ -15,9 +18,12 @@ import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEnt
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
+import com.accenture.academico.Acc.Bank.model.TipoTransacao;
+import com.accenture.academico.Acc.Bank.model.Transacao;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
+import com.accenture.academico.Acc.Bank.repository.TransacaoRepository;
 
 @Service
 public class ContaCorrenteService {
@@ -30,6 +36,9 @@ public class ContaCorrenteService {
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private TransacaoRepository transacaoRepository;
 	
 	@Transactional
 	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
@@ -68,33 +77,52 @@ public class ContaCorrenteService {
 	}
 	
 	@Transactional
-    public void sacar(Long id, BigDecimal valor) {
+    public void sacar(Long id, SaqueDepositoRequestDTO saqueDTO) {
 		ContaCorrente conta = buscarContaCorrente(id);
 		
-		conta.sacar(valor);
+		conta.sacar(saqueDTO.getValor());
+		registrarTransacao(conta, null, TipoTransacao.SAQUE, saqueDTO.getValor(), saqueDTO.getDescricao());
 		contaCorrenteRepository.save(conta);
     }
 
     @Transactional
-    public void depositar(Long id, BigDecimal valor) {
+    public void depositar(Long id, SaqueDepositoRequestDTO depositoDTO) {
     	ContaCorrente conta = buscarContaCorrente(id);
     	
-    	conta.depositar(valor);
+    	conta.depositar(depositoDTO.getValor());
+    	registrarTransacao(conta, null, TipoTransacao.DEPOSITO, depositoDTO.getValor(), depositoDTO.getDescricao());
     	contaCorrenteRepository.save(conta);
     }
 
     @Transactional
-	public void transferir(Long idOrigem, Long idDestino, BigDecimal valor) {
-    	if (idOrigem == idDestino)
+	public void transferir(Long idOrigem, TransferenciaRequestDTO transferenciaDTO) {
+    	if (idOrigem == transferenciaDTO.getIdContaDestino())
     		throw new TransferenciaEntreContasIguaisException();
     	
         ContaCorrente contaOrigem = buscarContaCorrente(idOrigem);
-        ContaCorrente contaDestino = buscarContaCorrente(idDestino);
+        ContaCorrente contaDestino = buscarContaCorrente(transferenciaDTO.getIdContaDestino());
         
-        contaOrigem.sacar(valor);
-        contaDestino.depositar(valor);
+        contaOrigem.sacar(transferenciaDTO.getValor());
+        contaDestino.depositar(transferenciaDTO.getValor());
         
         contaCorrenteRepository.save(contaOrigem);
         contaCorrenteRepository.save(contaDestino);
+        
+        registrarTransacao(contaOrigem, contaDestino, TipoTransacao.TRANSFERENCIA_ENVIADA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
+        registrarTransacao(contaDestino, contaOrigem, TipoTransacao.TRANSFERENCIA_RECEBIDA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
 	}
+    
+    private void registrarTransacao(ContaCorrente contaOrigem, ContaCorrente contaDestino, TipoTransacao tipo, BigDecimal valor, String descricao) {
+        Transacao transacao = Transacao.builder()
+                .contaCorrente(contaOrigem)
+                .contaCorrenteRelacionada(contaDestino)
+                .tipo(tipo)
+                .valor(valor)
+                .dataHora(LocalDateTime.now())
+                .descricao(descricao)
+                .build();
+
+        transacaoRepository.save(transacao);
+    }
+
 }
