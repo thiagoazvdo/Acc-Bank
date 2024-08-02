@@ -49,11 +49,10 @@ public class Transacao {
 
     @ManyToOne
     @JoinColumn(name = "conta_corrente_id")
-    @JsonBackReference
+    @JsonIgnore
     private ContaCorrente contaCorrente;
 
     @ManyToOne
     @JoinColumn(name = "conta_corrente_relacionada_id")
-    @JsonIgnore
     private ContaCorrente contaCorrenteRelacionada;
 }

@@ -5,11 +5,14 @@ import java.util.List;
 
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,10 +50,11 @@ public class ContaCorrente {
 
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
+	@JsonBackReference
 	private Cliente cliente;
 	
 	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonIgnore
     private List<Transacao> transacoes;
 
 	public void sacar(BigDecimal valorSaque) {

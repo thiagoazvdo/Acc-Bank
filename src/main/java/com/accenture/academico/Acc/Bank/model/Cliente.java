@@ -1,5 +1,8 @@
 package com.accenture.academico.Acc.Bank.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,5 +36,6 @@ public class Cliente {
     private String telefone;
 
     @OneToOne(mappedBy = "cliente")
+    @JsonManagedReference
     private ContaCorrente contaCorrente;
 }
