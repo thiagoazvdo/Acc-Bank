@@ -34,7 +34,7 @@ public class TransacaoController {
 	@GetMapping("/extrato-anual")
 	public ResponseEntity<ResponseBodyTemplate> extratoAnual(@RequestParam Long idConta, @RequestParam int ano) {
 		List<Transacao> transacoes = transacaoService.obterExtratoAnual(idConta, ano);
-		return ResponseHandler.success("Extrato mensal gerado com sucesso.", transacoes, HttpStatus.OK);
+		return ResponseHandler.success("Extrato anual gerado com sucesso.", transacoes, HttpStatus.OK);
 	}
 
 	@GetMapping("/extrato-filtrado")
