@@ -1,10 +1,13 @@
 package com.accenture.academico.Acc.Bank.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -44,6 +48,10 @@ public class ContaCorrente {
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
+	
+	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+    private List<Transacao> transacoes;
 
 	public void sacar(BigDecimal valorSaque) {
 		if (valorSaque.compareTo(BigDecimal.ZERO) <= 0) 
@@ -61,4 +69,9 @@ public class ContaCorrente {
 		
 		this.saldo = this.saldo.add(valorDeposito);
 	}
+	
+    public void adicionarTransacao(Transacao transacao) {
+        transacoes.add(transacao);
+        transacao.setContaCorrente(this);
+    }
 }

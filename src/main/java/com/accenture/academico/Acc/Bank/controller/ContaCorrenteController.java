@@ -1,7 +1,5 @@
 package com.accenture.academico.Acc.Bank.controller;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +7,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
+import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.handler.ResponseBodyTemplate;
 import com.accenture.academico.Acc.Bank.handler.ResponseHandler;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -48,21 +46,22 @@ public class ContaCorrenteController {
 		return ResponseHandler.success("Conta Corrente removida com sucesso.", HttpStatus.NO_CONTENT);
 	}
 	
-	 @PutMapping("/{id}/sacar")
-	 public ResponseEntity<ResponseBodyTemplate> sacar(@PathVariable Long id, @RequestParam BigDecimal valor) {
-		 contaCorrenteService.sacar(id, valor);
+	@PostMapping("/{id}/sacar")
+	 public ResponseEntity<ResponseBodyTemplate> sacar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO saqueDTO) {
+		 contaCorrenteService.sacar(id, saqueDTO);
 		 return ResponseHandler.success("Saque realizado com sucesso.", HttpStatus.OK);
 	 }
 	 
-	 @PutMapping("/{id}/depositar")
-	 public ResponseEntity<ResponseBodyTemplate> depositar(@PathVariable Long id, @RequestParam BigDecimal valor) {
-		 contaCorrenteService.depositar(id, valor);
+	 @PostMapping("/{id}/depositar")
+	 public ResponseEntity<ResponseBodyTemplate> depositar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO depositoDTO) {
+		 contaCorrenteService.depositar(id, depositoDTO);
 		 return ResponseHandler.success("Deposito realizado com sucesso.", HttpStatus.OK);
 	 }
 	 
-	 @PutMapping("/{idOrigem}/transferir")
-	 public ResponseEntity<ResponseBodyTemplate> transferir(@PathVariable Long idOrigem, @RequestParam Long idDestino, @RequestParam BigDecimal valor) {
-		 contaCorrenteService.transferir(idOrigem, idDestino, valor);
+	 @PostMapping("/{idOrigem}/transferir")
+	 public ResponseEntity<ResponseBodyTemplate> transferir(@PathVariable Long idOrigem, @Valid @RequestBody TransferenciaRequestDTO transferenciaDTO) {
+		 contaCorrenteService.transferir(idOrigem, transferenciaDTO);
 		 return ResponseHandler.success("Transferência realizada com sucesso.", HttpStatus.OK);
 	 }
+	 
 }
