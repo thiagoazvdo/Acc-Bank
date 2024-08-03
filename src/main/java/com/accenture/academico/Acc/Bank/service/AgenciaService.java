@@ -25,8 +25,8 @@ public class AgenciaService {
         return agenciaRepository.save(agenciaDTO.toEntity());
     }
 
-    public Agencia criarAgencia(Agencia agencia) {
-        return agenciaRepository.save(agencia);
+    public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
+        return agenciaRepository.save(agenciaDTO.toEntity());
     }
 
     public void removerAgencia(Long id) {
