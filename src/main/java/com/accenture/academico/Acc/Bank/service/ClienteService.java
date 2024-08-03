@@ -21,9 +21,9 @@ public class ClienteService {
 
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
         Cliente clienteAtual = buscarCliente(clienteId);
-        clienteAtual.setNome(clienteRequestDTO.getNome());
-        clienteAtual.setTelefone(clienteRequestDTO.getTelefone());
-        clienteAtual.setCpf(clienteRequestDTO.getCpf());
+        if(clienteRequestDTO.getNome() != null) clienteAtual.setNome(clienteRequestDTO.getNome());
+        if(clienteRequestDTO.getCpf() != null) clienteAtual.setCpf(clienteRequestDTO.getCpf());
+        if(clienteRequestDTO.getTelefone() != null) clienteAtual.setTelefone(clienteRequestDTO.getTelefone());
         return clienteRepository.save(clienteAtual);
     }
 
