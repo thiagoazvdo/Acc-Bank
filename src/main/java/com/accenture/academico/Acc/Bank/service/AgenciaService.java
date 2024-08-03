@@ -19,10 +19,10 @@ public class AgenciaService {
 
     public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
         Agencia agenciaAtual = buscarAgencia(agenciaId);
-        if (agenciaDTO.getNome() == null) agenciaDTO.setNome(agenciaAtual.getNome());
-        if (agenciaDTO.getEndereco() == null) agenciaDTO.setEndereco(agenciaAtual.getEndereco());
-        if (agenciaDTO.getTelefone() == null) agenciaDTO.setTelefone(agenciaAtual.getTelefone());
-        return agenciaRepository.save(agenciaDTO.toEntity());
+        if (agenciaDTO.getNome() != null) agenciaAtual.setNome(agenciaDTO.getNome());
+        if (agenciaDTO.getEndereco() != null) agenciaAtual.setEndereco(agenciaDTO.getEndereco());
+        if (agenciaDTO.getTelefone() != null) agenciaAtual.setTelefone(agenciaDTO.getTelefone());
+        return agenciaRepository.save(agenciaAtual);
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
