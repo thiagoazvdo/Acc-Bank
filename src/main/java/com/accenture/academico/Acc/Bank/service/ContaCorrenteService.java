@@ -49,22 +49,27 @@ public class ContaCorrenteService {
 				.orElseThrow(() -> new ClienteNaoEncontradoException(contaDTO.getIdCliente()));
 		
 		ContaCorrente conta = ContaCorrente.builder()
-				.numero(gerarNumeroContaCorrente())
 				.saldo(BigDecimal.ZERO)
 				.agencia(agencia)
 				.cliente(cliente)
 				.build();
 		
-		return contaCorrenteRepository.save(conta);
-	}
-
-	private String gerarNumeroContaCorrente() {
-		return Long.toString(contaCorrenteRepository.count() + 1);
+		conta = contaCorrenteRepository.save(conta);
+		
+		String numeroConta = Long.toString(conta.getId() + 10000);
+		conta.setNumero(numeroConta);
+		
+		return conta;
 	}
 
 	public ContaCorrente buscarContaCorrente(Long id) {
 		return contaCorrenteRepository.findById(id)
 				.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(id));
+	}
+	
+	public ContaCorrente buscarContaCorrentePorNumero(String numeroConta) {
+		return contaCorrenteRepository.findByNumero(numeroConta)
+				.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(numeroConta));
 	}
 	
 	public void removerContaCorrente(Long id) {
@@ -96,11 +101,11 @@ public class ContaCorrenteService {
 
     @Transactional
 	public void transferir(Long idOrigem, TransferenciaRequestDTO transferenciaDTO) {
-    	if (idOrigem == transferenciaDTO.getIdContaDestino())
-    		throw new TransferenciaEntreContasIguaisException();
-    	
         ContaCorrente contaOrigem = buscarContaCorrente(idOrigem);
-        ContaCorrente contaDestino = buscarContaCorrente(transferenciaDTO.getIdContaDestino());
+        ContaCorrente contaDestino = buscarContaCorrentePorNumero(transferenciaDTO.getNumeroContaDestino());
+        
+        if (contaOrigem.equals(contaDestino))
+    		throw new TransferenciaEntreContasIguaisException();
         
         contaOrigem.sacar(transferenciaDTO.getValor());
         contaDestino.depositar(transferenciaDTO.getValor());
