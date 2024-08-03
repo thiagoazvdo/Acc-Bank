@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class SaqueDepositoRequestDTO {
 
     @JsonProperty("valor")
-    @NotNull(message = "Campo valor obrigatorio")
+    @NotNull(message = "Campo valor obrigatório")
 	private BigDecimal valor;
     
     @JsonProperty("descricao")

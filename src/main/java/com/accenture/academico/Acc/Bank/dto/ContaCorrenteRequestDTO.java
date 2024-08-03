@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 public class ContaCorrenteRequestDTO {
 
     @JsonProperty("idCliente")
-    @NotNull(message = "Campo idCliente obrigatorio")
+    @NotNull(message = "Campo idCliente obrigatório")
 	private Long idCliente;
     
     @JsonProperty("idAgencia")
-    @NotNull(message = "Campo idAgencia obrigatorio")
+    @NotNull(message = "Campo idAgencia obrigatório")
 	private Long idAgencia;
 
 }

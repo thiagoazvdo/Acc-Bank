@@ -3,7 +3,6 @@ package com.accenture.academico.Acc.Bank.model;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -35,6 +34,7 @@ public class Transacao {
     private Long id;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TipoTransacao tipo;
 
     @Column(nullable = false)
@@ -44,12 +44,11 @@ public class Transacao {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime dataHora;
 
-    @Column
     private String descricao;
 
-    @ManyToOne
-    @JoinColumn(name = "conta_corrente_id")
     @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "conta_corrente_id", nullable = false)
     private ContaCorrente contaCorrente;
 
     @ManyToOne
