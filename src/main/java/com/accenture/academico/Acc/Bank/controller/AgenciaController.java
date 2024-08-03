@@ -47,7 +47,7 @@ public class AgenciaController {
 
     @PostMapping
     public ResponseEntity<ResponseBodyTemplate> adicionar(@Valid @RequestBody AgenciaRequestDTO agenciaDTO){
-    	Agencia agencia = agenciaService.criarAgencia(agenciaDTO.toEntity());
+    	Agencia agencia = agenciaService.criarAgencia(agenciaDTO);
 		return ResponseHandler.success("Agencia criada com sucesso.", agencia, HttpStatus.CREATED);
     }
 
