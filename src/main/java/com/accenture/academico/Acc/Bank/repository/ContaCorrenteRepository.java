@@ -11,4 +11,6 @@ import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 public interface ContaCorrenteRepository extends JpaRepository<ContaCorrente, Long>{
 
 	Optional<ContaCorrente> findByNumero(String numero);
+
+	Optional<ContaCorrente> findByClienteId(Long clienteId);
 }
