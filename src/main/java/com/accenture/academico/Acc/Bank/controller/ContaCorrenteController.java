@@ -1,5 +1,6 @@
 package com.accenture.academico.Acc.Bank.controller;
 
+import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +36,11 @@ public class ContaCorrenteController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<ResponseBodyTemplate> buscarContaCorrente(@PathVariable Long id){
+	public ResponseEntity<?> buscarContaCorrente(@PathVariable Long id){
 		ContaCorrente contaCorrente = contaCorrenteService.buscarContaCorrente(id);
-		return ResponseHandler.success("Conta Corrente encontrada com sucesso.", contaCorrente, HttpStatus.OK);
+		ContaCorrenteResponse contaCorrenteResponse = new ContaCorrenteResponse().toEntity(contaCorrente);
+		//return ResponseHandler.success("Conta Corrente encontrada com sucesso.", contaCorrenteResponse, HttpStatus.OK);
+		return ResponseEntity.ok(contaCorrenteResponse);
 	}
 	
 	@DeleteMapping("/{id}")
