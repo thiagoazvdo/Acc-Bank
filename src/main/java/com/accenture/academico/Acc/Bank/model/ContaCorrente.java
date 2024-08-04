@@ -7,12 +7,10 @@ import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficient
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,6 +22,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -32,13 +31,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "contas_correntes")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ContaCorrente {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = true, unique = true, length = 5)
 	private String numero;
 
 	@Column(nullable = false)
@@ -53,8 +54,8 @@ public class ContaCorrente {
 	@JsonBackReference
 	private Cliente cliente;
 	
-	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
+	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transacao> transacoes;
 
 	public void sacar(BigDecimal valorSaque) {
