@@ -1,4 +1,5 @@
 package com.accenture.academico.Acc.Bank.service;
+import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
@@ -16,16 +17,16 @@ public class AgenciaService {
         return agenciaRepository.findById(agenciaId).orElseThrow(() -> new AgenciaNaoEncontradaException(agenciaId));
     }
 
-    public Agencia atualizarAgencia(Long agenciaId, Agencia agencia){
+    public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
         Agencia agenciaAtual = buscarAgencia(agenciaId);
-        if (agencia.getNome() == null) agencia.setNome(agenciaAtual.getNome());
-        if (agencia.getEndereco() == null) agencia.setEndereco(agenciaAtual.getEndereco());
-        if (agencia.getTelefone() == null) agencia.setTelefone(agenciaAtual.getTelefone());
-        return agenciaRepository.save(agencia);
+        if (agenciaDTO.getNome() != null) agenciaAtual.setNome(agenciaDTO.getNome());
+        if (agenciaDTO.getEndereco() != null) agenciaAtual.setEndereco(agenciaDTO.getEndereco());
+        if (agenciaDTO.getTelefone() != null) agenciaAtual.setTelefone(agenciaDTO.getTelefone());
+        return agenciaRepository.save(agenciaAtual);
     }
 
-    public Agencia criarAgencia(Agencia agencia) {
-        return agenciaRepository.save(agencia);
+    public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
+        return agenciaRepository.save(agenciaDTO.toEntity());
     }
 
     public void removerAgencia(Long id) {
