@@ -1,6 +1,8 @@
 package com.accenture.academico.Acc.Bank.controller;
 import java.util.List;
 
+import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,13 +40,13 @@ public class AgenciaController {
     }
 
     @PutMapping("/{agenciaId}")
-    public ResponseEntity<ResponseBodyTemplate> atualizar(@PathVariable Long agenciaId, @RequestBody Agencia agenciaDTO) {
+    public ResponseEntity<ResponseBodyTemplate> atualizar(@PathVariable Long agenciaId, @Valid @RequestBody AgenciaRequestDTO agenciaDTO) {
     	Agencia agencia = agenciaService.atualizarAgencia(agenciaId, agenciaDTO);
 		return ResponseHandler.success("Agencia atualizada com sucesso.", agencia, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBodyTemplate> adicionar(@RequestBody Agencia agenciaDTO){
+    public ResponseEntity<ResponseBodyTemplate> adicionar(@Valid @RequestBody AgenciaRequestDTO agenciaDTO){
     	Agencia agencia = agenciaService.criarAgencia(agenciaDTO);
 		return ResponseHandler.success("Agencia criada com sucesso.", agencia, HttpStatus.CREATED);
     }

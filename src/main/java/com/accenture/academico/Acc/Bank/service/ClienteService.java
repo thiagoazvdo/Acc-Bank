@@ -1,6 +1,7 @@
 package com.accenture.academico.Acc.Bank.service;
 
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
@@ -19,6 +20,10 @@ public class ClienteService {
         return clienteRepository.findById(clienteId).orElseThrow(() -> new ClienteNaoEncontradoException(clienteId));
     }
 
+    private boolean cpfJaCadastrado(String cpf) {
+        return clienteRepository.findByCpf(cpf).isPresent();
+    }
+
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
         Cliente clienteAtual = buscarCliente(clienteId);
         if(clienteRequestDTO.getNome() != null) clienteAtual.setNome(clienteRequestDTO.getNome());
@@ -28,9 +33,14 @@ public class ClienteService {
     }
 
     public Cliente criarCliente(ClienteRequestDTO clienteRequestDTO) {
-        Cliente cliente = clienteRequestDTO.toEntity();
-        return clienteRepository.save(cliente);
+        if (cpfJaCadastrado(clienteRequestDTO.getCpf())) throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
+        Cliente novoCliente = new Cliente();
+        novoCliente.setNome(clienteRequestDTO.getNome());
+        novoCliente.setCpf(clienteRequestDTO.getCpf());
+        novoCliente.setTelefone(clienteRequestDTO.getTelefone());
+        return clienteRepository.save(novoCliente);
     }
+
 
     public void removerCliente(Long id) {
         clienteRepository.delete(buscarCliente(id));

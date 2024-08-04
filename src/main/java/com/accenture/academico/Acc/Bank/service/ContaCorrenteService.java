@@ -3,6 +3,7 @@ package com.accenture.academico.Acc.Bank.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteJaCadastradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,8 @@ public class ContaCorrenteService {
 	
 	@Transactional
 	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
+		if (contaCorrenteRepository.findByClienteId(contaDTO.getIdCliente()).isPresent()) throw new ContaCorrenteJaCadastradoException(contaDTO.getIdCliente());
+
 		Agencia agencia = agenciaRepository.findById(contaDTO.getIdAgencia())
 				.orElseThrow(() -> new AgenciaNaoEncontradaException(contaDTO.getIdAgencia()));
 		
