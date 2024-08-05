@@ -1,6 +1,7 @@
 package com.accenture.academico.Acc.Bank.controller;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
-import com.accenture.academico.Acc.Bank.handler.ResponseBodyTemplate;
-import com.accenture.academico.Acc.Bank.handler.ResponseHandler;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 
@@ -28,43 +27,45 @@ public class ContaCorrenteController {
 
 	@Autowired
 	private ContaCorrenteService contaCorrenteService;
-	
+
+	@Autowired
+	private ModelMapper modelMapper;
+
 	@PostMapping
-	public ResponseEntity<ResponseBodyTemplate> criarContaCorrente(@Valid @RequestBody ContaCorrenteRequestDTO contaDTO){
+	public ResponseEntity<?> criarContaCorrente(@Valid @RequestBody ContaCorrenteRequestDTO contaDTO){
 		ContaCorrente contaCorrente = contaCorrenteService.criarContaCorrente(contaDTO);
-		return ResponseHandler.success("Conta Corrente criada com sucesso.", contaCorrente, HttpStatus.CREATED);
+		return ResponseEntity.ok(contaCorrente);
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> buscarContaCorrente(@PathVariable Long id){
 		ContaCorrente contaCorrente = contaCorrenteService.buscarContaCorrente(id);
-		ContaCorrenteResponse contaCorrenteResponse = new ContaCorrenteResponse().toEntity(contaCorrente);
-		//return ResponseHandler.success("Conta Corrente encontrada com sucesso.", contaCorrenteResponse, HttpStatus.OK);
+		ContaCorrenteResponse contaCorrenteResponse = modelMapper.map(contaCorrente, ContaCorrenteResponse.class);
 		return ResponseEntity.ok(contaCorrenteResponse);
 	}
-	
+
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ResponseBodyTemplate> removerContaCorrente(@PathVariable Long id){
+	public ResponseEntity<?> removerContaCorrente(@PathVariable Long id){
 		contaCorrenteService.removerContaCorrente(id);
-		return ResponseHandler.success("Conta Corrente removida com sucesso.", HttpStatus.NO_CONTENT);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
-	
+
 	@PostMapping("/{id}/sacar")
-	 public ResponseEntity<ResponseBodyTemplate> sacar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO saqueDTO) {
-		 contaCorrenteService.sacar(id, saqueDTO);
-		 return ResponseHandler.success("Saque realizado com sucesso.", HttpStatus.OK);
-	 }
-	 
-	 @PostMapping("/{id}/depositar")
-	 public ResponseEntity<ResponseBodyTemplate> depositar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO depositoDTO) {
-		 contaCorrenteService.depositar(id, depositoDTO);
-		 return ResponseHandler.success("Deposito realizado com sucesso.", HttpStatus.OK);
-	 }
-	 
-	 @PostMapping("/{idOrigem}/transferir")
-	 public ResponseEntity<ResponseBodyTemplate> transferir(@PathVariable Long idOrigem, @Valid @RequestBody TransferenciaRequestDTO transferenciaDTO) {
-		 contaCorrenteService.transferir(idOrigem, transferenciaDTO);
-		 return ResponseHandler.success("Transferência realizada com sucesso.", HttpStatus.OK);
-	 }
+	public ResponseEntity<?> sacar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO saqueDTO) {
+		contaCorrenteService.sacar(id, saqueDTO);
+		return ResponseEntity.ok(saqueDTO);
+	}
+
+	@PostMapping("/{id}/depositar")
+	public ResponseEntity<?> depositar(@PathVariable Long id, @Valid @RequestBody SaqueDepositoRequestDTO depositoDTO) {
+		contaCorrenteService.depositar(id, depositoDTO);
+		return ResponseEntity.ok(depositoDTO);
+	}
+
+	@PostMapping("/{idOrigem}/transferir")
+	public ResponseEntity<?> transferir(@PathVariable Long idOrigem, @Valid @RequestBody TransferenciaRequestDTO transferenciaDTO) {
+		contaCorrenteService.transferir(idOrigem, transferenciaDTO);
+		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+	}
 	 
 }
