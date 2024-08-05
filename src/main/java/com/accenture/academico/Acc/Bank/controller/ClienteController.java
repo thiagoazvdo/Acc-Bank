@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
-import com.accenture.academico.Acc.Bank.handler.ResponseBodyTemplate;
-import com.accenture.academico.Acc.Bank.handler.ResponseHandler;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.service.ClienteService;
 
@@ -30,33 +28,33 @@ public class ClienteController {
 	ClienteService clienteService;
 
 	@GetMapping
-	public ResponseEntity<ResponseBodyTemplate> listar() {
+	public ResponseEntity<?> listar() {
 		List<Cliente> listaClientes = clienteService.listarClientes();
-		return ResponseHandler.success("Listagem de clientes concluida com sucesso.", listaClientes, HttpStatus.OK);
+		return ResponseEntity.ok(listaClientes);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ResponseBodyTemplate> buscar(@PathVariable Long id) {
+	public ResponseEntity<?> buscar(@PathVariable Long id) {
 		Cliente cliente = clienteService.buscarCliente(id);
-		return ResponseHandler.success("Cliente encontrado com sucesso.", cliente, HttpStatus.OK);
+		return ResponseEntity.ok(cliente);
 	}
 
 	@PutMapping("/{clienteId}")
-	public ResponseEntity<ResponseBodyTemplate> atualizar(@PathVariable Long clienteId, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+	public ResponseEntity<?> atualizar(@PathVariable Long clienteId, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteService.atualizar(clienteId, clienteRequestDTO);
-		return ResponseHandler.success("Cliente atualizado com sucesso.", cliente, HttpStatus.OK);
+		return ResponseEntity.ok(cliente);
 	}
 
 	@PostMapping
-	public ResponseEntity<ResponseBodyTemplate> adicionar(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+	public ResponseEntity<?> adicionar(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteService.criarCliente(clienteRequestDTO);
-		return ResponseHandler.success("Cliente criado com sucesso.", cliente, HttpStatus.CREATED);
+		return ResponseEntity.ok(cliente);
 	}
 
 	@DeleteMapping("/{clienteId}")
-	public ResponseEntity<ResponseBodyTemplate> remover(@PathVariable Long clienteId) {
+	public ResponseEntity<?> remover(@PathVariable Long clienteId) {
 		clienteService.removerCliente(clienteId);
-		return ResponseHandler.success("Cliente removido com sucesso.", HttpStatus.NO_CONTENT);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 }
