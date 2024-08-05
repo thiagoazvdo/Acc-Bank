@@ -1,9 +1,9 @@
 package com.accenture.academico.Acc.Bank.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,33 +28,34 @@ public class ClienteController {
 	ClienteService clienteService;
 
 	@GetMapping
-	public ResponseEntity<?> listar() {
+	public ResponseEntity<List<Cliente>> listar() {
 		List<Cliente> listaClientes = clienteService.listarClientes();
 		return ResponseEntity.ok(listaClientes);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> buscar(@PathVariable Long id) {
+	public ResponseEntity<Cliente> buscar(@PathVariable Long id) {
 		Cliente cliente = clienteService.buscarCliente(id);
 		return ResponseEntity.ok(cliente);
 	}
 
-	@PutMapping("/{clienteId}")
-	public ResponseEntity<?> atualizar(@PathVariable Long clienteId, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
-		Cliente cliente = clienteService.atualizar(clienteId, clienteRequestDTO);
+	@PutMapping("/{id}")
+	public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+		Cliente cliente = clienteService.atualizar(id, clienteRequestDTO);
 		return ResponseEntity.ok(cliente);
 	}
 
 	@PostMapping
-	public ResponseEntity<?> adicionar(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
+	public ResponseEntity<Cliente> adicionar(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
 		Cliente cliente = clienteService.criarCliente(clienteRequestDTO);
-		return ResponseEntity.ok(cliente);
+		URI uri = URI.create("/clientes/" + cliente.getId());
+		return ResponseEntity.created(uri).body(cliente);
 	}
 
-	@DeleteMapping("/{clienteId}")
-	public ResponseEntity<?> remover(@PathVariable Long clienteId) {
-		clienteService.removerCliente(clienteId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> remover(@PathVariable Long id) {
+		clienteService.removerCliente(id);
+		return ResponseEntity.noContent().build();
 	}
 
 }

@@ -1,16 +1,19 @@
 package com.accenture.academico.Acc.Bank.dto;
 
-import com.accenture.academico.Acc.Bank.model.Agencia;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 
-@Data
+import com.accenture.academico.Acc.Bank.model.Agencia;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContaCorrenteResponse {
+@Getter
+@Setter
+public class ContaCorrenteResponseDTO {
 
     private Long id;
 
