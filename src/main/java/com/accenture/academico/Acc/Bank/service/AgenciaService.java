@@ -1,15 +1,21 @@
 package com.accenture.academico.Acc.Bank.service;
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 public class AgenciaService {
 
+    @Autowired
+    private ModelMapper modelMapper;
+	
     @Autowired
     private AgenciaRepository agenciaRepository;
 
@@ -18,15 +24,17 @@ public class AgenciaService {
     }
 
     public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
-        Agencia agenciaAtual = buscarAgencia(agenciaId);
-        if (agenciaDTO.getNome() != null) agenciaAtual.setNome(agenciaDTO.getNome());
-        if (agenciaDTO.getEndereco() != null) agenciaAtual.setEndereco(agenciaDTO.getEndereco());
-        if (agenciaDTO.getTelefone() != null) agenciaAtual.setTelefone(agenciaDTO.getTelefone());
-        return agenciaRepository.save(agenciaAtual);
+        Agencia agencia = buscarAgencia(agenciaId);
+        
+        Agencia agenciaAtualizada = dtoToAgencia(agenciaDTO);
+        agenciaAtualizada.setId(agencia.getId());
+        
+        return agenciaRepository.save(agenciaAtualizada);
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
-        return agenciaRepository.save(agenciaDTO.toEntity());
+    	Agencia agencia = dtoToAgencia(agenciaDTO);
+        return agenciaRepository.save(agencia);
     }
 
     public void removerAgencia(Long id) {
@@ -35,5 +43,9 @@ public class AgenciaService {
 
     public List<Agencia> listarAgencias(){
         return agenciaRepository.findAll();
+    }
+    
+    private Agencia dtoToAgencia(AgenciaRequestDTO agenciaDTO) {
+    	return modelMapper.map(agenciaDTO, Agencia.class);
     }
 }
