@@ -65,7 +65,7 @@ public class ContaCorrenteController {
 	@PostMapping("/{idOrigem}/transferir")
 	public ResponseEntity<?> transferir(@PathVariable Long idOrigem, @Valid @RequestBody TransferenciaRequestDTO transferenciaDTO) {
 		contaCorrenteService.transferir(idOrigem, transferenciaDTO);
-		return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+		return ResponseEntity.ok(transferenciaDTO);
 	}
 	 
 }
