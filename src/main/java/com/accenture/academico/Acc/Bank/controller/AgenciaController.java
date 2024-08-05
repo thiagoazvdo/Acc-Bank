@@ -28,33 +28,33 @@ public class AgenciaController {
     AgenciaService agenciaService;
 
     @GetMapping
-    public ResponseEntity<ResponseBodyTemplate> listar() {
+    public ResponseEntity<?> listar() {
     	List<Agencia> listaAgencias = agenciaService.listarAgencias();
-		return ResponseHandler.success("Listagem de agencias concluida com sucesso.", listaAgencias, HttpStatus.OK);
+        return ResponseEntity.ok(listaAgencias);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseBodyTemplate> buscar(@PathVariable Long id) {
+    public ResponseEntity<?> buscar(@PathVariable Long id) {
     	Agencia agencia = agenciaService.buscarAgencia(id);
-		return ResponseHandler.success("Agencia encontrado com sucesso.", agencia, HttpStatus.OK);
+		return ResponseEntity.ok(agencia);
     }
 
     @PutMapping("/{agenciaId}")
-    public ResponseEntity<ResponseBodyTemplate> atualizar(@PathVariable Long agenciaId, @Valid @RequestBody AgenciaRequestDTO agenciaDTO) {
+    public ResponseEntity<?> atualizar(@PathVariable Long agenciaId, @Valid @RequestBody AgenciaRequestDTO agenciaDTO) {
     	Agencia agencia = agenciaService.atualizarAgencia(agenciaId, agenciaDTO);
-		return ResponseHandler.success("Agencia atualizada com sucesso.", agencia, HttpStatus.OK);
+        return ResponseEntity.ok(agencia);
     }
 
     @PostMapping
-    public ResponseEntity<ResponseBodyTemplate> adicionar(@Valid @RequestBody AgenciaRequestDTO agenciaDTO){
+    public ResponseEntity<?> adicionar(@Valid @RequestBody AgenciaRequestDTO agenciaDTO){
     	Agencia agencia = agenciaService.criarAgencia(agenciaDTO);
-		return ResponseHandler.success("Agencia criada com sucesso.", agencia, HttpStatus.CREATED);
+        return ResponseEntity.ok(agencia);
     }
 
     @DeleteMapping("/{agenciaId}")
-    public ResponseEntity<ResponseBodyTemplate> remover(@PathVariable Long agenciaId){
+    public ResponseEntity<?> remover(@PathVariable Long agenciaId){
         agenciaService.removerAgencia(agenciaId);
-        return ResponseHandler.success("Agencia removida com sucesso.", HttpStatus.NO_CONTENT);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
