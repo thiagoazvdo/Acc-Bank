@@ -27,8 +27,9 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity
      */
     @ExceptionHandler(BancoException.class)
-    public ResponseEntity<?> onBusinessException(BancoException bancoException) {
-    	return ResponseHandler.error(bancoException);
+    public ResponseEntity<ResponseError> onBusinessException(BancoException bancoException) {
+    	ResponseError responseError = new ResponseError(bancoException);
+    	return ResponseEntity.status(bancoException.getHttpStatus()).body(responseError);
     }
 
     /*
@@ -37,24 +38,26 @@ public class GlobalExceptionHandler {
      */
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ResponseError> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
     	List<String> erros = new ArrayList<>();
     	
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
         	erros.add(fieldError.getDefaultMessage());
         }
         
-    	return ResponseHandler.error("Erros de validacao encontrados", HttpStatus.BAD_REQUEST, erros);
+        ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<?> onConstraintViolation(ConstraintViolationException e) {
+    public ResponseEntity<ResponseError> onConstraintViolation(ConstraintViolationException e) {
     	List<String> erros = new ArrayList<>();
     	
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             erros.add(violation.getMessage());
         }
         
-    	return ResponseHandler.error("Erros de validacao encontrados", HttpStatus.BAD_REQUEST, erros);
+        ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 }
