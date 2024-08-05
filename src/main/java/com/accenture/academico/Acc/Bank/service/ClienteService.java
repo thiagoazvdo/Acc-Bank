@@ -1,18 +1,23 @@
 package com.accenture.academico.Acc.Bank.service;
 
+import java.util.List;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ClienteService {
 
+    @Autowired
+    private ModelMapper modelMapper;
+	
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -25,19 +30,19 @@ public class ClienteService {
     }
 
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
-        Cliente clienteAtual = buscarCliente(clienteId);
-        if(clienteRequestDTO.getNome() != null) clienteAtual.setNome(clienteRequestDTO.getNome());
-        if(clienteRequestDTO.getCpf() != null) clienteAtual.setCpf(clienteRequestDTO.getCpf());
-        if(clienteRequestDTO.getTelefone() != null) clienteAtual.setTelefone(clienteRequestDTO.getTelefone());
-        return clienteRepository.save(clienteAtual);
+        Cliente cliente = buscarCliente(clienteId);
+        
+        Cliente clienteAtualizado = dtoToCliente(clienteRequestDTO);
+        clienteAtualizado.setId(cliente.getId());
+        
+        return clienteRepository.save(clienteAtualizado);
     }
 
     public Cliente criarCliente(ClienteRequestDTO clienteRequestDTO) {
-        if (cpfJaCadastrado(clienteRequestDTO.getCpf())) throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
-        Cliente novoCliente = new Cliente();
-        novoCliente.setNome(clienteRequestDTO.getNome());
-        novoCliente.setCpf(clienteRequestDTO.getCpf());
-        novoCliente.setTelefone(clienteRequestDTO.getTelefone());
+        if (cpfJaCadastrado(clienteRequestDTO.getCpf())) 
+        	throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
+        
+        Cliente novoCliente = dtoToCliente(clienteRequestDTO);
         return clienteRepository.save(novoCliente);
     }
 
@@ -48,5 +53,9 @@ public class ClienteService {
 
     public List<Cliente> listarClientes(){
         return clienteRepository.findAll();
+    }
+    
+    private Cliente dtoToCliente(ClienteRequestDTO clienteDTO) {
+    	return modelMapper.map(clienteDTO, Cliente.class);
     }
 }

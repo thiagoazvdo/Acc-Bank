@@ -43,20 +43,13 @@ public class ContaCorrenteService {
 	
 	@Transactional
 	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
-		if (contaCorrenteRepository.findByClienteId(contaDTO.getIdCliente()).isPresent()) throw new ContaCorrenteJaCadastradoException(contaDTO.getIdCliente());
+		verificaSeClientePossuiConta(contaDTO.getIdCliente());
 
-		Agencia agencia = agenciaRepository.findById(contaDTO.getIdAgencia())
-				.orElseThrow(() -> new AgenciaNaoEncontradaException(contaDTO.getIdAgencia()));
+		Agencia agencia = buscarAgencia(contaDTO.getIdAgencia());
+		Cliente cliente = buscarCliente(contaDTO.getIdCliente());
 		
-		Cliente cliente = clienteRepository.findById(contaDTO.getIdCliente())
-				.orElseThrow(() -> new ClienteNaoEncontradoException(contaDTO.getIdCliente()));
-		
-		ContaCorrente conta = ContaCorrente.builder()
-				.saldo(BigDecimal.ZERO)
-				.agencia(agencia)
-				.cliente(cliente)
-				.build();
-		
+		ContaCorrente conta = new ContaCorrente(agencia, cliente);
+
 		conta = contaCorrenteRepository.save(conta);
 		
 		String numeroConta = Long.toString(conta.getId() + 10000);
@@ -121,16 +114,29 @@ public class ContaCorrenteService {
 	}
     
     private void registrarTransacao(ContaCorrente contaOrigem, ContaCorrente contaDestino, TipoTransacao tipo, BigDecimal valor, String descricao) {
-        Transacao transacao = Transacao.builder()
-                .contaCorrente(contaOrigem)
-                .contaCorrenteRelacionada(contaDestino)
-                .tipo(tipo)
-                .valor(valor)
-                .dataHora(LocalDateTime.now())
-                .descricao(descricao)
-                .build();
-
+        Transacao transacao = new Transacao();
+        transacao.setContaCorrente(contaOrigem);
+        transacao.setContaCorrenteRelacionada(contaDestino);
+        transacao.setTipo(tipo);
+        transacao.setValor(valor);
+        transacao.setDataHora(LocalDateTime.now());
+        transacao.setDescricao(descricao);
+        
         transacaoRepository.save(transacao);
     }
-
+    
+	private void verificaSeClientePossuiConta(Long idCliente) {
+		if (contaCorrenteRepository.findByClienteId(idCliente).isPresent()) 
+			throw new ContaCorrenteJaCadastradoException(idCliente);
+	}
+    
+    private Agencia buscarAgencia(Long id) {
+    	return agenciaRepository.findById(id)
+				.orElseThrow(() -> new AgenciaNaoEncontradaException(id));
+    }
+    
+    private Cliente buscarCliente(Long id) {
+    	return clienteRepository.findById(id)
+				.orElseThrow(() -> new ClienteNaoEncontradoException(id));
+    }
 }
