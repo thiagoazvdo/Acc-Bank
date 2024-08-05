@@ -26,23 +26,22 @@ public class TransacaoController {
 	private TransacaoService transacaoService;
 	
 	@GetMapping("/extrato-mensal")
-	public ResponseEntity<ResponseBodyTemplate> extratoMensal(@RequestParam Long idConta, @RequestParam YearMonth mesAno) {
+	public ResponseEntity<?> extratoMensal(@RequestParam Long idConta, @RequestParam YearMonth mesAno) {
 		List<Transacao> transacoes = transacaoService.obterExtratoMensal(idConta, mesAno);
-		return ResponseHandler.success("Extrato mensal gerado com sucesso.", transacoes, HttpStatus.OK);
+		return ResponseEntity.ok(transacoes);
 	}
 
 	@GetMapping("/extrato-anual")
-	public ResponseEntity<ResponseBodyTemplate> extratoAnual(@RequestParam Long idConta, @RequestParam int ano) {
+	public ResponseEntity<?> extratoAnual(@RequestParam Long idConta, @RequestParam int ano) {
 		List<Transacao> transacoes = transacaoService.obterExtratoAnual(idConta, ano);
-		return ResponseHandler.success("Extrato anual gerado com sucesso.", transacoes, HttpStatus.OK);
+		return ResponseEntity.ok(transacoes);
 	}
 
 	@GetMapping("/extrato-filtrado")
-	public ResponseEntity<ResponseBodyTemplate> extratoFiltrado(@RequestParam Long idConta,
+	public ResponseEntity<?> extratoFiltrado(@RequestParam Long idConta,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime dataInicio,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime dataFim) {
-		
 		List<Transacao> transacoes = transacaoService.obterExtratoFiltrado(idConta, dataInicio, dataFim);
-		return ResponseHandler.success("Extrato filtrado gerado com sucesso.", transacoes, HttpStatus.OK);
+		return ResponseEntity.ok(transacoes);
 	}
 }
