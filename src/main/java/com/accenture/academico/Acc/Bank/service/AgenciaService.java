@@ -26,14 +26,14 @@ public class AgenciaService {
     public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
         Agencia agencia = buscarAgencia(agenciaId);
         
-        Agencia agenciaAtualizada = dtoToAgencia(agenciaDTO);
+        Agencia agenciaAtualizada = converterParaAgencia(agenciaDTO);
         agenciaAtualizada.setId(agencia.getId());
         
         return agenciaRepository.save(agenciaAtualizada);
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
-    	Agencia agencia = dtoToAgencia(agenciaDTO);
+    	Agencia agencia = converterParaAgencia(agenciaDTO);
         return agenciaRepository.save(agencia);
     }
 
@@ -45,7 +45,7 @@ public class AgenciaService {
         return agenciaRepository.findAll();
     }
     
-    private Agencia dtoToAgencia(AgenciaRequestDTO agenciaDTO) {
+    private Agencia converterParaAgencia(AgenciaRequestDTO agenciaDTO) {
     	return modelMapper.map(agenciaDTO, Agencia.class);
     }
 }

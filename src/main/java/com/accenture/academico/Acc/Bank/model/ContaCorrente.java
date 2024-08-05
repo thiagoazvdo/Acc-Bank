@@ -7,7 +7,6 @@ import java.util.List;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,7 +54,6 @@ public class ContaCorrente {
 	@JsonBackReference
 	private Cliente cliente;
 	
-	@JsonIgnore
 	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transacao> transacoes;
 	

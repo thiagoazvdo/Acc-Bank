@@ -32,7 +32,7 @@ public class ClienteService {
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
         Cliente cliente = buscarCliente(clienteId);
         
-        Cliente clienteAtualizado = dtoToCliente(clienteRequestDTO);
+        Cliente clienteAtualizado = converterParaCliente(clienteRequestDTO);
         clienteAtualizado.setId(cliente.getId());
         
         return clienteRepository.save(clienteAtualizado);
@@ -42,7 +42,7 @@ public class ClienteService {
         if (cpfJaCadastrado(clienteRequestDTO.getCpf())) 
         	throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
         
-        Cliente novoCliente = dtoToCliente(clienteRequestDTO);
+        Cliente novoCliente = converterParaCliente(clienteRequestDTO);
         return clienteRepository.save(novoCliente);
     }
 
@@ -55,7 +55,7 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
     
-    private Cliente dtoToCliente(ClienteRequestDTO clienteDTO) {
+    private Cliente converterParaCliente(ClienteRequestDTO clienteDTO) {
     	return modelMapper.map(clienteDTO, Cliente.class);
     }
 }
