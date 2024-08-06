@@ -16,12 +16,12 @@ import lombok.Setter;
 @Setter
 public class TransferenciaRequestDTO {
 
-    @NotNull(message = "Campo valor obrigatório")
+    @NotNull(message = "Campo valor obrigatorio")
 	private BigDecimal valor;
     
 	private String descricao;
     
-    @NotBlank(message = "Campo numeroContaDestino obrigatório")
+    @NotBlank(message = "Campo numeroContaDestino obrigatorio")
     @Pattern(regexp = "\\d{5}", message = "Campo numeroContaDestino deve ter exatamente 5 digitos numericos")
 	private String numeroContaDestino;
 }

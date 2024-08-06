@@ -14,14 +14,14 @@ import lombok.Setter;
 @Setter
 public class ClienteRequestDTO {
 
-    @NotBlank(message = "Campo nome obrigatório")
+    @NotBlank(message = "Campo nome obrigatorio")
     private String nome;
 
     @Pattern(regexp = "\\d{11}", message = "Cpf deve ter exatamente 11 digitos numericos")
-    @NotBlank(message = "Campo cpf obrigatório!")
+    @NotBlank(message = "Campo cpf obrigatorio!")
     private String cpf;
 
-    @NotBlank(message = "Campo telefone obrigatório")
+    @NotBlank(message = "Campo telefone obrigatorio")
     private String telefone;
 
 }
