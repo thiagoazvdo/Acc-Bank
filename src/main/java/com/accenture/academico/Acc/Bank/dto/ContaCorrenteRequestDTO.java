@@ -12,9 +12,9 @@ import lombok.Setter;
 @Setter
 public class ContaCorrenteRequestDTO {
 
-    @NotNull(message = "Campo idCliente obrigatório")
+    @NotNull(message = "Campo idCliente obrigatorio")
 	private Long idCliente;
     
-    @NotNull(message = "Campo idAgencia obrigatório")
+    @NotNull(message = "Campo idAgencia obrigatorio")
 	private Long idAgencia;
 }

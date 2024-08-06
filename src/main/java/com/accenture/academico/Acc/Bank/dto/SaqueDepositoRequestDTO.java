@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class SaqueDepositoRequestDTO {
 
-    @NotNull(message = "Campo valor obrigatório")
+    @NotNull(message = "Campo valor obrigatorio")
 	private BigDecimal valor;
     
 	private String descricao;

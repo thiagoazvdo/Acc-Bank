@@ -12,13 +12,13 @@ import lombok.Setter;
 @Setter
 public class AgenciaRequestDTO {
 
-    @NotBlank(message = "Campo nome obrigatório!")
+    @NotBlank(message = "Campo nome obrigatorio")
     private String nome;
 
-    @NotBlank(message = "Campo endereco obrigatório!")
+    @NotBlank(message = "Campo endereco obrigatorio")
     private String endereco;
 
-    @NotBlank(message = "Campo telefone obrigatório!")
+    @NotBlank(message = "Campo telefone obrigatorio")
     private String telefone;
 
 }

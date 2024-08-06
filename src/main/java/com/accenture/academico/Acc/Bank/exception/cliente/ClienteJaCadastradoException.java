@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 public class ClienteJaCadastradoException extends BancoException {
 
     public ClienteJaCadastradoException(String cpf) {
-        super(String.format("Já existe um cliente cadastrado com o cpf %s", cpf));
+        super(String.format("Ja existe um cliente cadastrado com o cpf %s", cpf));
         this.httpStatus = HttpStatus.CONFLICT;
     }
 }
