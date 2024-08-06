@@ -7,7 +7,7 @@ import com.accenture.academico.Acc.Bank.exception.BancoException;
 public class TransferenciaEntreContasIguaisException extends BancoException{
 
 	public TransferenciaEntreContasIguaisException() {
-		super("Transferencia invalida! Não é possivel fazer uma transferencia entre duas contas iguais.");
+		super("Nao eh possivel fazer uma transferencia entre duas contas iguais");
         this.httpStatus = HttpStatus.BAD_REQUEST;
 	}
 }
