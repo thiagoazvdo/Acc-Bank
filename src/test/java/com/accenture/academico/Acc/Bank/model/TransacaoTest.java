@@ -1,17 +1,20 @@
 package com.accenture.academico.Acc.Bank.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TransacaoTest {
 
     @Test
-    @DisplayName("Testa o construtor padr�o")
+    @DisplayName("Testa o construtor padr�o")
     void testConstrutorPadrao() {
         Transacao transacao = new Transacao();
         assertNull(transacao.getId());
@@ -34,7 +37,7 @@ class TransacaoTest {
         transacao.setTipo(TipoTransacao.DEPOSITO);
         transacao.setValor(BigDecimal.valueOf(100.00));
         transacao.setDataHora(LocalDateTime.now());
-        transacao.setDescricao("Dep�sito inicial");
+        transacao.setDescricao("Dep�sito inicial");
         transacao.setContaCorrente(conta);
         transacao.setContaCorrenteRelacionada(contaRelacionada);
 
@@ -42,7 +45,7 @@ class TransacaoTest {
         assertEquals(TipoTransacao.DEPOSITO, transacao.getTipo());
         assertEquals(BigDecimal.valueOf(100.00), transacao.getValor());
         assertNotNull(transacao.getDataHora());
-        assertEquals("Dep�sito inicial", transacao.getDescricao());
+        assertEquals("Dep�sito inicial", transacao.getDescricao());
         assertEquals(conta, transacao.getContaCorrente());
         assertEquals(contaRelacionada, transacao.getContaCorrenteRelacionada());
     }
@@ -50,38 +53,58 @@ class TransacaoTest {
     @Test
     @DisplayName("Testa equals e hashCode")
     void testEqualsAndHashCode() {
-        Transacao transacao1 = new Transacao();
-        transacao1.setId(1L);
-        transacao1.setTipo(TipoTransacao.SAQUE);
-        transacao1.setValor(BigDecimal.valueOf(50.00));
-        transacao1.setDataHora(LocalDateTime.now());
-        transacao1.setDescricao("Saque autom�tico");
-        transacao1.setContaCorrente(new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null));
-        transacao1.setContaCorrenteRelacionada(new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null));
-
-        Transacao transacao2 = new Transacao();
-        transacao2.setId(1L);
-        transacao2.setTipo(TipoTransacao.SAQUE);
-        transacao2.setValor(BigDecimal.valueOf(50.00));
-        transacao2.setDataHora(transacao1.getDataHora());
-        transacao2.setDescricao("Saque autom�tico");
-        transacao2.setContaCorrente(new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null));
-        transacao2.setContaCorrenteRelacionada(new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null));
-
+        // Teste básico de igualdade
+        Transacao transacao1 = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
+        Transacao transacao2 = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
         assertEquals(transacao1, transacao2);
         assertEquals(transacao1.hashCode(), transacao2.hashCode());
+        
 
-        // Testa objetos diferentes
-        Transacao transacao3 = new Transacao();
-        transacao3.setId(2L);
-        transacao3.setTipo(TipoTransacao.DEPOSITO);
-        transacao3.setValor(BigDecimal.valueOf(200.00));
-        transacao3.setDataHora(LocalDateTime.now().minusDays(1));
-        transacao3.setDescricao("Dep�sito manual");
-        transacao3.setContaCorrente(new ContaCorrente(3L, "10003", BigDecimal.ZERO, null, null, null));
-        transacao3.setContaCorrenteRelacionada(new ContaCorrente(4L, "10004", BigDecimal.ZERO, null, null, null));
-
+        // Teste de desigualdade com IDs diferentes
+        Transacao transacao3 = new Transacao(2L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
         assertNotEquals(transacao1, transacao3);
         assertNotEquals(transacao1.hashCode(), transacao3.hashCode());
+        
+        // Teste de igualdade com a própria instância
+        assertEquals(transacao1, transacao1);
+        
+        // Teste de desigualdade com classe diferente
+        assertNotEquals(transacao1, new Cliente());
+    }
+    
+    @Test
+    void testEqualsNulo() {
+        // Teste de igualdade quando ambos os IDs são null
+    	Transacao transacao1 = new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
+        Transacao transacao2 = new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
+        assertEquals(transacao1, transacao2);
+
+        // Teste de desigualdade quando um ID é null e o outro não
+        Transacao transacao3 = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
+        assertNotEquals(transacao1, transacao3);
+    }
+    
+    @Test
+	void testEqualsWithDifferentCanEqual() {
+    	Transacao transacao1 = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);
+	    
+	    // Criar uma subclasse de Agencia que retorna false para canEqual
+    	Transacao transacaoSubclass = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null) {
+	        @Override
+	        public boolean canEqual(Object other) {
+	            return false;
+	        }
+	    };
+	    
+	    // O equals deve retornar false quando canEqual retornar false
+	    assertNotEquals(transacao1, transacaoSubclass);
+	}
+    
+    @Test
+    void testHashCodeNulo() {
+        // Teste de hashCode com valores nulos
+        Transacao transacao1 = new Transacao();
+        Transacao transacao2 = new Transacao();
+        assertEquals(transacao1.hashCode(), transacao2.hashCode());
     }
 }

@@ -49,15 +49,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseError> onConstraintViolation(ConstraintViolationException e) {
-    	List<String> erros = new ArrayList<>();
-    	
-        for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
-            erros.add(violation.getMessage());
-        }
-        
-        ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
-    }
 }
