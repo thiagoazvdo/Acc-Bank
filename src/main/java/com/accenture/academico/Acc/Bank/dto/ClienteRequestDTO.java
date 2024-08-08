@@ -18,7 +18,7 @@ public class ClienteRequestDTO {
     private String nome;
 
     @Pattern(regexp = "\\d{11}", message = "Cpf deve ter exatamente 11 digitos numericos")
-    @NotBlank(message = "Campo cpf obrigatorio!")
+    @NotBlank(message = "Campo cpf obrigatorio")
     private String cpf;
 
     @NotBlank(message = "Campo telefone obrigatorio")
