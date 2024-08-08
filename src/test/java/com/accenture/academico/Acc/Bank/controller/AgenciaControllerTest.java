@@ -64,7 +64,7 @@ class AgenciaControllerTest {
 	
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Criar")
-    class AgenciaCriarFluxosBasicos{
+    class AgenciaFluxosBasicosCriar{
     	
     	@Test
         @DisplayName("Quando criamos uma nova agencia com dados válidos")
@@ -229,7 +229,7 @@ class AgenciaControllerTest {
     
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Atualizar")
-    class AgenciaAtualizarFluxosBasicos{
+    class AgenciaFluxosBasicosAtualizar{
     	
     	@Test
         @DisplayName("Quando atualizamos uma agencia com dados válidos")
@@ -397,7 +397,7 @@ class AgenciaControllerTest {
     
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Buscar")
-    class AgenciaBuscarFluxosBasicos{
+    class AgenciaFluxosBasicosBuscar{
     	
     	@Test
         @DisplayName("Quando buscamos uma agencia salva pelo id")
@@ -442,7 +442,7 @@ class AgenciaControllerTest {
     
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Remover")
-    class AgenciaRemoverFluxosBasicos{
+    class AgenciaFluxosBasicosRemover{
     	
     	@Test
         @DisplayName("Quando removemos uma agencia pelo id")
@@ -482,7 +482,7 @@ class AgenciaControllerTest {
     
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Listar")
-    class AgenciaListarFluxosBasicos{
+    class AgenciaFluxosBasicosListar{
     	
     	@Test
         @DisplayName("Quando listamos todas agencias salvas")
