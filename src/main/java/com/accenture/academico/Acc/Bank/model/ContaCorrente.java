@@ -65,20 +65,18 @@ public class ContaCorrente {
 	}
 
 	public void sacar(BigDecimal valorSaque) {
-		if (valorSaque.compareTo(BigDecimal.ZERO) <= 0) 
-			throw new ValorInvalidoException();
+		boolean valorMaiorQueZero = valorSaque.compareTo(BigDecimal.ZERO) > 0;
+		boolean saldoDisponivel = saldo.compareTo(valorSaque) >= 0;
 		
-		if (saldo.compareTo(valorSaque) < 0) 
-			throw new SaldoInsuficienteException();
-		
-		this.saldo = this.saldo.subtract(valorSaque);
+		if (valorMaiorQueZero && saldoDisponivel) 
+			this.saldo = this.saldo.subtract(valorSaque);
 	}
 
 	public void depositar(BigDecimal valorDeposito) {
-		if (valorDeposito.compareTo(BigDecimal.ZERO) <= 0) 
-			throw new ValorInvalidoException();
+		boolean valorMaiorQueZero = valorDeposito.compareTo(BigDecimal.ZERO) > 0;
 		
-		this.saldo = this.saldo.add(valorDeposito);
+		if (valorMaiorQueZero) 
+			this.saldo = this.saldo.add(valorDeposito);
 	}
 	
     public void adicionarTransacao(Transacao transacao) {
