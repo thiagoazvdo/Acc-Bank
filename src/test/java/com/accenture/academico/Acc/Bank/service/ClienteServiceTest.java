@@ -1,14 +1,19 @@
 package com.accenture.academico.Acc.Bank.service;
 
-import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
-import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
-import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
-import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
-import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
-import com.accenture.academico.Acc.Bank.model.Agencia;
-import com.accenture.academico.Acc.Bank.model.Cliente;
-import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
-import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,14 +22,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 
 @DisplayName("Testes do service de Clientes")
 class ClienteServiceTest {
@@ -45,8 +47,8 @@ class ClienteServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        cliente = new Cliente(1L, "Cliente 1", "Rua Sem Saída, 000 - Cabo Canaveral", "1234567896910", null);
-        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555");
+        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null);
+        clienteRequestDTO = new ClienteRequestDTO("JoÃ£o da Silva", "12345678900", "5555-5555");
     }
 
     @Test
@@ -62,6 +64,7 @@ class ClienteServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(cliente, result);
+        verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
         verify(modelMapper, times(1)).map(clienteRequestDTO, Cliente.class);
         verify(clienteRepository, times(1)).save(cliente);
     }
@@ -118,6 +121,7 @@ class ClienteServiceTest {
 
         // Assert
         assertEquals(cliente, result);
+        verify(clienteRepository, times(1)).findById(1L);
     }
 
     @Test
