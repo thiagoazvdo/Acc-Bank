@@ -1,6 +1,10 @@
 package com.accenture.academico.Acc.Bank.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,15 +25,19 @@ class ClienteTest {
 	@Test
 	void testGettersAndSetters() {
 		Cliente clienteNovo = new Cliente();
+		ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, clienteNovo, null);
+
 		clienteNovo.setId(2L);
 		clienteNovo.setNome("João Silva");
 		clienteNovo.setCpf("12345678901");
 		clienteNovo.setTelefone("1111-8888");
+		clienteNovo.setContaCorrente(conta);
 
 		assertEquals(2L, clienteNovo.getId());
 		assertEquals("João Silva", clienteNovo.getNome());
 		assertEquals("12345678901", clienteNovo.getCpf());
 		assertEquals("1111-8888", clienteNovo.getTelefone());
+		assertEquals(conta, clienteNovo.getContaCorrente());
 	}
 
 	@Test
@@ -57,7 +65,25 @@ class ClienteTest {
 		cliente3.setTelefone("1111-8888");
 
 		assertNotEquals(cliente1, cliente3);
+		
+		// Teste de igualdade com a própria instância
+        assertEquals(cliente1, cliente1);
+
+        // Teste de desigualdade com classe diferente
+        assertNotEquals(cliente1, new ContaCorrente());
 	}
+	
+	@Test
+    void testEqualsNulo() {
+        // Teste de igualdade quando ambos os IDs são null
+		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null);
+		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null);
+        assertEquals(cliente1, cliente2);
+
+        // Teste de desigualdade quando um ID é null e o outro não
+        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null);
+        assertNotEquals(cliente1, cliente3);
+    }
 
 	@Test
 	void testEqualsWithDifferentCanEqual() {

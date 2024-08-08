@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,7 +47,7 @@ public class ClienteControllerTest {
 
     @BeforeEach
     void setUp() {
-        cliente = new Cliente(1L, "Cliente 1", "88616355491", "988129070", null);
+        cliente = new Cliente(null, "Cliente 1", "88616355491", "988129070", null);
         clienteRequestDTO = new ClienteRequestDTO(cliente.getNome(), cliente.getCpf(), cliente.getTelefone());
 
         clienteRepository.save(cliente);
@@ -58,10 +60,10 @@ public class ClienteControllerTest {
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Adicionar")
-    class ClienteAdicionarFluxosBasicos {
+    class ClienteFluxosBasicosAdicionar {
 
         @Test
-        @DisplayName("Quando criamos um novo cliente com dados v·lidos")
+        @DisplayName("Quando criamos um novo cliente com dados vÔøΩlidos")
         void quandoCriarClienteValido() throws Exception {
             // Arrange
             ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Novo", "12345678901", "988129070");
@@ -82,117 +84,362 @@ public class ClienteControllerTest {
             assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
         }
-
+        
         @Test
-        @DisplayName("Quando criamos um novo cliente com nome nulo")
-        void quandoCriarClienteNomeNulo() throws Exception {
+        @DisplayName("Quando criamos um cliente ja cadastrado")
+        void quandoCriarClienteJaCadastrado() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO(null, "12345678901", "988129070");
-
+        	
             // Act
-            mockMvc.perform(post("/clientes")
+        	String responseJsonString = mockMvc.perform(post("/clientes")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(clienteRequestDTO)))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print());
+                    .andExpect(status().isConflict())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            ClienteJaCadastradoException exception = new ClienteJaCadastradoException(cliente.getCpf());
+        	
+            // Assert
+            assertEquals(exception.getMessage(), resultado.getMessage());
         }
 
         @Test
-        @DisplayName("Quando criamos um novo cliente com CPF nulo")
-        void quandoCriarClienteCpfNulo() throws Exception {
+        @DisplayName("Quando criamos um novo cliente com campos nulos")
+        void quandoCriarClienteCamposNulos() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Sem CPF", null, "988129070");
-
+        	clienteRequestDTO.setNome(null);
+        	clienteRequestDTO.setCpf(null);
+        	clienteRequestDTO.setTelefone(null);
+        	
             // Act
-            mockMvc.perform(post("/clientes")
+        	String responseJsonString = mockMvc.perform(post("/clientes")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(clienteRequestDTO)))
                     .andExpect(status().isBadRequest())
-                    .andDo(print());
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(3, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com campos vazios")
+        void quandoCriarClienteCamposVazios() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setNome("");
+        	clienteRequestDTO.setCpf("");
+        	clienteRequestDTO.setTelefone("");
+        	
+            // Act
+        	String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
         }
 
         @Test
-        @DisplayName("Quando criamos um novo cliente com telefone vazio")
-        void quandoCriarClienteTelefoneVazio() throws Exception {
+        @DisplayName("Quando criamos um novo cliente com CPF com letras")
+        void quandoCriarClienteCpfComLetras() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Sem Telefone", "12345678901", "");
-
+        	clienteRequestDTO.setCpf("cpf22233300");
+        	
             // Act
-            mockMvc.perform(post("/clientes")
+            String responseJsonString = mockMvc.perform(post("/clientes")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(clienteRequestDTO)))
                     .andExpect(status().isBadRequest())
-                    .andDo(print());
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
         }
-
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com CPF com 12 digitos")
+        void quandoCriarClienteCpfCom12Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("000222444666");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com CPF com 10 digitos")
+        void quandoCriarClienteCpfCom10Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("0002224446");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
     }
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Atualizar")
-    class ClienteAtualizarFluxosBasicos {
-
-        @Test
-        @DisplayName("Quando atualizamos um cliente com nome nulo")
-        void quandoAtualizamosClienteNomeNulo() throws Exception {
+    class ClienteFluxosBasicosAtualizar {
+    	
+    	@Test
+        @DisplayName("Quando atualizamos um cliente com dados v√°lidos")
+        void quandoAtualizamosClienteValido() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO(null, "12345678910", "9999-9999");
-
+            clienteRequestDTO.setNome("Cliente Novo");
+            clienteRequestDTO.setCpf("12345678901");
+            clienteRequestDTO.setTelefone("988129070");
+            
             // Act
-            mockMvc.perform(put("/clientes/" + cliente.getId())
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(clienteRequestDTO)))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print());
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Cliente resultado = objectMapper.readValue(responseJsonString, Cliente.class);
+
+            // Assert
+            assertEquals(cliente.getId(), resultado.getId());
+            assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
+            assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
+            assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
         }
-
-        @Test
-        @DisplayName("Quando atualizamos um cliente com CPF nulo")
-        void quandoAtualizamosClienteCpfNulo() throws Exception {
+    	
+    	@Test
+        @DisplayName("Quando atualizamos um cliente inexistente")
+        void quandoAtualizamosClienteInexistente() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Nome Novo", null, "9999-9999");
-
+    		Long idInexistente = 999L;
+        	
             // Act
-            mockMvc.perform(put("/clientes/" + cliente.getId())
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print());
-        }
-
-        @Test
-        @DisplayName("Quando atualizamos um cliente com telefone vazio")
-        void quandoAtualizamosClienteTelefoneVazio() throws Exception {
-            // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Nome Novo", "12345678910", "");
-
-            // Act
-            mockMvc.perform(put("/clientes/" + cliente.getId())
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print());
-        }
-
-        @Test
-        @DisplayName("Quando tentamos atualizar um cliente que n„o existe")
-        void quandoAtualizamosClienteNaoExistente() throws Exception {
-            // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Nome Novo", "12345678910", "9999-9999");
-            Long idNaoExistente = 999L;
-
-            // Act
-            mockMvc.perform(put("/clientes/" + idNaoExistente)
+        	String responseJsonString = mockMvc.perform(put("/clientes/" + idInexistente)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(clienteRequestDTO)))
                     .andExpect(status().isNotFound())
-                    .andDo(print());
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
+        	
+            // Assert
+            assertEquals(exception.getMessage(), resultado.getMessage());
+        }
+
+    	@Test
+        @DisplayName("Quando atualizamos um cliente com campos nulos")
+        void quandoAtualizamosClienteCamposNulos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setNome(null);
+        	clienteRequestDTO.setCpf(null);
+        	clienteRequestDTO.setTelefone(null);
+        	
+            // Act
+        	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(3, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com campos vazios")
+        void quandoAtualizamosClienteCamposVazios() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setNome("");
+        	clienteRequestDTO.setCpf("");
+        	clienteRequestDTO.setTelefone("");
+        	
+            // Act
+        	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
+
+        @Test
+        @DisplayName("Quando atualizamos um cliente com CPF com letras")
+        void quandoAtualizamosClienteCpfComLetras() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("cpf22233300");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com CPF com 12 digitos")
+        void quandoAtualizamosClienteCpfCom12Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("000222444666");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com CPF com 10 digitos")
+        void quandoAtualizamosClienteCpfCom10Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("0002224446");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
         }
     }
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Buscar")
-    class ClienteBuscarFluxosBasicos {
+    class ClienteFluxosBasicosBuscar {
 
+    	@Test
+        @DisplayName("Quando buscamos um cliente v√°lidos")
+        void quandoBuscamosClienteValido() throws Exception {
+            // Arrange
+            
+            // Act
+            String responseJsonString = mockMvc.perform(get("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Cliente resultado = objectMapper.readValue(responseJsonString, Cliente.class);
+
+            // Assert
+            assertEquals(cliente.getId(), resultado.getId());
+            assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
+            assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
+            assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
+        }
+    	
         @Test
         @DisplayName("Quando buscamos um cliente inexistente pelo id")
         void quandoBuscamosClienteInexistente() throws Exception {
@@ -207,16 +454,33 @@ public class ClienteControllerTest {
                     .andReturn().getResponse().getContentAsString();
 
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-
+            ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
+        	
             // Assert
-            assertEquals(String.format("Nao existe um cliente cadastrado com o id %d", idInexistente) , resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMessage());
         }
     }
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Remover")
-    class ClienteRemoverFluxosBasicos {
+    class ClienteFluxosBasicosRemover {
 
+    	@Test
+        @DisplayName("Quando removemos um cliente pelo id")
+        void quandoRemovemosClienteValido() throws Exception {
+        	// Arrange
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(delete("/clientes/" + cliente.getId())
+            			.contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+            
+            // Assert
+            assertTrue(responseJsonString.isBlank());
+        }
+    	
         @Test
         @DisplayName("Quando removemos um cliente inexistente")
         void quandoRemovemosClienteInexistente() throws Exception {
@@ -231,16 +495,17 @@ public class ClienteControllerTest {
                     .andReturn().getResponse().getContentAsString();
 
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-
+            ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
+        	
             // Assert
-            assertEquals(String.format("Nao existe um cliente cadastrado com o id %d", idInexistente) , resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMessage());
         }
 
     }
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Listar")
-    class ClienteListarFluxosBasicos {
+    class ClienteFluxosBasicosListar {
 
         @Test
         @DisplayName("Quando listamos todos cliente salvos")
@@ -251,7 +516,8 @@ public class ClienteControllerTest {
 
 
             // Act
-            String responseJsonString = mockMvc.perform(get("/clientes"))
+            String responseJsonString = mockMvc.perform(get("/clientes")
+            			.contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
