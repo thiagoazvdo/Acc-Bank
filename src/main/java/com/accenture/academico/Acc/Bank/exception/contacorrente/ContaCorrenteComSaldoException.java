@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 
 import com.accenture.academico.Acc.Bank.exception.BancoException;
 
-public class ContaComSaldoException extends BancoException{
+public class ContaCorrenteComSaldoException extends BancoException{
 
-	public ContaComSaldoException() {
+	public ContaCorrenteComSaldoException() {
 		super("Nao eh possivel remover uma conta que possui saldo");
         this.httpStatus = HttpStatus.BAD_REQUEST;
 	}
