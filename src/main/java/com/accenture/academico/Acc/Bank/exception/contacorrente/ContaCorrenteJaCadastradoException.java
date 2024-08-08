@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public class ContaCorrenteJaCadastradoException extends BancoException {
 
-    public ContaCorrenteJaCadastradoException(Long contaId) {
-        super(String.format("Ja existe uma conta corrente cadastrada com o id %d", contaId));
+    public ContaCorrenteJaCadastradoException(Long clienteId) {
+        super(String.format("O cliente com id %d ja possui uma conta cadastrada", clienteId));
         this.httpStatus = HttpStatus.CONFLICT;
     }
 }

@@ -8,10 +8,6 @@ import lombok.Getter;
 public class BancoException extends RuntimeException {
     
 	protected HttpStatus httpStatus;
-	
-	public BancoException() {
-        super("Erro inesperado no Acc Bank!");
-    }
 
     public BancoException(String message) {
         super(message);
