@@ -307,7 +307,7 @@ class ContaCorrenteControllerTest {
     		conta.depositar(BigDecimal.valueOf(20));
     		contaCorrenteRepository.save(conta);
     		
-    		saqueDTO = new SaqueDepositoRequestDTO();
+    		saqueDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
     	}
     	
     	@Test
@@ -336,8 +336,6 @@ class ContaCorrenteControllerTest {
         @DisplayName("Quando sacamos um valor valido de uma conta corrente inexistente")
         void quandoSacamosValorValidoContaCorrenteInexistente() throws Exception {
         	// Arrange
-        	saqueDTO.setValor(BigDecimal.valueOf(5));
-    		
         	Long idInexistente = 999L;
     		
             // Act
@@ -427,7 +425,7 @@ class ContaCorrenteControllerTest {
     	
     	@BeforeEach
     	void setUp() {
-    		depositoDTO = new SaqueDepositoRequestDTO();
+    		depositoDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
     	}
     	
     	@Test
@@ -455,8 +453,6 @@ class ContaCorrenteControllerTest {
         @DisplayName("Quando depositamos um valor valido de uma conta corrente inexistente")
         void quandoDepositamosValorValidoContaCorrenteInexistente() throws Exception {
         	// Arrange
-        	depositoDTO.setValor(BigDecimal.valueOf(5));
-    		
         	Long idInexistente = 999L;
     		
             // Act
@@ -533,9 +529,7 @@ class ContaCorrenteControllerTest {
     		conta2.setNumero(Long.toString(conta2.getId() + 10000));
         	conta2 = contaCorrenteRepository.save(conta2);
     		
-    		transferenciaDTO = new TransferenciaRequestDTO();
-    		transferenciaDTO.setValor(BigDecimal.valueOf(5.57));
-        	transferenciaDTO.setNumeroContaDestino(conta2.getNumero());
+    		transferenciaDTO = new TransferenciaRequestDTO(BigDecimal.valueOf(5), null, conta2.getNumero());
     	}
     	
     	@Test
