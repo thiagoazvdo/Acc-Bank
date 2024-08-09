@@ -1,0 +1,16 @@
+services:
+  accbank-api:
+    image: accbank-api
+    environment:
+      spring.profiles.active: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: accbankdb
+    ports:
+      - "3306:3306"
