@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@DisplayName("Testes do service de Transações")
+@DisplayName("Testes do service de TransaÃ§Ãµes")
 class TransacaoServiceTest {
 
     @InjectMocks
@@ -49,7 +49,7 @@ class TransacaoServiceTest {
         transacao.setTipo(TipoTransacao.DEPOSITO);
         transacao.setValor(BigDecimal.valueOf(100.00));
         transacao.setDataHora(LocalDateTime.now());
-        transacao.setDescricao("Depósito inicial");
+        transacao.setDescricao("DepÃ³sito inicial");
         transacao.setContaCorrente(contaCorrente);
     }
 
@@ -113,15 +113,16 @@ class TransacaoServiceTest {
     }
 
     @Test
-    @DisplayName("Testa obter extrato filtrado quando conta não encontrada")
+    @DisplayName("Testa obter extrato filtrado quando conta nÃ£o encontrada")
     void testObterExtratoFiltrado_ContaNaoEncontrada() {
         // Arrange
         LocalDateTime dataInicio = LocalDateTime.now().minusDays(7);
         LocalDateTime dataFim = LocalDateTime.now();
-        when(contaCorrenteService.buscarContaCorrente(anyLong())).thenThrow(new ContaCorrenteNaoEncontradaException("Conta não encontrada"));
+        Long idInexistente = 9999L;
+        when(contaCorrenteService.buscarContaCorrente(idInexistente)).thenThrow(new ContaCorrenteNaoEncontradaException(idInexistente));
 
         // Act & Assert
-        assertThrows(ContaCorrenteNaoEncontradaException.class, () -> transacaoService.obterExtratoFiltrado(1L, dataInicio, dataFim));
-        verify(contaCorrenteService, times(1)).buscarContaCorrente(1L);
+        assertThrows(ContaCorrenteNaoEncontradaException.class, () -> transacaoService.obterExtratoFiltrado(idInexistente, dataInicio, dataFim));
+        verify(contaCorrenteService, times(1)).buscarContaCorrente(idInexistente);
     }
 }

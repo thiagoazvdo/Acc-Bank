@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@DisplayName("Testes do controller de TransaÁıes")
+@DisplayName("Testes do controller de Transa√ß√µes")
 class TransacaoControllerTest {
 
     @Autowired
@@ -70,7 +70,7 @@ class TransacaoControllerTest {
         contaCorrente = new ContaCorrente(1L, "10001", BigDecimal.ZERO, agencia1, null, null);
         contaCorrenteRepository.save(contaCorrente);
 
-        transacao1 = new Transacao(1L, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), LocalDateTime.now().minusDays(10), "DepÛsito Inicial", contaCorrente, null);
+        transacao1 = new Transacao(1L, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), LocalDateTime.now().minusDays(10), "Dep√≥sito Inicial", contaCorrente, null);
         transacao2 = new Transacao(2L, TipoTransacao.SAQUE, BigDecimal.valueOf(50.00), LocalDateTime.now().minusDays(5), "Saque", contaCorrente, null);
 
         mesAno = YearMonth.now();
@@ -83,7 +83,7 @@ class TransacaoControllerTest {
     }
 
     @Test
-    @DisplayName("Deve retornar o extrato mensal quando dados v·lidos s„o fornecidos")
+    @DisplayName("Deve retornar o extrato mensal quando dados v√°lidos s√£o fornecidos")
     void quandoExtratoMensalValido() throws Exception {
 
         // Arrange
@@ -108,7 +108,7 @@ class TransacaoControllerTest {
 
 
     @Test
-    @DisplayName("Quando buscamos o extrato anual com dados v·lidos")
+    @DisplayName("Quando buscamos o extrato anual com dados v√°lidos")
     void quandoExtratoAnualValido() throws Exception {
         // Arrange
         int ano = YearMonth.now().getYear();
@@ -133,7 +133,7 @@ class TransacaoControllerTest {
 
 
     @Test
-    @DisplayName("Quando buscamos o extrato filtrado com dados v·lidos")
+    @DisplayName("Quando buscamos o extrato filtrado com dados v√°lidos")
     void quandoExtratoFiltradoValido() throws Exception {
         // Arrange
         LocalDateTime dataInicio = LocalDateTime.now().minusMonths(1);
