@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
@@ -53,43 +52,37 @@ class ContaCorrenteServiceTest {
     @Mock
     private TransacaoRepository transacaoRepository;
     
-    @Mock
-    private ModelMapper modelMapper;
-    
     private Agencia agencia;
     private Cliente cliente;
     private ContaCorrente conta;
-    private ContaCorrenteResponseDTO contaResponseDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222");
-        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null);
+        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222", null, null);
+        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null, null, null);
         
         conta = new ContaCorrente(agencia, cliente);
         conta.setId(1L);
         conta.setNumero("10001");
         
-        contaResponseDTO = new ContaCorrenteResponseDTO(1L, "10001", BigDecimal.ZERO, agencia);
     }
 
     @Test
     void testCriarContaCorrente_Sucesso() {
         // Arrange
         ContaCorrenteRequestDTO contaRequestDTO = new ContaCorrenteRequestDTO();
-        contaRequestDTO.setIdAgencia(1L);
-        contaRequestDTO.setIdCliente(1L);
+        contaRequestDTO.setIdAgencia(agencia.getId());
+        contaRequestDTO.setIdCliente(cliente.getId());
 
-    	when(agenciaService.buscarAgencia(1L)).thenReturn(agencia);
-    	when(clienteService.buscarCliente(1L)).thenReturn(cliente);
+    	when(agenciaService.buscarAgencia(agencia.getId())).thenReturn(agencia);
+    	when(clienteService.buscarCliente(cliente.getId())).thenReturn(cliente);
         when(contaCorrenteRepository.findByClienteId(1L)).thenReturn(Optional.empty());
         when(contaCorrenteRepository.save(any(ContaCorrente.class))).thenReturn(conta);
-        when(modelMapper.map(conta, ContaCorrenteResponseDTO.class)).thenReturn(contaResponseDTO);
 
         // Act
-        ContaCorrenteResponseDTO result = contaCorrenteService.criarContaCorrente(contaRequestDTO);
+        ContaCorrente result = contaCorrenteService.criarContaCorrente(contaRequestDTO);
 
         // Assert
         assertNotNull(result);
@@ -101,8 +94,8 @@ class ContaCorrenteServiceTest {
 //        assertEquals(new ArrayList<>(), result.getTransacoes());
         
         verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
-        verify(agenciaService, times(1)).buscarAgencia(1L);
-        verify(clienteService, times(1)).buscarCliente(1L);
+        verify(agenciaService, times(1)).buscarAgencia(agencia.getId());
+        verify(clienteService, times(1)).buscarCliente(cliente.getId());
         verify(contaCorrenteRepository, times(1)).save(any(ContaCorrente.class));
     }
     
@@ -120,37 +113,6 @@ class ContaCorrenteServiceTest {
         verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
     }
     
-    @Test
-    void testBuscarContaCorrenteResponseDTO_Sucesso() {
-        // Arrange
-        when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.of(conta));
-        when(modelMapper.map(conta, ContaCorrenteResponseDTO.class)).thenReturn(contaResponseDTO);
-
-        // Act
-        ContaCorrenteResponseDTO result = contaCorrenteService.buscarContaCorrenteResponseDTO(1L);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("10001", result.getNumero());
-        assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
-//        assertEquals(cliente, result.getCliente());
-//        assertEquals(new ArrayList<>(), result.getTransacoes());
-        
-        verify(contaCorrenteRepository, times(1)).findById(1L);
-    }
-    
-    @Test
-    void testBuscarContaCorrenteResponseDTO_ContaNaoEncontrada() {
-        // Arrange
-        when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ContaCorrenteNaoEncontradaException.class, () -> contaCorrenteService.buscarContaCorrente(1L));
-        verify(contaCorrenteRepository, times(1)).findById(1L);
-    }
-
     @Test
     void testBuscarContaCorrente_Sucesso() {
         // Arrange

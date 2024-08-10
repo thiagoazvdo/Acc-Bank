@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
@@ -37,9 +36,6 @@ class ClienteServiceTest {
     @Mock
     private ClienteRepository clienteRepository;
 
-    @Mock
-    private ModelMapper modelMapper;
-
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
 
@@ -47,14 +43,13 @@ class ClienteServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null);
+        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null);
         clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555");
     }
 
     @Test
     void testCriarCliente_Sucesso() {
         // Arrange
-        when(modelMapper.map(clienteRequestDTO, Cliente.class)).thenReturn(cliente);
         when(clienteRepository.findByCpf(clienteRequestDTO.getCpf())).thenReturn(Optional.empty());
         when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
 
@@ -65,8 +60,7 @@ class ClienteServiceTest {
         assertNotNull(result);
         assertEquals(cliente, result);
         verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
-        verify(modelMapper, times(1)).map(clienteRequestDTO, Cliente.class);
-        verify(clienteRepository, times(1)).save(cliente);
+        verify(clienteRepository, times(1)).save(any(Cliente.class));
     }
 
     @Test
@@ -82,10 +76,9 @@ class ClienteServiceTest {
     @Test
     void testAtualizarCliente_Sucesso() {
         // Arrange
-        Cliente clienteAtualizado = new Cliente(1L, "Cliente 1", "88615266473", "98886-7878", null);
+        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null);
 
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(modelMapper.map(clienteRequestDTO, Cliente.class)).thenReturn(clienteAtualizado);
+        when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);
 
         // Act
@@ -97,7 +90,7 @@ class ClienteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("98886-7878", result.getTelefone());
 
-        verify(modelMapper, times(1)).map(clienteRequestDTO, Cliente.class);
+        verify(clienteRepository, times(1)).findById(cliente.getId());
         verify(clienteRepository, times(1)).save(clienteAtualizado);
     }
 

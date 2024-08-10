@@ -43,7 +43,7 @@ class TransacaoServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        contaCorrente = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
+        contaCorrente = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
         transacao = new Transacao();
         transacao.setId(1L);
         transacao.setTipo(TipoTransacao.DEPOSITO);

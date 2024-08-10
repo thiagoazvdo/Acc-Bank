@@ -41,13 +41,15 @@ public class ClienteControllerTest {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
+    
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
 
     @BeforeEach
     void setUp() {
-        cliente = new Cliente(null, "Cliente 1", "88616355491", "988129070", null);
+        cliente = new Cliente(null, "Cliente 1", "88616355491", "988129070", null, null, null);
         clienteRequestDTO = new ClienteRequestDTO(cliente.getNome(), cliente.getCpf(), cliente.getTelefone());
 
         clienteRepository.save(cliente);
@@ -63,7 +65,7 @@ public class ClienteControllerTest {
     class ClienteFluxosBasicosAdicionar {
 
         @Test
-        @DisplayName("Quando criamos um novo cliente com dados v�lidos")
+        @DisplayName("Quando criamos um novo cliente com dados validos")
         void quandoCriarClienteValido() throws Exception {
             // Arrange
             ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Novo", "12345678901", "988129070");
@@ -83,6 +85,9 @@ public class ClienteControllerTest {
             assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
             assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(resultado.getDataCriacao(), resultado.getDataAtualizacao());
+            assertNotNull(resultado.getDataCriacao());
+            assertNotNull(resultado.getDataAtualizacao());
         }
         
         @Test
@@ -512,7 +517,7 @@ public class ClienteControllerTest {
         void quandoListamosTodosClientes() throws Exception {
             // Arrange
 
-            Cliente cliente2 = clienteRepository.save(new Cliente(null, "Cliente 2", "12345678810", "987654321", null));
+            Cliente cliente2 = clienteRepository.save(new Cliente(null, "Cliente 2", "12345678810", "987654321", null, null, null));
 
 
             // Act

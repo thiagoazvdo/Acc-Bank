@@ -2,11 +2,13 @@ package com.accenture.academico.Acc.Bank.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,10 +16,6 @@ import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.List;
 
-import com.accenture.academico.Acc.Bank.model.Agencia;
-import com.accenture.academico.Acc.Bank.model.TipoTransacao;
-import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
-import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,10 +28,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
+import com.accenture.academico.Acc.Bank.model.Agencia;
+import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
+import com.accenture.academico.Acc.Bank.model.TipoTransacao;
 import com.accenture.academico.Acc.Bank.model.Transacao;
+import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
+import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
+import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
+import com.accenture.academico.Acc.Bank.repository.TransacaoRepository;
+import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 import com.accenture.academico.Acc.Bank.service.TransacaoService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -45,65 +53,78 @@ class TransacaoControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private TransacaoService transacaoService;
-
-    @Autowired
-    private ContaCorrenteRepository contaCorrenteRepository;
-
     @Autowired
     private AgenciaRepository agenciaRepository;
+    
+    @Autowired
+    private ClienteRepository clienteRepository;
+    
+    @Autowired
+    private ContaCorrenteRepository contaCorrenteRepository;
+    
+    @Autowired
+    private TransacaoRepository transacaoRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private Transacao transacao1;
     private Transacao transacao2;
-    private ContaCorrente contaCorrente;
-    private YearMonth mesAno;
+    private Transacao transacao3;
+    private Transacao transacao4;
+    private Transacao transacao5;
+    private Transacao transacao6;
+    private ContaCorrente conta;
 
     @BeforeEach
     void setUp() {
-        // Inicializa os objetos de teste
-        Agencia agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789"));
+        Agencia agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
+        Cliente cliente1 = clienteRepository.save(new Cliente(null, "Raphael Agra", "11122233345", "83987372109", null, null, null));
+        conta = contaCorrenteRepository.save(new ContaCorrente(agencia1, cliente1));
+        
+        transacao1 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), null, "Deposito Inicial", conta, null));
+        transacao2 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(5.00), null, "Saque 1", conta, null));
+        transacao3 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(6.00), null, "Deposito 2", conta, null));
+        transacao4 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(7.00), null, "Saque 2", conta, null));
+        transacao5 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(8.00), null, "Deposito 3", conta, null));
+        transacao6 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(9.00), null, "Saque 3", conta, null));
 
-        contaCorrente = new ContaCorrente(1L, "10001", BigDecimal.ZERO, agencia1, null, null);
-        contaCorrenteRepository.save(contaCorrente);
-
-        transacao1 = new Transacao(1L, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), LocalDateTime.now().minusDays(10), "Depósito Inicial", contaCorrente, null);
-        transacao2 = new Transacao(2L, TipoTransacao.SAQUE, BigDecimal.valueOf(50.00), LocalDateTime.now().minusDays(5), "Saque", contaCorrente, null);
-
-        mesAno = YearMonth.now();
+        transacao1.setDataHora(LocalDateTime.of(2023, 01, 31, 0, 0));
+        transacao2.setDataHora(LocalDateTime.of(2023, 02, 05, 0, 0));
+        transacao3.setDataHora(LocalDateTime.of(2023, 02, 15, 0, 0));
+        transacao4.setDataHora(LocalDateTime.of(2023, 03, 10, 0, 0));
+        transacao5.setDataHora(LocalDateTime.of(2023, 03, 20, 0, 0));
+        transacao6.setDataHora(LocalDateTime.of(2023, 03, 30, 0, 0));
+        
+        transacaoRepository.saveAll(List.of(transacao1, transacao2, transacao3, transacao4, transacao5, transacao6));
     }
 
     @AfterEach
     void tearDown() {
-        contaCorrenteRepository.deleteAll();
+    	transacaoRepository.deleteAll();
+    	contaCorrenteRepository.deleteAll();
+        clienteRepository.deleteAll();
         agenciaRepository.deleteAll();
     }
 
     @Test
     @DisplayName("Deve retornar o extrato mensal quando dados válidos são fornecidos")
     void quandoExtratoMensalValido() throws Exception {
-
         // Arrange
-        List<Transacao> transacoes = Arrays.asList(transacao1, transacao2);
-        given(transacaoService.obterExtratoMensal(contaCorrente.getId(), mesAno)).willReturn(transacoes);
-
+    	String mesAno = "03/2023";
+    	
         // Act
-        String responseJsonString = mockMvc.perform(get("/transacoes/extrato-mensal")
-                        .param("idConta", contaCorrente.getId().toString())
+        String responseJsonString = mockMvc.perform(get("/contas-correntes/" + conta.getId() + "/extrato-mensal")
                         .param("mesAno", mesAno.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<TransferenciaRequestDTO> resultado = Arrays.asList(objectMapper.readValue(responseJsonString, TransferenciaRequestDTO[].class));
+        List<Transacao> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<Transacao>>() {});
 
         // Assert
-        assertEquals(2, resultado.size());
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao1.getValor())));
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao2.getValor())));
+        assertEquals(3, resultado.size());
+        assertEquals(List.of(transacao4, transacao5, transacao6), resultado);
     }
 
 
@@ -111,24 +132,20 @@ class TransacaoControllerTest {
     @DisplayName("Quando buscamos o extrato anual com dados válidos")
     void quandoExtratoAnualValido() throws Exception {
         // Arrange
-        int ano = YearMonth.now().getYear();
-        List<Transacao> transacoes = Arrays.asList(transacao1, transacao2);
-        when(transacaoService.obterExtratoAnual(anyLong(), anyInt())).thenReturn(transacoes);
+        int ano = 2023;
 
         // Act
-        String responseJsonString = mockMvc.perform(get("/transacoes/extrato-anual")
-                        .param("idConta", "1")
+        String responseJsonString = mockMvc.perform(get("/contas-correntes/" + conta.getId() + "/extrato-anual")
                         .param("ano", String.valueOf(ano))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<TransferenciaRequestDTO> resultado = Arrays.asList(objectMapper.readValue(responseJsonString, TransferenciaRequestDTO[].class));
+        List<Transacao> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<Transacao>>() {});
 
         // Assert
-        assertEquals(2, resultado.size());
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao1.getValor())));
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao2.getValor())));
+        assertEquals(6, resultado.size());
+        assertEquals(List.of(transacao1, transacao2, transacao3, transacao4, transacao5, transacao6), resultado);
     }
 
 
@@ -136,25 +153,21 @@ class TransacaoControllerTest {
     @DisplayName("Quando buscamos o extrato filtrado com dados válidos")
     void quandoExtratoFiltradoValido() throws Exception {
         // Arrange
-        LocalDateTime dataInicio = LocalDateTime.now().minusMonths(1);
-        LocalDateTime dataFim = LocalDateTime.now();
-        List<Transacao> transacoes = Arrays.asList(transacao1, transacao2);
-        when(transacaoService.obterExtratoFiltrado(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(transacoes);
+        String dataInicio = "04/02/2023 00:00";
+        String dataFim = "21/03/2023 00:00";
 
         // Act
-        String responseJsonString = mockMvc.perform(get("/transacoes/extrato-filtrado")
-                        .param("idConta", "1")
-                        .param("dataInicio", dataInicio.toString())
-                        .param("dataFim", dataFim.toString())
+        String responseJsonString = mockMvc.perform(get("/contas-correntes/" + conta.getId() + "/extrato-filtrado")
+                        .param("dataInicio", dataInicio)
+                        .param("dataFim", dataFim)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<TransferenciaRequestDTO> resultado = Arrays.asList(objectMapper.readValue(responseJsonString, TransferenciaRequestDTO[].class));
+        List<Transacao> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<Transacao>>() {});
 
         // Assert
-        assertEquals(2, resultado.size());
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao1.getValor())));
-        assertTrue(resultado.stream().anyMatch(t -> t.getValor().equals(transacao2.getValor())));
+        assertEquals(4, resultado.size());
+        assertEquals(List.of(transacao2, transacao3, transacao4, transacao5), resultado);
     }
 }
