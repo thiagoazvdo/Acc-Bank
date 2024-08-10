@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
@@ -28,16 +27,6 @@ public class ContaCorrenteController {
 
 	@Autowired
 	private ContaCorrenteService contaCorrenteService;
-
-	@PostMapping
-	public ResponseEntity<ContaCorrenteResponseDTO> criarContaCorrente(@Valid @RequestBody ContaCorrenteRequestDTO contaDTO){
-		ContaCorrente contaCorrente = contaCorrenteService.criarContaCorrente(contaDTO);
-		ContaCorrenteResponseDTO contaCorrenteResponse = new ContaCorrenteResponseDTO();
-		BeanUtils.copyProperties(contaCorrente, contaCorrenteResponse);
-		
-		URI uri = URI.create("/contas-correntes/" + contaCorrenteResponse.getId());
-        return ResponseEntity.created(uri).body(contaCorrenteResponse);
-	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ContaCorrenteResponseDTO> buscarContaCorrente(@PathVariable Long id){

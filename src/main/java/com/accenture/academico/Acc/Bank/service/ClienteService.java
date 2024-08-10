@@ -2,6 +2,8 @@ package com.accenture.academico.Acc.Bank.service;
 
 import java.util.List;
 
+import com.accenture.academico.Acc.Bank.model.Agencia;
+import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,9 +13,16 @@ import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoExc
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ClienteService {
+
+    @Autowired
+    private AgenciaService agenciaService;
+
+    @Autowired
+    private ContaCorrenteService contaCorrenteService;
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -32,12 +41,20 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    @Transactional
     public Cliente criarCliente(ClienteRequestDTO clienteRequestDTO) {
+
         if (cpfJaCadastrado(clienteRequestDTO.getCpf())) 
         	throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
+
+        Agencia agencia = agenciaService.buscarAgencia(clienteRequestDTO.getIdAgencia());
         
         Cliente cliente = new Cliente();
         BeanUtils.copyProperties(clienteRequestDTO, cliente);
+        cliente.setAgencia(agencia);
+
+        contaCorrenteService.criarContaCorrente(cliente);
+
         return clienteRepository.save(cliente);
     }
 

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
@@ -39,19 +38,15 @@ public class ContaCorrenteService {
 	private TransacaoRepository transacaoRepository;
 	
 	@Transactional
-	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
-		verificaSeClientePossuiConta(contaDTO.getIdCliente());
+	public ContaCorrente criarContaCorrente(Cliente cliente) {
 
-		Agencia agencia = agenciaService.buscarAgencia(contaDTO.getIdAgencia());
-		Cliente cliente = clienteService.buscarCliente(contaDTO.getIdCliente());
-		
-		ContaCorrente conta = new ContaCorrente(agencia, cliente);
+		ContaCorrente conta = new ContaCorrente(cliente);
 
 		conta = contaCorrenteRepository.save(conta);
-		
+
 		String numeroConta = Long.toString(conta.getId() + 10000);
 		conta.setNumero(numeroConta);
-		
+
 		return conta;
 	}
 	

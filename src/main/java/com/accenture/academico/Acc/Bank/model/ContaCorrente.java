@@ -15,11 +15,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -51,13 +49,6 @@ public class ContaCorrente {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCriacao;
 
-    @Column(name = "data_atualizacao", nullable = false)
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-    private LocalDateTime dataAtualizacao;
-	
-	@ManyToOne
-	@JoinColumn(name = "id_agencia")
-	private Agencia agencia;
 
 	@OneToOne
 	@JoinColumn(name = "id_cliente")
@@ -67,9 +58,7 @@ public class ContaCorrente {
 	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transacao> transacoes;
 	
-	public ContaCorrente(Agencia agencia, Cliente cliente) {
-		this.saldo = BigDecimal.ZERO;
-		this.agencia = agencia;
+	public ContaCorrente(Cliente cliente) {
 		this.cliente = cliente;
 		this.transacoes = new ArrayList<>();
 	}
@@ -94,15 +83,10 @@ public class ContaCorrente {
         transacao.setContaCorrente(this);
     }
 
-    @PreUpdate
-    public void preUpdate() {
-    	this.dataAtualizacao = LocalDateTime.now();
-    }
-
     @PrePersist
     public void prePersist() {
         final LocalDateTime atual = LocalDateTime.now();
         this.dataCriacao = atual;
-        this.dataAtualizacao = atual;
+		this.saldo = BigDecimal.ZERO;
     }
 }
