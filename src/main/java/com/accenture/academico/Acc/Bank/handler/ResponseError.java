@@ -1,26 +1,26 @@
 package com.accenture.academico.Acc.Bank.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.accenture.academico.Acc.Bank.exception.BancoException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
-@Setter
 public class ResponseError {
 
 	private String message;
     private List<String> errors;
-	
+
+    public ResponseError(String message) {
+    	this.message = message;
+    }
+    
     public ResponseError(BancoException bancoException) {
-    	this.message = bancoException.getMessage();
-    	this.errors = new ArrayList<>();
+    	this(bancoException.getMessage());
     }
 }

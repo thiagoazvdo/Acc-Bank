@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.accenture.academico.Acc.Bank.exception.BancoException;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
