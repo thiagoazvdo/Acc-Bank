@@ -27,8 +27,8 @@ class TransacaoTest {
     @Test
     void testGettersAndSetters() {
         Transacao transacao = new Transacao();
-        ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
-        ContaCorrente contaRelacionada = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null, null, null);
+        ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
+        ContaCorrente contaRelacionada = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null);
 
         transacao.setId(1L);
         transacao.setTipo(TipoTransacao.DEPOSITO);

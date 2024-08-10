@@ -11,7 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.jupiter.api.*;
@@ -42,22 +44,27 @@ public class ClienteControllerTest {
     private ClienteRepository clienteRepository;
 
     @Autowired
+    private AgenciaRepository agenciaRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
     
     private Cliente cliente;
+
+    private Agencia agencia;
     private ClienteRequestDTO clienteRequestDTO;
 
     @BeforeEach
     void setUp() {
-        cliente = new Cliente(null, "Cliente 1", "88616355491", "988129070", null, null, null);
-        clienteRequestDTO = new ClienteRequestDTO(cliente.getNome(), cliente.getCpf(), cliente.getTelefone());
-
+        agencia = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
+        clienteRequestDTO = new ClienteRequestDTO("Cliente 1", "88616355491", "988129070", agencia.getId());
         clienteRepository.save(cliente);
     }
 
     @AfterEach
     void tearDown() {
         clienteRepository.deleteAll();
+        agenciaRepository.deleteAll();
     }
 
     @Nested
@@ -68,7 +75,6 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um novo cliente com dados validos")
         void quandoCriarClienteValido() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Novo", "12345678901", "988129070");
 
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
@@ -517,7 +523,7 @@ public class ClienteControllerTest {
         void quandoListamosTodosClientes() throws Exception {
             // Arrange
 
-            Cliente cliente2 = clienteRepository.save(new Cliente(null, "Cliente 2", "12345678810", "987654321", null, null, null));
+            Cliente cliente2 = clienteRepository.save(new Cliente(null, "Cliente 2", "12345678810", "987654321", null, null, null, agencia));
 
 
             // Act

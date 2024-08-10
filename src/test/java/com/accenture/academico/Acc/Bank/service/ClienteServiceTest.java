@@ -43,8 +43,8 @@ class ClienteServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null);
-        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555");
+        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null, null);
+        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555", null);
     }
 
     @Test
@@ -76,7 +76,7 @@ class ClienteServiceTest {
     @Test
     void testAtualizarCliente_Sucesso() {
         // Arrange
-        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null);
+        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null, null);
 
         when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);
