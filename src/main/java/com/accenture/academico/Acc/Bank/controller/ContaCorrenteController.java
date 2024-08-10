@@ -2,6 +2,7 @@ package com.accenture.academico.Acc.Bank.controller;
 
 import java.net.URI;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
+import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 
 import jakarta.validation.Valid;
@@ -29,14 +31,20 @@ public class ContaCorrenteController {
 
 	@PostMapping
 	public ResponseEntity<ContaCorrenteResponseDTO> criarContaCorrente(@Valid @RequestBody ContaCorrenteRequestDTO contaDTO){
-		ContaCorrenteResponseDTO contaCorrenteResponse = contaCorrenteService.criarContaCorrente(contaDTO);
+		ContaCorrente contaCorrente = contaCorrenteService.criarContaCorrente(contaDTO);
+		ContaCorrenteResponseDTO contaCorrenteResponse = new ContaCorrenteResponseDTO();
+		BeanUtils.copyProperties(contaCorrente, contaCorrenteResponse);
+		
 		URI uri = URI.create("/contas-correntes/" + contaCorrenteResponse.getId());
         return ResponseEntity.created(uri).body(contaCorrenteResponse);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ContaCorrenteResponseDTO> buscarContaCorrente(@PathVariable Long id){
-		ContaCorrenteResponseDTO contaCorrenteResponse = contaCorrenteService.buscarContaCorrenteResponseDTO(id);
+		ContaCorrente contaCorrente = contaCorrenteService.buscarContaCorrente(id);
+		ContaCorrenteResponseDTO contaCorrenteResponse = new ContaCorrenteResponseDTO();
+		BeanUtils.copyProperties(contaCorrente, contaCorrenteResponse);
+		
 		return ResponseEntity.ok(contaCorrenteResponse);
 	}
 

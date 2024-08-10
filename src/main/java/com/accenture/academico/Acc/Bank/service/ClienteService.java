@@ -2,7 +2,7 @@ package com.accenture.academico.Acc.Bank.service;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +16,6 @@ import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 public class ClienteService {
 
     @Autowired
-    private ModelMapper modelMapper;
-	
-    @Autowired
     private ClienteRepository clienteRepository;
 
     public Cliente buscarCliente(Long clienteId) {
@@ -31,19 +28,17 @@ public class ClienteService {
 
     public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
         Cliente cliente = buscarCliente(clienteId);
-        
-        Cliente clienteAtualizado = converterParaCliente(clienteRequestDTO);
-        clienteAtualizado.setId(cliente.getId());
-        
-        return clienteRepository.save(clienteAtualizado);
+        BeanUtils.copyProperties(clienteRequestDTO, cliente);
+        return clienteRepository.save(cliente);
     }
 
     public Cliente criarCliente(ClienteRequestDTO clienteRequestDTO) {
         if (cpfJaCadastrado(clienteRequestDTO.getCpf())) 
         	throw new ClienteJaCadastradoException(clienteRequestDTO.getCpf());
         
-        Cliente novoCliente = converterParaCliente(clienteRequestDTO);
-        return clienteRepository.save(novoCliente);
+        Cliente cliente = new Cliente();
+        BeanUtils.copyProperties(clienteRequestDTO, cliente);
+        return clienteRepository.save(cliente);
     }
 
 
@@ -53,9 +48,5 @@ public class ClienteService {
 
     public List<Cliente> listarClientes(){
         return clienteRepository.findAll();
-    }
-    
-    private Cliente converterParaCliente(ClienteRequestDTO clienteDTO) {
-    	return modelMapper.map(clienteDTO, Cliente.class);
     }
 }

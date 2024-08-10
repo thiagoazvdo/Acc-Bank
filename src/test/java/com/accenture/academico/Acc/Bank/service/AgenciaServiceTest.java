@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 
 import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
@@ -36,9 +35,6 @@ class AgenciaServiceTest {
 	@Mock
     private AgenciaRepository agenciaRepository;
 
-    @Mock
-    private ModelMapper modelMapper;
-
     private Agencia agencia;
     private AgenciaRequestDTO agenciaRequestDTO;
 	
@@ -46,14 +42,13 @@ class AgenciaServiceTest {
     void setUp() {
     	MockitoAnnotations.openMocks(this);
     	
-        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222");
+        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222", null, null);
         agenciaRequestDTO = new AgenciaRequestDTO("Banco do Brasil UFCG", "UFCG", "3333-2222");
     }
     
     @Test
     void testCriarAgencia_Sucesso() {
         // Arrange
-    	when(modelMapper.map(agenciaRequestDTO, Agencia.class)).thenReturn(agencia);
         when(agenciaRepository.save(any(Agencia.class))).thenReturn(agencia);
 
         // Act
@@ -66,17 +61,15 @@ class AgenciaServiceTest {
         assertEquals("UFCG", result.getEndereco());
         assertEquals("3333-2222", result.getTelefone());
         
-        verify(modelMapper, times(1)).map(agenciaRequestDTO, Agencia.class);
-        verify(agenciaRepository, times(1)).save(agencia);
+        verify(agenciaRepository, times(1)).save(any(Agencia.class));
     }
     
     @Test
     void testAtualizarAgencia_Sucesso() {
     	// Arrange
-    	Agencia agenciaAtualizada = new Agencia(null, "Banco do Brasil UFPB", "UFPB", "4444-5555");
+    	Agencia agenciaAtualizada = new Agencia(agencia.getId(), "Banco do Brasil UFPB", "UFPB", "4444-5555", null, null);
     	
-        when(agenciaRepository.findById(1L)).thenReturn(Optional.of(agencia));
-        when(modelMapper.map(agenciaRequestDTO, Agencia.class)).thenReturn(agenciaAtualizada);
+        when(agenciaRepository.findById(agencia.getId())).thenReturn(Optional.of(agencia));
         when(agenciaRepository.save(any(Agencia.class))).thenReturn(agenciaAtualizada);
 
         // Act
@@ -90,7 +83,7 @@ class AgenciaServiceTest {
         assertEquals("UFPB", result.getEndereco());
         assertEquals("4444-5555", result.getTelefone());
         
-        verify(modelMapper, times(1)).map(agenciaRequestDTO, Agencia.class);
+        verify(agenciaRepository, times(1)).findById(agencia.getId());
         verify(agenciaRepository, times(1)).save(agenciaAtualizada);
     }
     

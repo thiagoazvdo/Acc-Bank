@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,24 +20,32 @@ class ClienteTest {
 		assertNull(clienteNovo.getNome());
 		assertNull(clienteNovo.getCpf());
 		assertNull(clienteNovo.getTelefone());
+		assertNull(clienteNovo.getDataCriacao());
+	    assertNull(clienteNovo.getDataAtualizacao());
 		assertNull(clienteNovo.getContaCorrente());
 	}
 
 	@Test
 	void testGettersAndSetters() {
+		LocalDateTime data = LocalDateTime.of(2023, 01, 31, 0, 0);
+		
 		Cliente clienteNovo = new Cliente();
-		ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, clienteNovo, null);
+		ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, clienteNovo, null);
 
 		clienteNovo.setId(2L);
 		clienteNovo.setNome("João Silva");
 		clienteNovo.setCpf("12345678901");
 		clienteNovo.setTelefone("1111-8888");
+		clienteNovo.setDataCriacao(data);
+		clienteNovo.setDataAtualizacao(data);
 		clienteNovo.setContaCorrente(conta);
 
 		assertEquals(2L, clienteNovo.getId());
 		assertEquals("João Silva", clienteNovo.getNome());
 		assertEquals("12345678901", clienteNovo.getCpf());
 		assertEquals("1111-8888", clienteNovo.getTelefone());
+		assertEquals(data, clienteNovo.getDataCriacao());
+		assertEquals(data, clienteNovo.getDataAtualizacao());
 		assertEquals(conta, clienteNovo.getContaCorrente());
 	}
 
@@ -76,12 +85,12 @@ class ClienteTest {
 	@Test
     void testEqualsNulo() {
         // Teste de igualdade quando ambos os IDs são null
-		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null);
-		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null);
+		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null);
+		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null);
         assertEquals(cliente1, cliente2);
 
         // Teste de desigualdade quando um ID é null e o outro não
-        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null);
+        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null, null, null);
         assertNotEquals(cliente1, cliente3);
     }
 

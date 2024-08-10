@@ -1,15 +1,12 @@
 package com.accenture.academico.Acc.Bank.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
@@ -30,9 +27,6 @@ import com.accenture.academico.Acc.Bank.repository.TransacaoRepository;
 public class ContaCorrenteService {
 
 	@Autowired
-	private ModelMapper modelMapper;
-	
-	@Autowired
 	private ContaCorrenteRepository contaCorrenteRepository;
 	
 	@Autowired
@@ -45,7 +39,7 @@ public class ContaCorrenteService {
 	private TransacaoRepository transacaoRepository;
 	
 	@Transactional
-	public ContaCorrenteResponseDTO criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
+	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
 		verificaSeClientePossuiConta(contaDTO.getIdCliente());
 
 		Agencia agencia = agenciaService.buscarAgencia(contaDTO.getIdAgencia());
@@ -58,12 +52,7 @@ public class ContaCorrenteService {
 		String numeroConta = Long.toString(conta.getId() + 10000);
 		conta.setNumero(numeroConta);
 		
-		return converterParaContaCorrenteResponseDTO(conta);
-	}
-
-	public ContaCorrenteResponseDTO buscarContaCorrenteResponseDTO(Long id) {
-		ContaCorrente conta = buscarContaCorrente(id);
-		return converterParaContaCorrenteResponseDTO(conta);
+		return conta;
 	}
 	
 	public ContaCorrente buscarContaCorrente(Long id) {
@@ -138,7 +127,6 @@ public class ContaCorrenteService {
         transacao.setContaCorrenteRelacionada(contaDestino);
         transacao.setTipo(tipo);
         transacao.setValor(valor);
-        transacao.setDataHora(LocalDateTime.now());
         transacao.setDescricao(descricao);
         
         transacaoRepository.save(transacao);
@@ -157,10 +145,5 @@ public class ContaCorrenteService {
 	private void verificaSeValorEhMaiorQueZero(BigDecimal valor) {
 		if (valor.compareTo(BigDecimal.ZERO) <= 0)
     		throw new ValorInvalidoException();
-	}
-	
-	private ContaCorrenteResponseDTO converterParaContaCorrenteResponseDTO(ContaCorrente conta) {
-		return modelMapper.map(conta, ContaCorrenteResponseDTO.class);
-	}
-	
+	}	
 }

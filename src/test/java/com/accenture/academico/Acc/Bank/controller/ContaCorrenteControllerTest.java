@@ -61,7 +61,8 @@ class ContaCorrenteControllerTest {
 	@Autowired
     private MockMvc mockMvc;
 	
-	ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	ObjectMapper objectMapper;
 	
 	Agencia agencia1;
 	Agencia agencia2;
@@ -73,11 +74,11 @@ class ContaCorrenteControllerTest {
 	
     @BeforeEach
     void setUp() {
-    	agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789"));
-    	agencia2 = agenciaRepository.save(new Agencia(null, "Agencia 2", "Endereco 2", "987654321"));
+    	agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
+    	agencia2 = agenciaRepository.save(new Agencia(null, "Agencia 2", "Endereco 2", "987654321", null, null));
     	
-    	cliente1 = clienteRepository.save(new Cliente(null, "Raphael Agra", "11122233345", "83987372109", null));
-    	cliente2 = clienteRepository.save(new Cliente(null, "Biu Silva", "55566677789", "83987872511", null));
+    	cliente1 = clienteRepository.save(new Cliente(null, "Raphael Agra", "11122233345", "83987372109", null, null, null));
+    	cliente2 = clienteRepository.save(new Cliente(null, "Biu Silva", "55566677789", "83987872511", null, null, null));
     	
     	conta = contaCorrenteRepository.save(new ContaCorrente(agencia1, cliente1));
     	conta.setNumero(Long.toString(conta.getId() + 10000));

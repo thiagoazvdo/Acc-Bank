@@ -44,14 +44,15 @@ class AgenciaControllerTest {
 	@Autowired
     private MockMvc mockMvc;
 	
-	ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	ObjectMapper objectMapper;
 
 	Agencia agencia;
 	AgenciaRequestDTO agenciaRequestDTO;
 	
     @BeforeEach
     void setUp() {
-    	agencia = new Agencia(null, "Agencia 1", "Endereco 1", "123456789");
+    	agencia = new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null);
     	agenciaRequestDTO = new AgenciaRequestDTO(agencia.getNome(), agencia.getEndereco(), agencia.getTelefone());
     	
     	agencia = agenciaRepository.save(agencia);
@@ -86,6 +87,9 @@ class AgenciaControllerTest {
             assertEquals(agenciaRequestDTO.getNome(), resultado.getNome());
             assertEquals(agenciaRequestDTO.getEndereco(), resultado.getEndereco());
             assertEquals(agenciaRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(resultado.getDataCriacao(), resultado.getDataAtualizacao());
+            assertNotNull(resultado.getDataCriacao());
+            assertNotNull(resultado.getDataAtualizacao());
         }
         
         @Test
@@ -488,7 +492,7 @@ class AgenciaControllerTest {
         @DisplayName("Quando listamos todas agencias salvas")
         void quandoListamosTodasAgencias() throws Exception {
             // Arrange
-            Agencia agencia2 = agenciaRepository.save(new Agencia(null, "Agencia 2", "Endereco 2", "987654321"));
+            Agencia agencia2 = agenciaRepository.save(new Agencia(null, "Agencia 2", "Endereco 2", "987654321", null, null));
             
             // Act
             String responseJsonString = mockMvc.perform(get("/agencias"))
@@ -504,11 +508,17 @@ class AgenciaControllerTest {
             assertEquals(agencia.getNome(), resultado.get(0).getNome());
             assertEquals(agencia.getEndereco(), resultado.get(0).getEndereco());
             assertEquals(agencia.getTelefone(), resultado.get(0).getTelefone());
+            assertEquals(resultado.get(0).getDataCriacao(), resultado.get(0).getDataAtualizacao());
+            assertNotNull(resultado.get(0).getDataCriacao());
+            assertNotNull(resultado.get(0).getDataAtualizacao());
             
             assertEquals(agencia2.getId(), resultado.get(1).getId());
             assertEquals(agencia2.getNome(), resultado.get(1).getNome());
             assertEquals(agencia2.getEndereco(), resultado.get(1).getEndereco());
             assertEquals(agencia2.getTelefone(), resultado.get(1).getTelefone());
+            assertEquals(resultado.get(1).getDataCriacao(), resultado.get(1).getDataAtualizacao());
+            assertNotNull(resultado.get(1).getDataCriacao());
+            assertNotNull(resultado.get(1).getDataAtualizacao());
         }
     }
 }
