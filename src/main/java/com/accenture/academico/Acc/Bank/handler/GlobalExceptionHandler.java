@@ -3,8 +3,10 @@ package com.accenture.academico.Acc.Bank.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,5 +47,18 @@ public class GlobalExceptionHandler {
         ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
+
+    @ExceptionHandler(CannotCreateTransactionException.class)
+    public ResponseEntity<?> tratarConexaoBancoDadosException(CannotCreateTransactionException e) {
+        ResponseError responseError = new ResponseError("Falha na conexão com o banco de dados. Tente novamente mais tarde.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
+    }
+    @ExceptionHandler(DataAccessResourceFailureException.class)
+    public ResponseEntity<?> tratarConexaoBancoDadosException(DataAccessResourceFailureException ex) {
+        ResponseError responseError = new ResponseError("Falha na conexão com o banco de dados. Tente novamente mais tarde.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
+
+    }
+
 
 }
