@@ -3,11 +3,8 @@ package com.accenture.academico.Acc.Bank.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import com.accenture.academico.Acc.Bank.exception.ConexaoBancoDadosException;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.asm.tree.TryCatchBlockNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +31,6 @@ import javax.xml.crypto.Data;
 @Service
 public class ContaCorrenteService {
 
-	private static final String MSG_CONEXAO_BD_PERDIDA = "Falha na conexão com o banco de dados. Tente novamente mais tarde.";
-
 	@Autowired
 	private ModelMapper modelMapper;
 	
@@ -59,14 +54,10 @@ public class ContaCorrenteService {
 		Cliente cliente = clienteService.buscarCliente(contaDTO.getIdCliente());
 		ContaCorrente conta = new ContaCorrente(agencia, cliente);
 
-		try {
-			conta = contaCorrenteRepository.save(conta);
-			String numeroConta = Long.toString(conta.getId() + 10000);
-			conta.setNumero(numeroConta);
-			return converterParaContaCorrenteResponseDTO(conta);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
+		conta = contaCorrenteRepository.save(conta);
+		String numeroConta = Long.toString(conta.getId() + 10000);
+		conta.setNumero(numeroConta);
+		return converterParaContaCorrenteResponseDTO(conta);
 	}
 
 	public ContaCorrenteResponseDTO buscarContaCorrenteResponseDTO(Long id) {
@@ -75,35 +66,24 @@ public class ContaCorrenteService {
 	}
 	
 	public ContaCorrente buscarContaCorrente(Long id) {
-		try {
-			return contaCorrenteRepository.findById(id)
+		return contaCorrenteRepository.findById(id)
 					.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(id));
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
 	}
 	
 	public ContaCorrente buscarContaCorrentePorNumero(String numeroConta) {
-		try{
-			return contaCorrenteRepository.findByNumero(numeroConta)
+		return contaCorrenteRepository.findByNumero(numeroConta)
 					.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(numeroConta));
-		} catch (DataAccessResourceFailureException e){
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
 	}
 	
 	public void removerContaCorrente(Long id) {
-		try {
-			ContaCorrente conta = buscarContaCorrente(id);
-			if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) throw new ContaCorrenteComSaldoException();
-			contaCorrenteRepository.delete(conta);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
+		ContaCorrente conta = buscarContaCorrente(id);
+		if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) throw new ContaCorrenteComSaldoException();
+		contaCorrenteRepository.delete(conta);
 	}
 	
 	@Transactional
     public void sacar(Long id, SaqueDepositoRequestDTO saqueDTO) {
+
 		verificaSeValorEhMaiorQueZero(saqueDTO.getValor());
 
 		ContaCorrente conta = buscarContaCorrente(id);
@@ -111,11 +91,7 @@ public class ContaCorrenteService {
 		conta.sacar(saqueDTO.getValor());
 		registrarTransacao(conta, null, TipoTransacao.SAQUE, saqueDTO.getValor(), saqueDTO.getDescricao());
 
-		try {
-			contaCorrenteRepository.save(conta);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
+		contaCorrenteRepository.save(conta);
     }
 
     @Transactional
@@ -126,12 +102,8 @@ public class ContaCorrenteService {
     	conta.depositar(depositoDTO.getValor());
     	registrarTransacao(conta, null, TipoTransacao.DEPOSITO, depositoDTO.getValor(), depositoDTO.getDescricao());
 
-		try {
-			contaCorrenteRepository.save(conta);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
-    }
+		contaCorrenteRepository.save(conta);
+	}
 
     @Transactional
 	public void transferir(Long idOrigem, TransferenciaRequestDTO transferenciaDTO) {
@@ -145,15 +117,10 @@ public class ContaCorrenteService {
         contaOrigem.sacar(transferenciaDTO.getValor());
         contaDestino.depositar(transferenciaDTO.getValor());
 
-		try{
-			contaCorrenteRepository.save(contaOrigem);
-			contaCorrenteRepository.save(contaDestino);
-			registrarTransacao(contaOrigem, contaDestino, TipoTransacao.TRANSFERENCIA_ENVIADA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
-			registrarTransacao(contaDestino, contaOrigem, TipoTransacao.TRANSFERENCIA_RECEBIDA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
-
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
+		contaCorrenteRepository.save(contaOrigem);
+		contaCorrenteRepository.save(contaDestino);
+		registrarTransacao(contaOrigem, contaDestino, TipoTransacao.TRANSFERENCIA_ENVIADA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
+		registrarTransacao(contaDestino, contaOrigem, TipoTransacao.TRANSFERENCIA_RECEBIDA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
 
 	}
     
@@ -166,20 +133,12 @@ public class ContaCorrenteService {
         transacao.setDataHora(LocalDateTime.now());
         transacao.setDescricao(descricao);
 
-		try{
-			transacaoRepository.save(transacao);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
+		transacaoRepository.save(transacao);
     }
     
 	private void verificaSeClientePossuiConta(Long idCliente) {
-		try {
-			if (contaCorrenteRepository.findByClienteId(idCliente).isPresent())
+		if (contaCorrenteRepository.findByClienteId(idCliente).isPresent())
 				throw new ContaCorrenteJaCadastradoException(idCliente);
-		} catch (DataAccessResourceFailureException e) {
-			throw new ConexaoBancoDadosException(MSG_CONEXAO_BD_PERDIDA);
-		}
 	}
 	
 	private void verificaSeContaPossuiSaldoSuficiente(ContaCorrente conta, BigDecimal valorSaque) {
