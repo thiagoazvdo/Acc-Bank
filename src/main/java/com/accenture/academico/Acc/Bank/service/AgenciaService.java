@@ -1,7 +1,7 @@
 package com.accenture.academico.Acc.Bank.service;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +14,6 @@ import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 public class AgenciaService {
 
     @Autowired
-    private ModelMapper modelMapper;
-	
-    @Autowired
     private AgenciaRepository agenciaRepository;
 
     public Agencia buscarAgencia(Long agenciaId) {
@@ -25,15 +22,13 @@ public class AgenciaService {
 
     public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
         Agencia agencia = buscarAgencia(agenciaId);
-        
-        Agencia agenciaAtualizada = converterParaAgencia(agenciaDTO);
-        agenciaAtualizada.setId(agencia.getId());
-        
-        return agenciaRepository.save(agenciaAtualizada);
+        BeanUtils.copyProperties(agenciaDTO, agencia);
+        return agenciaRepository.save(agencia);
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
-    	Agencia agencia = converterParaAgencia(agenciaDTO);
+    	Agencia agencia = new Agencia();
+    	BeanUtils.copyProperties(agenciaDTO, agencia);
         return agenciaRepository.save(agencia);
     }
 
@@ -43,9 +38,5 @@ public class AgenciaService {
 
     public List<Agencia> listarAgencias(){
         return agenciaRepository.findAll();
-    }
-    
-    private Agencia converterParaAgencia(AgenciaRequestDTO agenciaDTO) {
-    	return modelMapper.map(agenciaDTO, Agencia.class);
     }
 }
