@@ -51,7 +51,7 @@ public class ContaCorrente {
 
 
 	@OneToOne
-	@JoinColumn(name = "id_cliente")
+	@JoinColumn(name = "id_cliente", nullable = false)
 	@JsonBackReference
 	private Cliente cliente;
 	
@@ -60,6 +60,8 @@ public class ContaCorrente {
 	
 	public ContaCorrente(Cliente cliente) {
 		this.cliente = cliente;
+		this.numero = Long.toString(cliente.getId() + 10000);
+		this.saldo = BigDecimal.ZERO;
 		this.transacoes = new ArrayList<>();
 	}
 
@@ -87,6 +89,5 @@ public class ContaCorrente {
     public void prePersist() {
         final LocalDateTime atual = LocalDateTime.now();
         this.dataCriacao = atual;
-		this.saldo = BigDecimal.ZERO;
     }
 }

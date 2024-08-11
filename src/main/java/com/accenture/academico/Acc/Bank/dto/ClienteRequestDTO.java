@@ -25,7 +25,7 @@ public class ClienteRequestDTO {
     @NotBlank(message = "Campo telefone obrigatorio")
     private String telefone;
 
-    @NotNull
+    @NotNull(message = "Campo idAgencia obrigatorio")
     private Long idAgencia;
 
 }

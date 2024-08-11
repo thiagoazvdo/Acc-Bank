@@ -32,7 +32,7 @@ public class Cliente {
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 11)
     private String telefone;
 
     @Column(name = "data_criacao", nullable = false)
@@ -48,7 +48,7 @@ public class Cliente {
     private ContaCorrente contaCorrente;
 
     @ManyToOne
-    @JoinColumn(name = "id_agencia")
+    @JoinColumn(name = "id_agencia", nullable = false)
     private Agencia agencia;
 
     @PreUpdate
