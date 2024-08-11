@@ -1,6 +1,9 @@
 package com.accenture.academico.Acc.Bank.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -8,26 +11,31 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
-import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
-import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
-import com.accenture.academico.Acc.Bank.model.Cliente;
-import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.jupiter.api.*;
-import org.springframework.test.web.servlet.MockMvc;
+import java.util.List;
 
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
+import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
+import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.handler.ResponseError;
+import com.accenture.academico.Acc.Bank.model.Agencia;
+import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
+import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
+import com.accenture.academico.Acc.Bank.service.ClienteService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,25 +47,35 @@ public class ClienteControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private ClienteService clienteService;
+    
+    @Autowired
     private ClienteRepository clienteRepository;
+
+    @Autowired
+    private AgenciaRepository agenciaRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
     
     private Cliente cliente;
+
+    private Agencia agencia;
     private ClienteRequestDTO clienteRequestDTO;
 
     @BeforeEach
     void setUp() {
-        cliente = new Cliente(null, "Cliente 1", "88616355491", "988129070", null, null, null);
-        clienteRequestDTO = new ClienteRequestDTO(cliente.getNome(), cliente.getCpf(), cliente.getTelefone());
+        agencia = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
+        
+        clienteRequestDTO = new ClienteRequestDTO("Cliente 1", "11122233345", "83988129070", agencia.getId());
+        cliente = clienteService.criarCliente(clienteRequestDTO);
 
-        clienteRepository.save(cliente);
     }
 
     @AfterEach
     void tearDown() {
         clienteRepository.deleteAll();
+        agenciaRepository.deleteAll();
     }
 
     @Nested
@@ -68,8 +86,10 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um novo cliente com dados validos")
         void quandoCriarClienteValido() throws Exception {
             // Arrange
-            ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Cliente Novo", "12345678901", "988129070");
-
+        	clienteRequestDTO.setNome("Raphael");
+        	clienteRequestDTO.setCpf("77788899900");
+        	clienteRequestDTO.setTelefone("83911112222");
+        	
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -85,14 +105,15 @@ public class ClienteControllerTest {
             assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
             assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
-            assertEquals(resultado.getDataCriacao(), resultado.getDataAtualizacao());
+            assertNotNull(resultado.getContaCorrente());
             assertNotNull(resultado.getDataCriacao());
             assertNotNull(resultado.getDataAtualizacao());
+            assertEquals(resultado.getDataCriacao(), resultado.getDataAtualizacao());
         }
         
         @Test
-        @DisplayName("Quando criamos um cliente ja cadastrado")
-        void quandoCriarClienteJaCadastrado() throws Exception {
+        @DisplayName("Quando criamos um cliente com cpf ja cadastrado")
+        void quandoCriarClienteComCpfJaCadastrado() throws Exception {
             // Arrange
         	
             // Act
@@ -104,7 +125,28 @@ public class ClienteControllerTest {
                     .andReturn().getResponse().getContentAsString();
         	
         	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ClienteJaCadastradoException exception = new ClienteJaCadastradoException(cliente.getCpf());
+            ClienteJaCadastradoException exception = new ClienteJaCadastradoException("cpf", cliente.getCpf());
+        	
+            // Assert
+            assertEquals(exception.getMessage(), resultado.getMessage());
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um cliente com telefone ja cadastrado")
+        void quandoCriarClienteComTelefoneJaCadastrado() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("66655544499");
+        	
+            // Act
+        	String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isConflict())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            ClienteJaCadastradoException exception = new ClienteJaCadastradoException("telefone", cliente.getTelefone());
         	
             // Assert
             assertEquals(exception.getMessage(), resultado.getMessage());
@@ -117,6 +159,7 @@ public class ClienteControllerTest {
         	clienteRequestDTO.setNome(null);
         	clienteRequestDTO.setCpf(null);
         	clienteRequestDTO.setTelefone(null);
+        	clienteRequestDTO.setIdAgencia(null);
         	
             // Act
         	String responseJsonString = mockMvc.perform(post("/clientes")
@@ -131,10 +174,11 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
+                    () -> assertEquals(4, resultado.getErrors().size()),
                     () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Campo idAgencia obrigatorio"))
             );
         }
         
@@ -267,6 +311,7 @@ public class ClienteControllerTest {
             assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
             assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(cliente.getContaCorrente(), resultado.getContaCorrente());
         }
     	
     	@Test
@@ -516,10 +561,9 @@ public class ClienteControllerTest {
         @DisplayName("Quando listamos todos cliente salvos")
         void quandoListamosTodosClientes() throws Exception {
             // Arrange
-
-            Cliente cliente2 = clienteRepository.save(new Cliente(null, "Cliente 2", "12345678810", "987654321", null, null, null));
-
-
+        	ClienteRequestDTO clienteRequestDTO2 = new ClienteRequestDTO("Cliente 2", "12345678810", "83987654321", agencia.getId());
+            Cliente cliente2 = clienteService.criarCliente(clienteRequestDTO2);
+        	
             // Act
             String responseJsonString = mockMvc.perform(get("/clientes")
             			.contentType(MediaType.APPLICATION_JSON))
@@ -535,11 +579,14 @@ public class ClienteControllerTest {
             assertEquals(cliente.getNome(), resultado.get(0).getNome());
             assertEquals(cliente.getCpf(), resultado.get(0).getCpf());
             assertEquals(cliente.getTelefone(), resultado.get(0).getTelefone());
+            assertEquals(cliente.getContaCorrente(), resultado.get(0).getContaCorrente());
+            
 
             assertEquals(cliente2.getId(), resultado.get(1).getId());
             assertEquals(cliente2.getNome(), resultado.get(1).getNome());
             assertEquals(cliente2.getCpf(), resultado.get(1).getCpf());
             assertEquals(cliente2.getTelefone(), resultado.get(1).getTelefone());
+            assertEquals(cliente2.getContaCorrente(), resultado.get(1).getContaCorrente());
         }
 
     }

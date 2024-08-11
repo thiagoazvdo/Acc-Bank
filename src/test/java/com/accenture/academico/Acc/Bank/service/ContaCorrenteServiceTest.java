@@ -19,12 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
@@ -61,56 +58,10 @@ class ContaCorrenteServiceTest {
         MockitoAnnotations.openMocks(this);
         
         agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222", null, null);
-        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null, null, null);
+        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null, null, null, agencia);
         
-        conta = new ContaCorrente(agencia, cliente);
+        conta = new ContaCorrente(cliente);
         conta.setId(1L);
-        conta.setNumero("10001");
-        
-    }
-
-    @Test
-    void testCriarContaCorrente_Sucesso() {
-        // Arrange
-        ContaCorrenteRequestDTO contaRequestDTO = new ContaCorrenteRequestDTO();
-        contaRequestDTO.setIdAgencia(agencia.getId());
-        contaRequestDTO.setIdCliente(cliente.getId());
-
-    	when(agenciaService.buscarAgencia(agencia.getId())).thenReturn(agencia);
-    	when(clienteService.buscarCliente(cliente.getId())).thenReturn(cliente);
-        when(contaCorrenteRepository.findByClienteId(1L)).thenReturn(Optional.empty());
-        when(contaCorrenteRepository.save(any(ContaCorrente.class))).thenReturn(conta);
-
-        // Act
-        ContaCorrente result = contaCorrenteService.criarContaCorrente(contaRequestDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("10001", result.getNumero());
-        assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
-//        assertEquals(cliente, result.getCliente());
-//        assertEquals(new ArrayList<>(), result.getTransacoes());
-        
-        verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
-        verify(agenciaService, times(1)).buscarAgencia(agencia.getId());
-        verify(clienteService, times(1)).buscarCliente(cliente.getId());
-        verify(contaCorrenteRepository, times(1)).save(any(ContaCorrente.class));
-    }
-    
-    @Test
-    void testCriarContaCorrente_ClienteJaPossuiConta() {
-        // Arrange
-        ContaCorrenteRequestDTO contaRequestDTO = new ContaCorrenteRequestDTO();
-        contaRequestDTO.setIdAgencia(1L);
-        contaRequestDTO.setIdCliente(1L);
-
-        when(contaCorrenteRepository.findByClienteId(1L)).thenReturn(Optional.of(conta));
-
-        // Act & Assert
-        assertThrows(ContaCorrenteJaCadastradoException.class, () -> contaCorrenteService.criarContaCorrente(contaRequestDTO));
-        verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
     }
     
     @Test
@@ -126,7 +77,6 @@ class ContaCorrenteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("10001", result.getNumero());
         assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
         assertEquals(cliente, result.getCliente());
         assertEquals(new ArrayList<>(), result.getTransacoes());
         
@@ -156,7 +106,6 @@ class ContaCorrenteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("10001", result.getNumero());
         assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
         assertEquals(cliente, result.getCliente());
         assertEquals(new ArrayList<>(), result.getTransacoes());
         

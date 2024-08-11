@@ -5,15 +5,7 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,7 +32,7 @@ public class Cliente {
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 11)
     private String telefone;
 
     @Column(name = "data_criacao", nullable = false)
@@ -51,10 +43,14 @@ public class Cliente {
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataAtualizacao;
     
-    @OneToOne(mappedBy = "cliente")
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
     @JsonManagedReference
     private ContaCorrente contaCorrente;
-    
+
+    @ManyToOne
+    @JoinColumn(name = "id_agencia", nullable = false)
+    private Agencia agencia;
+
     @PreUpdate
     public void preUpdate() {
     	this.dataAtualizacao = LocalDateTime.now();

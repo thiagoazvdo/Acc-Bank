@@ -6,17 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
-import com.accenture.academico.Acc.Bank.model.Agencia;
-import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.model.TipoTransacao;
 import com.accenture.academico.Acc.Bank.model.Transacao;
@@ -30,39 +26,14 @@ public class ContaCorrenteService {
 	private ContaCorrenteRepository contaCorrenteRepository;
 	
 	@Autowired
-	private AgenciaService agenciaService;
-	
-	@Autowired
-	private ClienteService clienteService;
-	
-	@Autowired
 	private TransacaoRepository transacaoRepository;
 	
-	@Transactional
-	public ContaCorrente criarContaCorrente(ContaCorrenteRequestDTO contaDTO) {
-		verificaSeClientePossuiConta(contaDTO.getIdCliente());
-
-		Agencia agencia = agenciaService.buscarAgencia(contaDTO.getIdAgencia());
-		Cliente cliente = clienteService.buscarCliente(contaDTO.getIdCliente());
-		
-		ContaCorrente conta = new ContaCorrente(agencia, cliente);
-
-		conta = contaCorrenteRepository.save(conta);
-		
-		String numeroConta = Long.toString(conta.getId() + 10000);
-		conta.setNumero(numeroConta);
-		
-		return conta;
-	}
-	
 	public ContaCorrente buscarContaCorrente(Long id) {
-		return contaCorrenteRepository.findById(id)
-				.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(id));
+		return contaCorrenteRepository.findById(id).orElseThrow(() -> new ContaCorrenteNaoEncontradaException(id));
 	}
 	
 	public ContaCorrente buscarContaCorrentePorNumero(String numeroConta) {
-		return contaCorrenteRepository.findByNumero(numeroConta)
-				.orElseThrow(() -> new ContaCorrenteNaoEncontradaException(numeroConta));
+		return contaCorrenteRepository.findByNumero(numeroConta).orElseThrow(() -> new ContaCorrenteNaoEncontradaException(numeroConta));
 	}
 	
 	public void removerContaCorrente(Long id) {
@@ -131,11 +102,6 @@ public class ContaCorrenteService {
         
         transacaoRepository.save(transacao);
     }
-    
-	private void verificaSeClientePossuiConta(Long idCliente) {
-		if (contaCorrenteRepository.findByClienteId(idCliente).isPresent()) 
-			throw new ContaCorrenteJaCadastradoException(idCliente);
-	}
 	
 	private void verificaSeContaPossuiSaldoSuficiente(ContaCorrente conta, BigDecimal valorSaque) {
 		if (conta.getSaldo().compareTo(valorSaque) < 0) 

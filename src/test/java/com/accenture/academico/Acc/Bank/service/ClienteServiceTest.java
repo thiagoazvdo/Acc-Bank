@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 
@@ -35,6 +36,9 @@ class ClienteServiceTest {
 
     @Mock
     private ClienteRepository clienteRepository;
+    
+    @Mock
+    private AgenciaService agenciaService;
 
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
@@ -42,16 +46,22 @@ class ClienteServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null);
-        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555");
+        Agencia agencia = new Agencia(1L, "Agencia 1", "Endereco 1", "123456789", null, null);
+        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null, agencia);
+        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "8355554444", agencia.getId());
     }
 
     @Test
     void testCriarCliente_Sucesso() {
         // Arrange
-        when(clienteRepository.findByCpf(clienteRequestDTO.getCpf())).thenReturn(Optional.empty());
-        when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(false);
+        when(clienteRepository.existsByTelefone(clienteRequestDTO.getTelefone())).thenReturn(false);
+        when(agenciaService.buscarAgencia(clienteRequestDTO.getIdAgencia())).thenReturn(new Agencia());
+        when(clienteRepository.save(any(Cliente.class))).thenAnswer(invocation -> {
+            Cliente cliente = invocation.getArgument(0);
+            cliente.setId(1L); // Defina um ID se necessário para simular o comportamento de salvar no banco
+            return cliente;
+        });
 
         // Act
         Cliente result = clienteService.criarCliente(clienteRequestDTO);
@@ -59,24 +69,37 @@ class ClienteServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(cliente, result);
-        verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
-        verify(clienteRepository, times(1)).save(any(Cliente.class));
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByTelefone(clienteRequestDTO.getTelefone());
+        verify(clienteRepository, times(2)).save(any(Cliente.class));
     }
 
     @Test
     void testCriarCliente_CpfJaCadastrado() {
         // Arrange
-        when(clienteRepository.findByCpf(clienteRequestDTO.getCpf())).thenReturn(Optional.of(cliente));
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(true);
 
         // Act & Assert
         assertThrows(ClienteJaCadastradoException.class, () -> clienteService.criarCliente(clienteRequestDTO));
-        verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+    }
+    
+    @Test
+    void testCriarCliente_TelefoneJaCadastrado() {
+        // Arrange
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(false);
+        when(clienteRepository.existsByTelefone(clienteRequestDTO.getTelefone())).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(ClienteJaCadastradoException.class, () -> clienteService.criarCliente(clienteRequestDTO));
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByTelefone(clienteRequestDTO.getTelefone());
     }
 
     @Test
     void testAtualizarCliente_Sucesso() {
         // Arrange
-        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null);
+        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null, null);
 
         when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);

@@ -30,7 +30,7 @@ class ContaCorrenteTest {
     	cliente.setCpf("11122233345");
     	cliente.setTelefone("83 8888-8888");
 		
-		contaCorrente = new ContaCorrente(agencia, cliente);
+		contaCorrente = new ContaCorrente(cliente);
 		contaCorrente.setId(1l);
 		contaCorrente.setNumero("10001");
 	}
@@ -42,8 +42,6 @@ class ContaCorrenteTest {
 	    assertNull(conta.getNumero());
 	    assertNull(conta.getSaldo());
 	    assertNull(conta.getDataCriacao());
-	    assertNull(conta.getDataAtualizacao());
-	    assertNull(conta.getAgencia());
 	    assertNull(conta.getCliente());
 	    assertNull(conta.getTransacoes());
 	}
@@ -52,7 +50,6 @@ class ContaCorrenteTest {
 	void testGettersAndSetters() {
 		LocalDateTime data = LocalDateTime.of(2023, 01, 31, 0, 0);
 		
-		Agencia agencia = new Agencia();
 		Cliente cliente = new Cliente();
 		
 		ContaCorrente conta = new ContaCorrente();
@@ -60,24 +57,20 @@ class ContaCorrenteTest {
 		conta.setNumero("10002");
 		conta.setSaldo(BigDecimal.ZERO);
 		conta.setDataCriacao(data);
-		conta.setDataAtualizacao(data);
 		conta.setTransacoes(new ArrayList<>());
-		conta.setAgencia(agencia);
 		conta.setCliente(cliente);
 		
 		assertEquals(2L, conta.getId());
 		assertEquals("10002", conta.getNumero());
 		assertEquals(BigDecimal.ZERO, conta.getSaldo());
 		assertEquals(data, conta.getDataCriacao());
-		assertEquals(data, conta.getDataAtualizacao());
 		assertEquals(new ArrayList<>(), conta.getTransacoes());
-		assertEquals(agencia, conta.getAgencia());
 		assertEquals(cliente, conta.getCliente());
 	}
 
 	@Test
 	void testSacar() {
-		ContaCorrente conta = new ContaCorrente(2l, "11111", BigDecimal.valueOf(10.0), null, null, null, null, null);
+		ContaCorrente conta = new ContaCorrente(2l, "11111", BigDecimal.valueOf(10.0), null, null, null);
 		conta.sacar(BigDecimal.valueOf(2.37));
 
 		assertEquals(BigDecimal.valueOf(7.63), conta.getSaldo());
@@ -153,11 +146,11 @@ class ContaCorrenteTest {
 	@Test
 	void testEqualsObject() {
 		// Teste básico de igualdade
-		ContaCorrente conta2 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
+		ContaCorrente conta2 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
 		assertEquals(contaCorrente, conta2);
 		
 		// Teste de desigualdade com IDs diferentes
-		ContaCorrente conta3 = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null, null, null);
+		ContaCorrente conta3 = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null);
 		assertNotEquals(contaCorrente, conta3);
 		
 		// Teste de igualdade com a própria instância
@@ -170,21 +163,21 @@ class ContaCorrenteTest {
 	@Test
     void testEqualsNulo() {
         // Teste de igualdade quando ambos os IDs são null
-		ContaCorrente conta1 = new ContaCorrente(null, "10001", BigDecimal.ZERO, null, null, null, null, null);
-		ContaCorrente conta2 = new ContaCorrente(null, "10001", BigDecimal.ZERO, null, null, null, null, null);
+		ContaCorrente conta1 = new ContaCorrente(null, "10001", BigDecimal.ZERO, null, null, null);
+		ContaCorrente conta2 = new ContaCorrente(null, "10001", BigDecimal.ZERO, null, null, null);
         assertEquals(conta1, conta2);
 
         // Teste de desigualdade quando um ID é null e o outro não
-        ContaCorrente conta3 = new ContaCorrente(3L, "10003", BigDecimal.ZERO, null, null, null, null, null);
+        ContaCorrente conta3 = new ContaCorrente(3L, "10003", BigDecimal.ZERO, null, null, null);
         assertNotEquals(conta1, conta3);
     }
 	
 	@Test
 	void testEqualsWithDifferentCanEqual() {
-		ContaCorrente conta1 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
+		ContaCorrente conta1 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
 	    
 	    // Criar uma subclasse de ContaCorrente que retorna false para canEqual
-		ContaCorrente contaSubclass = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null) {
+		ContaCorrente contaSubclass = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null) {
 	        @Override
 	        public boolean canEqual(Object other) {
 	            return false;
@@ -198,12 +191,12 @@ class ContaCorrenteTest {
 	@Test
     void testHashCode() {
         // Teste de hashCode para objetos iguais
-		ContaCorrente conta1 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
-		ContaCorrente conta2 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, null, null);
+		ContaCorrente conta1 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
+		ContaCorrente conta2 = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
         assertEquals(conta1.hashCode(), conta2.hashCode());
 
         // Teste de hashCode para objetos diferentes
-        ContaCorrente conta3 = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null, null, null);
+        ContaCorrente conta3 = new ContaCorrente(2L, "10002", BigDecimal.ZERO, null, null, null);
         assertNotEquals(conta1.hashCode(), conta3.hashCode());
     }
 	

@@ -2,6 +2,7 @@ package com.accenture.academico.Acc.Bank.dto;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,5 +24,8 @@ public class ClienteRequestDTO {
 
     @NotBlank(message = "Campo telefone obrigatorio")
     private String telefone;
+
+    @NotNull(message = "Campo idAgencia obrigatorio")
+    private Long idAgencia;
 
 }

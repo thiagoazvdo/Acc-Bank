@@ -30,7 +30,7 @@ class ClienteTest {
 		LocalDateTime data = LocalDateTime.of(2023, 01, 31, 0, 0);
 		
 		Cliente clienteNovo = new Cliente();
-		ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null, clienteNovo, null);
+		ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, clienteNovo, null);
 
 		clienteNovo.setId(2L);
 		clienteNovo.setNome("João Silva");
@@ -85,12 +85,12 @@ class ClienteTest {
 	@Test
     void testEqualsNulo() {
         // Teste de igualdade quando ambos os IDs são null
-		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null);
-		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null);
+		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null, null);
+		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null, null);
         assertEquals(cliente1, cliente2);
 
         // Teste de desigualdade quando um ID é null e o outro não
-        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null, null, null);
+        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null, null, null, null);
         assertNotEquals(cliente1, cliente3);
     }
 
