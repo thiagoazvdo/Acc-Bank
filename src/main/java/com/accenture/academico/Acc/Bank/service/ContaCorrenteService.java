@@ -12,7 +12,6 @@ import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteCom
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.model.TipoTransacao;
 import com.accenture.academico.Acc.Bank.model.Transacao;
@@ -47,12 +46,8 @@ public class ContaCorrenteService {
 	
 	@Transactional
     public void sacar(Long id, SaqueDepositoRequestDTO saqueDTO) {
-		verificaSeValorEhMaiorQueZero(saqueDTO.getValor());
-
 		ContaCorrente conta = buscarContaCorrente(id);
-		
 		verificaSeContaPossuiSaldoSuficiente(conta, saqueDTO.getValor());
-		
 		conta.sacar(saqueDTO.getValor());
 		
 		registrarTransacao(conta, null, TipoTransacao.SAQUE, saqueDTO.getValor(), saqueDTO.getDescricao());
@@ -61,8 +56,6 @@ public class ContaCorrenteService {
 
     @Transactional
     public void depositar(Long id, SaqueDepositoRequestDTO depositoDTO) {
-    	verificaSeValorEhMaiorQueZero(depositoDTO.getValor());
-    	
     	ContaCorrente conta = buscarContaCorrente(id);
     	conta.depositar(depositoDTO.getValor());
     	
@@ -72,8 +65,6 @@ public class ContaCorrenteService {
 
     @Transactional
 	public void transferir(Long idOrigem, TransferenciaRequestDTO transferenciaDTO) {
-    	verificaSeValorEhMaiorQueZero(transferenciaDTO.getValor());
-    	
         ContaCorrente contaOrigem = buscarContaCorrente(idOrigem);
         ContaCorrente contaDestino = buscarContaCorrentePorNumero(transferenciaDTO.getNumeroContaDestino());
         
@@ -81,7 +72,6 @@ public class ContaCorrenteService {
     		throw new TransferenciaEntreContasIguaisException();
         
         verificaSeContaPossuiSaldoSuficiente(contaOrigem, transferenciaDTO.getValor());
-        
         contaOrigem.sacar(transferenciaDTO.getValor());
         contaDestino.depositar(transferenciaDTO.getValor());
         
@@ -107,9 +97,4 @@ public class ContaCorrenteService {
 		if (conta.getSaldo().compareTo(valorSaque) < 0) 
 			throw new SaldoInsuficienteException();
 	}
-	
-	private void verificaSeValorEhMaiorQueZero(BigDecimal valor) {
-		if (valor.compareTo(BigDecimal.ZERO) <= 0)
-    		throw new ValorInvalidoException();
-	}	
 }

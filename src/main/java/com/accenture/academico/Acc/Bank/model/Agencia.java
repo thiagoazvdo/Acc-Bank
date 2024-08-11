@@ -38,7 +38,7 @@ public class Agencia {
     @Column(nullable = false)
     private String endereco;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 11)
     private String telefone;
     
     @Column(name = "data_criacao", nullable = false)
