@@ -54,6 +54,22 @@ class TransacaoServiceTest {
     }
 
     @Test
+    @DisplayName("Testa obter extrato geral com sucesso")
+    void testObterExtratoGeral_Sucesso() {
+        // Arrange
+        when(contaCorrenteService.buscarContaCorrente(contaCorrente.getId())).thenReturn(contaCorrente);
+        when(transacaoRepository.findByContaCorrente(eq(contaCorrente))).thenReturn(Collections.singletonList(transacao));
+
+        // Act
+        List<Transacao> resultado = transacaoService.obterExtratoGeral(contaCorrente.getId());
+
+        // Assert
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        assertEquals(transacao, resultado.get(0));
+    }
+    
+    @Test
     @DisplayName("Testa obter extrato mensal com sucesso")
     void testObterExtratoMensal_Sucesso() {
         // Arrange
