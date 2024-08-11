@@ -1,8 +1,6 @@
 package com.accenture.academico.Acc.Bank.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -10,8 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.accenture.academico.Acc.Bank.service.ClienteService;
-import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -32,6 +29,7 @@ import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
 import com.accenture.academico.Acc.Bank.repository.TransacaoRepository;
+import com.accenture.academico.Acc.Bank.service.ClienteService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,7 +55,7 @@ class TransacaoControllerTest {
     private TransacaoRepository transacaoRepository;
 
     @Autowired
-    private ContaCorrenteService contaCorrenteService;
+    private ClienteService clienteService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -73,10 +71,11 @@ class TransacaoControllerTest {
     @BeforeEach
     void setUp() {
         Agencia agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
-        Cliente cliente1 = clienteRepository.save(new Cliente(null, "Raphael Agra", "11122233345", "83987372109", null, null, null, agencia1));
-        conta = contaCorrenteService.criarContaCorrente(cliente1);
+        
+        ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Raphael Agra", "11122233345", "83988129070", agencia1.getId());
+        Cliente cliente = clienteService.criarCliente(clienteRequestDTO);
 
-//        cliente1.setContaCorrente(conta);
+        conta = cliente.getContaCorrente();
         
         transacao1 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), null, "Deposito Inicial", conta, null));
         transacao2 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(5.00), null, "Saque 1", conta, null));

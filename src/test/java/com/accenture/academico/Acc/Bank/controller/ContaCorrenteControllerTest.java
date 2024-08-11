@@ -1,8 +1,6 @@
 package com.accenture.academico.Acc.Bank.controller;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,8 +10,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 
-import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
-import com.accenture.academico.Acc.Bank.service.ClienteService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +22,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
@@ -42,6 +38,7 @@ import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
+import com.accenture.academico.Acc.Bank.service.ClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -69,7 +66,6 @@ class ContaCorrenteControllerTest {
 	ObjectMapper objectMapper;
 	
 	Agencia agencia1;
-	Agencia agencia2;
 	ClienteRequestDTO clienteDto1;
 	ClienteRequestDTO clienteDto2;
 
@@ -77,20 +73,21 @@ class ContaCorrenteControllerTest {
 
     Cliente cliente2;
 	
-	private ContaCorrente conta1;
+	ContaCorrente conta1;
+	ContaCorrente conta2;
 
     @BeforeEach
     void setUp() {
     	agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
-    	agencia2 = agenciaRepository.save(new Agencia(null, "Agencia 2", "Endereco 2", "987654321", null, null));
 
-        clienteDto1 = new ClienteRequestDTO("Thiago", "07890898765", "88891010", agencia1.getId());
-        clienteDto2 = new ClienteRequestDTO("Jessika", "07830898765", "98891010", agencia2.getId());
-
-        cliente1 = clienteService.criarCliente(clienteDto1);
-        cliente2 = clienteService.criarCliente(clienteDto2);
-
-        conta1 = cliente1.getContaCorrente();
+    	clienteDto1 = new ClienteRequestDTO("Thiago", "11122233345", "83911112222", agencia1.getId());
+    	clienteDto2 = new ClienteRequestDTO("Jessika", "07830898765", "83944445555", agencia1.getId());
+    	
+    	cliente1 = clienteService.criarCliente(clienteDto1);
+    	cliente2 = clienteService.criarCliente(clienteDto2);
+    	
+    	conta1 = cliente1.getContaCorrente();
+    	conta2 = cliente2.getContaCorrente();
     }
     
     @AfterEach

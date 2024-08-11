@@ -50,7 +50,6 @@ class ContaCorrenteTest {
 	void testGettersAndSetters() {
 		LocalDateTime data = LocalDateTime.of(2023, 01, 31, 0, 0);
 		
-		Agencia agencia = new Agencia();
 		Cliente cliente = new Cliente();
 		
 		ContaCorrente conta = new ContaCorrente();
