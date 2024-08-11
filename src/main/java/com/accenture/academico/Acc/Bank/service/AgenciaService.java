@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaJaCadastradaException;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
@@ -27,6 +28,8 @@ public class AgenciaService {
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
+    	verificaSeTelefoneJaCadastrado(agenciaDTO.getTelefone());
+    	
     	Agencia agencia = new Agencia();
     	BeanUtils.copyProperties(agenciaDTO, agencia);
         return agenciaRepository.save(agencia);
@@ -38,5 +41,10 @@ public class AgenciaService {
 
     public List<Agencia> listarAgencias(){
         return agenciaRepository.findAll();
+    }
+    
+    private void verificaSeTelefoneJaCadastrado(String telefone) {
+    	if (agenciaRepository.existsByTelefone(telefone)) 
+			throw new AgenciaJaCadastradaException("telefone", telefone);
     }
 }

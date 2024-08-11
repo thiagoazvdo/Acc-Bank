@@ -42,8 +42,8 @@ class AgenciaServiceTest {
     void setUp() {
     	MockitoAnnotations.openMocks(this);
     	
-        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222", null, null);
-        agenciaRequestDTO = new AgenciaRequestDTO("Banco do Brasil UFCG", "UFCG", "3333-2222");
+        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "83933332222", null, null);
+        agenciaRequestDTO = new AgenciaRequestDTO("Banco do Brasil UFCG", "UFCG", "83933332222");
     }
     
     @Test
@@ -59,7 +59,7 @@ class AgenciaServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("Banco do Brasil UFCG", result.getNome());
         assertEquals("UFCG", result.getEndereco());
-        assertEquals("3333-2222", result.getTelefone());
+        assertEquals("83933332222", result.getTelefone());
         
         verify(agenciaRepository, times(1)).save(any(Agencia.class));
     }
@@ -67,7 +67,7 @@ class AgenciaServiceTest {
     @Test
     void testAtualizarAgencia_Sucesso() {
     	// Arrange
-    	Agencia agenciaAtualizada = new Agencia(agencia.getId(), "Banco do Brasil UFPB", "UFPB", "4444-5555", null, null);
+    	Agencia agenciaAtualizada = new Agencia(agencia.getId(), "Banco do Brasil UFPB", "UFPB", "83944445555", null, null);
     	
         when(agenciaRepository.findById(agencia.getId())).thenReturn(Optional.of(agencia));
         when(agenciaRepository.save(any(Agencia.class))).thenReturn(agenciaAtualizada);
@@ -81,7 +81,7 @@ class AgenciaServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("Banco do Brasil UFPB", result.getNome());
         assertEquals("UFPB", result.getEndereco());
-        assertEquals("4444-5555", result.getTelefone());
+        assertEquals("83944445555", result.getTelefone());
         
         verify(agenciaRepository, times(1)).findById(agencia.getId());
         verify(agenciaRepository, times(1)).save(agenciaAtualizada);

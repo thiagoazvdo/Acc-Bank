@@ -203,11 +203,12 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertEquals(5, resultado.getErrors().size()),
                     () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
             );
         }
 
@@ -282,6 +283,78 @@ public class ClienteControllerTest {
                     () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
             );
         }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com telefone com letras")
+        void quandoCriarClienteTelefoneComLetras() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("telefone123");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com telefone com 12 digitos")
+        void quandoCriarClienteTelefoneCom12Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("000222444666");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com telefone com 10 digitos")
+        void quandoCriarClienteTelefoneCom10Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("0002224446");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+            );
+        }
     }
 
     @Nested
@@ -294,7 +367,7 @@ public class ClienteControllerTest {
             // Arrange
             clienteRequestDTO.setNome("Cliente Novo");
             clienteRequestDTO.setCpf("12345678901");
-            clienteRequestDTO.setTelefone("988129070");
+            clienteRequestDTO.setTelefone("83988129070");
             
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -384,11 +457,12 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertEquals(5, resultado.getErrors().size()),
                     () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
             );
         }
 
@@ -461,6 +535,78 @@ public class ClienteControllerTest {
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
                     () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com letras")
+        void quandoAtualizamosClienteTelefoneComLetras() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("telefone123");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com 12 digitos")
+        void quandoAtualizamosClienteTelefoneCom12Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("000222444666");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com 10 digitos")
+        void quandoAtualizamosClienteTelefoneCom10Digitos() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setTelefone("0002224446");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
             );
         }
     }

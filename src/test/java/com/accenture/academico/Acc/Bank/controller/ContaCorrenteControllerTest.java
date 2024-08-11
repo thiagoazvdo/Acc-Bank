@@ -1,5 +1,6 @@
 package com.accenture.academico.Acc.Bank.controller;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,7 +31,6 @@ import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteCom
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.accenture.academico.Acc.Bank.handler.ResponseError;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
@@ -193,7 +193,7 @@ class ContaCorrenteControllerTest {
 
     @Nested
     @DisplayName("Conjunto casos de teste do endpoint Buscar")
-    class AgenciaFluxosBasicosBuscar{
+    class ContaCorrenteFluxosBasicosBuscar{
     	
     	@Test
         @DisplayName("Quando buscamos uma conta corrente salva pelo id")
@@ -372,10 +372,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
-            
+
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     	
     	@Test
@@ -393,10 +396,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     	
     	@Test
@@ -489,10 +495,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     	
     	@Test
@@ -510,10 +519,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     }
 
@@ -615,10 +627,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     	
     	@Test
@@ -636,10 +651,13 @@ class ContaCorrenteControllerTest {
             .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ValorInvalidoException exception = new ValorInvalidoException();
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+            );
         }
     	
     	@Test

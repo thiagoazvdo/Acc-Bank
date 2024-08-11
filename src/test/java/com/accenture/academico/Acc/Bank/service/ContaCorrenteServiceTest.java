@@ -25,7 +25,6 @@ import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteCom
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -193,33 +192,6 @@ class ContaCorrenteServiceTest {
     }
     
     @Test
-    void testSacar_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO saqueDTO = new SaqueDepositoRequestDTO();
-        saqueDTO.setValor(BigDecimal.ZERO);
-        saqueDTO.setDescricao("descricao para o saque");
-
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.sacar(1L, saqueDTO));
-    }
-    
-    @Test
-    void testSacar_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO saqueDTO = new SaqueDepositoRequestDTO();
-        saqueDTO.setValor(BigDecimal.valueOf(-1));
-        saqueDTO.setDescricao("descricao para o saque");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.sacar(1L, saqueDTO));
-    }
-    
-    @Test
     void testSacar_SaldoInsuficienteException() {
         // Arrange
     	conta.setSaldo(BigDecimal.valueOf(200.0));
@@ -272,32 +244,6 @@ class ContaCorrenteServiceTest {
     }
     
     @Test
-    void testDepositar_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO depositoDTO = new SaqueDepositoRequestDTO();
-        depositoDTO.setValor(BigDecimal.ZERO);
-        depositoDTO.setDescricao("descricao para o deposito");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.depositar(1L, depositoDTO));
-    }
-    
-    @Test
-    void testDepositar_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO depositoDTO = new SaqueDepositoRequestDTO();
-        depositoDTO.setValor(BigDecimal.valueOf(-1));
-        depositoDTO.setDescricao("descricao para o deposito");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.depositar(1L, depositoDTO));
-    }
-    
-    @Test
     void testTransferir_Sucesso() {
         // Arrange
     	conta.setSaldo(BigDecimal.valueOf(200.0));
@@ -327,48 +273,6 @@ class ContaCorrenteServiceTest {
         verify(contaCorrenteRepository, times(1)).save(conta);
         verify(contaCorrenteRepository, times(1)).save(contaDestino);
         verify(transacaoRepository, times(2)).save(any(Transacao.class));
-    }
-    
-    @Test
-    void testTransferir_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-
-        ContaCorrente contaDestino = new ContaCorrente();
-        contaDestino.setId(2L);
-        contaDestino.setNumero("10002");
-        contaDestino.setSaldo(BigDecimal.valueOf(36.00));
-
-        TransferenciaRequestDTO transferenciaDTO = new TransferenciaRequestDTO();
-        transferenciaDTO.setNumeroContaDestino("10002");
-        transferenciaDTO.setValor(BigDecimal.valueOf(0));
-
-        // Act & Assert
-        
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.transferir(1L, transferenciaDTO));
-        assertEquals(BigDecimal.valueOf(200.0), conta.getSaldo());
-        assertEquals(BigDecimal.valueOf(36.0), contaDestino.getSaldo());
-    }
-    
-    @Test
-    void testTransferir_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-
-        ContaCorrente contaDestino = new ContaCorrente();
-        contaDestino.setId(2L);
-        contaDestino.setNumero("10002");
-        contaDestino.setSaldo(BigDecimal.valueOf(36.00));
-
-        TransferenciaRequestDTO transferenciaDTO = new TransferenciaRequestDTO();
-        transferenciaDTO.setNumeroContaDestino("10002");
-        transferenciaDTO.setValor(BigDecimal.valueOf(-1));
-
-        // Act & Assert
-        
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.transferir(1L, transferenciaDTO));
-        assertEquals(BigDecimal.valueOf(200.0), conta.getSaldo());
-        assertEquals(BigDecimal.valueOf(36.0), contaDestino.getSaldo());
     }
     
     @Test
