@@ -1,9 +1,7 @@
 package com.accenture.academico.Acc.Bank.controller;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +15,8 @@ import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.service.ContaCorrenteService;
 
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/contas-correntes")
@@ -32,10 +32,10 @@ public class ContaCorrenteController {
 		return ResponseEntity.ok(contaCorrente);
 	}
 
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> removerContaCorrente(@PathVariable Long id){
-		contaCorrenteService.removerContaCorrente(id);
-		return ResponseEntity.noContent().build();
+	@GetMapping
+	public ResponseEntity<List<ContaCorrente>> listarContas(){
+		List<ContaCorrente> listaDeContas = contaCorrenteService.listarContas();
+		return ResponseEntity.ok(listaDeContas);
 	}
 
 	@PostMapping("/{id}/sacar")
