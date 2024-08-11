@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 public class SaqueDepositoRequestDTO {
 
-    @NotNull(message = "Campo valor obrigatorio")
-    @DecimalMin(value = "0.01", message = "O valor deve ser maior que zero")
+    @NotNull
+    @DecimalMin(value = "0.01")
 	private BigDecimal valor;
     
 	private String descricao;

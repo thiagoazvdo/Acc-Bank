@@ -13,13 +13,13 @@ import lombok.Setter;
 @Setter
 public class AgenciaRequestDTO {
 
-    @NotBlank(message = "Campo nome obrigatorio")
+    @NotBlank
     private String nome;
 
-    @NotBlank(message = "Campo endereco obrigatorio")
+    @NotBlank
     private String endereco;
 
-    @NotBlank(message = "Campo telefone obrigatorio")
+    @NotBlank
     @Pattern(regexp = "\\d{11}", message = "Telefone deve ter exatamente 11 digitos numericos")
     private String telefone;
 
