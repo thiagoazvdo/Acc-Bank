@@ -175,10 +175,10 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo idAgencia obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("idAgencia e obrigatorio"))
             );
         }
         
@@ -204,9 +204,9 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(5, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
                     () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
             );
@@ -430,9 +430,9 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
         }
         
@@ -458,11 +458,11 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(5, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo cpf obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
                     () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
         }
 

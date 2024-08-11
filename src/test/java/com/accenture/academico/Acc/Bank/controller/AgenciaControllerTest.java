@@ -136,9 +136,9 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo endereco obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
 
         }
@@ -165,10 +165,10 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo endereco obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
         }
         
@@ -296,9 +296,9 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo endereco obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
         }
         
@@ -324,10 +324,10 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Campo nome obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo endereco obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Campo telefone obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
             );
         }
         

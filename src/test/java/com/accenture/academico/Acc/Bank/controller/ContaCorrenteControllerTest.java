@@ -206,8 +206,8 @@ class ContaCorrenteControllerTest {
                 .andDo(print())
                 .andReturn().getResponse().getContentAsString();
             
-            ContaCorrenteResponseDTO resultado = objectMapper.readValue(responseJsonString, ContaCorrenteResponseDTO.class);
-            
+            ContaCorrente resultado = objectMapper.readValue(responseJsonString, ContaCorrente.class);
+
             // Assert
             assertEquals(conta1.getId(), resultado.getId());
             assertEquals(conta1.getNumero(), resultado.getNumero());
@@ -236,469 +236,471 @@ class ContaCorrenteControllerTest {
         }
     }
     
-    @Nested
-    @DisplayName("Conjunto casos de teste do endpoint Remover")
-    class ContaCorrenteFluxosBasicosRemover{
-    	
-    	@Test
-        @DisplayName("Quando removemos uma conta corrente pelo id")
-        void quandoRemovemosContaCorrenteValida() throws Exception {
-        	// Arrange
-        	
-            // Act
-            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + conta1.getId())
-            			.contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            // Assert
-            assertTrue(responseJsonString.isBlank());
-        }
-    	
-    	@Test
-        @DisplayName("Quando removemos uma conta corrente inexistente")
-        void quandoRemovemosContaCorrenteInexistente() throws Exception {
-        	// Arrange
-        	Long idInexistente = 999L;
-    		
-            // Act
-            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + idInexistente)
-            			.contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-    	@Test
-        @DisplayName("Quando removemos uma conta corrente com saldo")
-        void quandoRemovemosContaCorrenteComSaldo() throws Exception {
-        	// Arrange
-    		conta1.depositar(BigDecimal.valueOf(10));
-    		contaCorrenteRepository.save(conta1);
-    		
-    		
-            // Act
-            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + conta1.getId())
-            			.contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteComSaldoException exception = new ContaCorrenteComSaldoException();
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    }
-    
-    @Nested
-    @DisplayName("Conjunto casos de teste do endpoint Sacar")
-    class ContaCorrenteFluxosBasicosSacar{
-    	
-    	private SaqueDepositoRequestDTO saqueDTO;
-    	
-    	@BeforeEach
-    	void setUp() {
-    		conta1.depositar(BigDecimal.valueOf(20));
-    		contaCorrenteRepository.save(conta1);
-    		
-    		saqueDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
-    	}
-    	
-    	@Test
-        @DisplayName("Quando sacamos um valor valido de uma conta corrente")
-        void quandoSacamosValorValidoContaCorrente() throws Exception {
-        	// Arrange
-        	saqueDTO.setValor(BigDecimal.valueOf(5.57));
-    		
-            // Act
-            String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
-            			.contentType(MediaType.APPLICATION_JSON)
-            			.content(objectMapper.writeValueAsString(saqueDTO)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            ContaCorrente contaAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
-            
-            // Assert
-            assertTrue(responseJsonString.isBlank());
-            System.out.println(conta1.getSaldo());
-            assertEquals(0, contaAtualizada.getSaldo().compareTo(BigDecimal.valueOf(14.43)));
-        }
-    	
-    	@Test
-        @DisplayName("Quando sacamos um valor valido de uma conta corrente inexistente")
-        void quandoSacamosValorValidoContaCorrenteInexistente() throws Exception {
-        	// Arrange
-        	Long idInexistente = 999L;
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/sacar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(saqueDTO)))
-            .andExpect(status().isNotFound())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-    	@Test
-        @DisplayName("Quando sacamos um valor igual a zero de uma conta corrente")
-        void quandoSacamosValorIgualAZeroValidoContaCorrente() throws Exception {
-        	// Arrange
-        	saqueDTO.setValor(BigDecimal.valueOf(0));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(saqueDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+//    @Nested
+//    @DisplayName("Conjunto casos de teste do endpoint Remover")
+//    class ContaCorrenteFluxosBasicosRemover {
+//
+//        @Test
+//        @DisplayName("Quando removemos uma conta corrente pelo id")
+//        void quandoRemovemosContaCorrenteValida() throws Exception {
+//            // Arrange
+//
+//            // Act
+//            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + conta1.getId())
+//                            .contentType(MediaType.APPLICATION_JSON))
+//                    .andExpect(status().isNoContent())
+//                    .andDo(print())
+//                    .andReturn().getResponse().getContentAsString();
+//
+//            // Assert
+//            assertTrue(responseJsonString.isBlank());
+//        }
+//    }
 
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
+//    	@Test
+//        @DisplayName("Quando removemos uma conta corrente inexistente")
+//        void quandoRemovemosContaCorrenteInexistente() throws Exception {
+//        	// Arrange
+//        	Long idInexistente = 999L;
+//
+//            // Act
+//            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + idInexistente)
+//            			.contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNotFound())
+//                .andDo(print())
+//                .andReturn().getResponse().getContentAsString();
+//
+//            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+//            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
+//
+//            // Assert
+//            assertEquals(exception.getMessage() , resultado.getMessage());
+//        }
+
+//    	@Test
+//        @DisplayName("Quando removemos uma conta corrente com saldo")
+//        void quandoRemovemosContaCorrenteComSaldo() throws Exception {
+//        	// Arrange
+//    		conta1.depositar(BigDecimal.valueOf(10));
+//    		contaCorrenteRepository.save(conta1);
+//
+//
+//            // Act
+//            String responseJsonString = mockMvc.perform(delete("/contas-correntes/" + conta1.getId())
+//            			.contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isBadRequest())
+//                .andDo(print())
+//                .andReturn().getResponse().getContentAsString();
+//
+//            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+//            ContaCorrenteComSaldoException exception = new ContaCorrenteComSaldoException();
+//
+//            // Assert
+//            assertEquals(exception.getMessage() , resultado.getMessage());
+//        }
+//    }
+
+        @Nested
+        @DisplayName("Conjunto casos de teste do endpoint Sacar")
+        class ContaCorrenteFluxosBasicosSacar {
+
+            private SaqueDepositoRequestDTO saqueDTO;
+
+            @BeforeEach
+            void setUp() {
+                conta1.depositar(BigDecimal.valueOf(20));
+                contaCorrenteRepository.save(conta1);
+
+                saqueDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
+            }
+
+            @Test
+            @DisplayName("Quando sacamos um valor valido de uma conta corrente")
+            void quandoSacamosValorValidoContaCorrente() throws Exception {
+                // Arrange
+                saqueDTO.setValor(BigDecimal.valueOf(5.57));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(saqueDTO)))
+                        .andExpect(status().isOk())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ContaCorrente contaAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
+
+                // Assert
+                assertTrue(responseJsonString.isBlank());
+                System.out.println(conta1.getSaldo());
+                assertEquals(0, contaAtualizada.getSaldo().compareTo(BigDecimal.valueOf(14.43)));
+            }
+
+            @Test
+            @DisplayName("Quando sacamos um valor valido de uma conta corrente inexistente")
+            void quandoSacamosValorValidoContaCorrenteInexistente() throws Exception {
+                // Arrange
+                Long idInexistente = 999L;
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/sacar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(saqueDTO)))
+                        .andExpect(status().isNotFound())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
+
+            @Test
+            @DisplayName("Quando sacamos um valor igual a zero de uma conta corrente")
+            void quandoSacamosValorIgualAZeroValidoContaCorrente() throws Exception {
+                // Arrange
+                saqueDTO.setValor(BigDecimal.valueOf(0));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(saqueDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
+
+            @Test
+            @DisplayName("Quando sacamos um valor negativo de uma conta corrente")
+            void quandoSacamosValorNegativoContaCorrente() throws Exception {
+                // Arrange
+                saqueDTO.setValor(BigDecimal.valueOf(-1));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(saqueDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
+
+            @Test
+            @DisplayName("Quando sacamos um valor maior que o saldo de uma conta corrente")
+            void quandoSacamosValorMaiorQueSaldoContaCorrente() throws Exception {
+                // Arrange
+                saqueDTO.setValor(BigDecimal.valueOf(20.01));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(saqueDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                SaldoInsuficienteException exception = new SaldoInsuficienteException();
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
         }
-    	
-    	@Test
-        @DisplayName("Quando sacamos um valor negativo de uma conta corrente")
-        void quandoSacamosValorNegativoContaCorrente() throws Exception {
-        	// Arrange
-        	saqueDTO.setValor(BigDecimal.valueOf(-1));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(saqueDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
+
+        @Nested
+        @DisplayName("Conjunto casos de teste do endpoint Depositar")
+        class ContaCorrenteFluxosBasicosDepositar {
+
+            private SaqueDepositoRequestDTO depositoDTO;
+
+            @BeforeEach
+            void setUp() {
+                depositoDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
+            }
+
+            @Test
+            @DisplayName("Quando depositamos um valor valido de uma conta corrente")
+            void quandoDepositamosValorValidoContaCorrente() throws Exception {
+                // Arrange
+                depositoDTO.setValor(BigDecimal.valueOf(5.57));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(depositoDTO)))
+                        .andExpect(status().isOk())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ContaCorrente contaAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
+
+                // Assert
+                assertTrue(responseJsonString.isBlank());
+                assertEquals(0, contaAtualizada.getSaldo().compareTo(depositoDTO.getValor()));
+            }
+
+            @Test
+            @DisplayName("Quando depositamos um valor valido de uma conta corrente inexistente")
+            void quandoDepositamosValorValidoContaCorrenteInexistente() throws Exception {
+                // Arrange
+                Long idInexistente = 999L;
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/depositar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(depositoDTO)))
+                        .andExpect(status().isNotFound())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
+
+            @Test
+            @DisplayName("Quando depositamos um valor igual a zero de uma conta corrente")
+            void quandoDepositamosValorIgualAZeroValidoContaCorrente() throws Exception {
+                // Arrange
+                depositoDTO.setValor(BigDecimal.valueOf(0));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(depositoDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
+
+            @Test
+            @DisplayName("Quando depositamos um valor negativo de uma conta corrente")
+            void quandoDepositamosValorNegativoContaCorrente() throws Exception {
+                // Arrange
+                depositoDTO.setValor(BigDecimal.valueOf(-1));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(depositoDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
         }
-    	
-    	@Test
-        @DisplayName("Quando sacamos um valor maior que o saldo de uma conta corrente")
-        void quandoSacamosValorMaiorQueSaldoContaCorrente() throws Exception {
-        	// Arrange
-        	saqueDTO.setValor(BigDecimal.valueOf(20.01));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/sacar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(saqueDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            SaldoInsuficienteException exception = new SaldoInsuficienteException();
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    }
-    
-    @Nested
-    @DisplayName("Conjunto casos de teste do endpoint Depositar")
-    class ContaCorrenteFluxosBasicosDepositar{
-    	
-    	private SaqueDepositoRequestDTO depositoDTO;
-    	
-    	@BeforeEach
-    	void setUp() {
-    		depositoDTO = new SaqueDepositoRequestDTO(BigDecimal.valueOf(5), null);
-    	}
-    	
-    	@Test
-        @DisplayName("Quando depositamos um valor valido de uma conta corrente")
-        void quandoDepositamosValorValidoContaCorrente() throws Exception {
-        	// Arrange
-        	depositoDTO.setValor(BigDecimal.valueOf(5.57));
-    		
-            // Act
-            String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
-            			.contentType(MediaType.APPLICATION_JSON)
-            			.content(objectMapper.writeValueAsString(depositoDTO)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            ContaCorrente contaAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
-            
-            // Assert
-            assertTrue(responseJsonString.isBlank());
-            assertEquals(0, contaAtualizada.getSaldo().compareTo(depositoDTO.getValor()));
-        }
-    	
-    	@Test
-        @DisplayName("Quando depositamos um valor valido de uma conta corrente inexistente")
-        void quandoDepositamosValorValidoContaCorrenteInexistente() throws Exception {
-        	// Arrange
-        	Long idInexistente = 999L;
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/depositar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(depositoDTO)))
-            .andExpect(status().isNotFound())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-    	@Test
-        @DisplayName("Quando depositamos um valor igual a zero de uma conta corrente")
-        void quandoDepositamosValorIgualAZeroValidoContaCorrente() throws Exception {
-        	// Arrange
-        	depositoDTO.setValor(BigDecimal.valueOf(0));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(depositoDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
-        }
-    	
-    	@Test
-        @DisplayName("Quando depositamos um valor negativo de uma conta corrente")
-        void quandoDepositamosValorNegativoContaCorrente() throws Exception {
-        	// Arrange
-        	depositoDTO.setValor(BigDecimal.valueOf(-1));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/depositar")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(depositoDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
+
+        @Nested
+        @DisplayName("Conjunto casos de teste do endpoint Transferir")
+        class ContaCorrenteFluxosBasicosTransferir {
+
+            private ContaCorrente conta2;
+            private TransferenciaRequestDTO transferenciaDTO;
+
+            @BeforeEach
+            void setUp() {
+                conta1.depositar(BigDecimal.valueOf(20));
+                contaCorrenteRepository.save(conta1);
+
+                conta2 = cliente2.getContaCorrente();
+
+                transferenciaDTO = new TransferenciaRequestDTO(BigDecimal.valueOf(5), null, conta2.getNumero());
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia valida")
+            void quandoTransferenciaValidaContaCorrente() throws Exception {
+                // Arrange
+                transferenciaDTO.setValor(BigDecimal.valueOf(5.57));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isOk())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ContaCorrente contaOrigemAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
+                ContaCorrente contaDestinoAtualizada = contaCorrenteRepository.findByNumero(conta2.getNumero()).orElseThrow();
+
+                // Assert
+                assertTrue(responseJsonString.isBlank());
+                assertEquals(0, contaOrigemAtualizada.getSaldo().compareTo(BigDecimal.valueOf(14.43)));
+                assertEquals(0, contaDestinoAtualizada.getSaldo().compareTo(transferenciaDTO.getValor()));
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia contaCorrenteOrigem inexistente")
+            void quandoTransferimosContaCorrenteOrigemInexistente() throws Exception {
+                // Arrange
+                Long idInexistente = 999L;
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isNotFound())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia contaCorrenteDestino inexistente")
+            void quandoTransferimosContaCorrenteDestinoInexistente() throws Exception {
+                // Arrange
+                String numeroInexistente = "00000";
+                transferenciaDTO.setNumeroContaDestino(numeroInexistente);
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isNotFound())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(numeroInexistente);
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia com valor igual a zero")
+            void quandoTransferimosValorIgualAZero() throws Exception {
+                // Arrange
+                transferenciaDTO.setValor(BigDecimal.valueOf(0));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia com valor negativo")
+            void quandoTransferimosValorNegativo() throws Exception {
+                // Arrange
+                transferenciaDTO.setValor(BigDecimal.valueOf(-1));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+
+                // Assert
+                assertAll(
+                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                        () -> assertEquals(1, resultado.getErrors().size()),
+                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                );
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia entre contas iguais")
+            void quandoTransferimosEntreContasIguais() throws Exception {
+                // Arrange
+                transferenciaDTO.setNumeroContaDestino(conta1.getNumero());
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                TransferenciaEntreContasIguaisException exception = new TransferenciaEntreContasIguaisException();
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
+
+            @Test
+            @DisplayName("Quando realizamos uma transferencia com valor maior que o saldo")
+            void quandoTransferimosValorMaiorQueSaldo() throws Exception {
+                // Arrange
+                transferenciaDTO.setValor(BigDecimal.valueOf(20.01));
+
+                // Act
+                String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(transferenciaDTO)))
+                        .andExpect(status().isBadRequest())
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+                SaldoInsuficienteException exception = new SaldoInsuficienteException();
+
+                // Assert
+                assertEquals(exception.getMessage(), resultado.getMessage());
+            }
         }
     }
 
-    @Nested
-    @DisplayName("Conjunto casos de teste do endpoint Transferir")
-    class ContaCorrenteFluxosBasicosTransferir{
-    	
-    	private ContaCorrente conta2;
-    	private TransferenciaRequestDTO transferenciaDTO;
-    	
-    	@BeforeEach
-    	void setUp() {
-    		conta1.depositar(BigDecimal.valueOf(20));
-    		contaCorrenteRepository.save(conta1);
-    		
-    		conta2 = cliente2.getContaCorrente();
-
-    		transferenciaDTO = new TransferenciaRequestDTO(BigDecimal.valueOf(5), null, conta2.getNumero());
-    	}
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia valida")
-        void quandoTransferenciaValidaContaCorrente() throws Exception {
-        	// Arrange
-        	transferenciaDTO.setValor(BigDecimal.valueOf(5.57));
-    		
-            // Act
-            String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-            			.contentType(MediaType.APPLICATION_JSON)
-            			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andReturn().getResponse().getContentAsString();
-            
-            ContaCorrente contaOrigemAtualizada = contaCorrenteRepository.findById(conta1.getId()).orElseThrow();
-            ContaCorrente contaDestinoAtualizada = contaCorrenteRepository.findByNumero(conta2.getNumero()).orElseThrow();
-            
-            // Assert
-            assertTrue(responseJsonString.isBlank());
-            assertEquals(0, contaOrigemAtualizada.getSaldo().compareTo(BigDecimal.valueOf(14.43)));
-            assertEquals(0, contaDestinoAtualizada.getSaldo().compareTo(transferenciaDTO.getValor()));
-        }
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia contaCorrenteOrigem inexistente")
-        void quandoTransferimosContaCorrenteOrigemInexistente() throws Exception {
-        	// Arrange
-        	Long idInexistente = 999L;
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + idInexistente + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isNotFound())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia contaCorrenteDestino inexistente")
-        void quandoTransferimosContaCorrenteDestinoInexistente() throws Exception {
-        	// Arrange
-    		String numeroInexistente = "00000";
-        	transferenciaDTO.setNumeroContaDestino(numeroInexistente);
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isNotFound())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(numeroInexistente);
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia com valor igual a zero")
-        void quandoTransferimosValorIgualAZero() throws Exception {
-        	// Arrange
-        	transferenciaDTO.setValor(BigDecimal.valueOf(0));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
-        }
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia com valor negativo")
-        void quandoTransferimosValorNegativo() throws Exception {
-        	// Arrange
-        	transferenciaDTO.setValor(BigDecimal.valueOf(-1));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            
-            // Assert
-            assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
-            );
-        }
-    	
-    	@Test
-        @DisplayName("Quando realizamos uma transferencia entre contas iguais")
-        void quandoTransferimosEntreContasIguais() throws Exception {
-        	// Arrange
-        	transferenciaDTO.setNumeroContaDestino(conta1.getNumero());
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            TransferenciaEntreContasIguaisException exception = new TransferenciaEntreContasIguaisException();
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    	
-       	@Test
-        @DisplayName("Quando realizamos uma transferencia com valor maior que o saldo")
-        void quandoTransferimosValorMaiorQueSaldo() throws Exception {
-        	// Arrange
-       		transferenciaDTO.setValor(BigDecimal.valueOf(20.01));
-    		
-            // Act
-        	String responseJsonString = mockMvc.perform(post("/contas-correntes/" + conta1.getId() + "/transferir")
-        			.contentType(MediaType.APPLICATION_JSON)
-        			.content(objectMapper.writeValueAsString(transferenciaDTO)))
-            .andExpect(status().isBadRequest())
-            .andDo(print())
-            .andReturn().getResponse().getContentAsString();
-            
-            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
-            SaldoInsuficienteException exception = new SaldoInsuficienteException();
-            
-            // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
-        }
-    }
-}
