@@ -8,6 +8,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,7 +55,8 @@ public class ContaCorrente {
 	@JoinColumn(name = "id_cliente", nullable = false)
 	@JsonBackReference
 	private Cliente cliente;
-	
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transacao> transacoes;
 	

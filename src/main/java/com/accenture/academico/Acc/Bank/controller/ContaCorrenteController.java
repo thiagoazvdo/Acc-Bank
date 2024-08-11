@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -27,12 +26,10 @@ public class ContaCorrenteController {
 	private ContaCorrenteService contaCorrenteService;
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ContaCorrenteResponseDTO> buscarContaCorrente(@PathVariable Long id){
+	public ResponseEntity<ContaCorrente> buscarContaCorrente(@PathVariable Long id){
 		ContaCorrente contaCorrente = contaCorrenteService.buscarContaCorrente(id);
-		ContaCorrenteResponseDTO contaCorrenteResponse = new ContaCorrenteResponseDTO();
-		BeanUtils.copyProperties(contaCorrente, contaCorrenteResponse);
-		
-		return ResponseEntity.ok(contaCorrenteResponse);
+
+		return ResponseEntity.ok(contaCorrente);
 	}
 
 	@DeleteMapping("/{id}")
