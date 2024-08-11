@@ -53,20 +53,20 @@ public class GlobalExceptionHandler {
                 })
                 .toList();
 
-        ResponseError responseError = new ResponseError("Erros de validação encontrados", erros);
+        ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
     }
 
     @ExceptionHandler(CannotCreateTransactionException.class)
     public ResponseEntity<?> tratarConexaoBancoDadosException(CannotCreateTransactionException e) {
-        ResponseError responseError = new ResponseError("Falha na conexão com o banco de dados. Tente novamente mais tarde.");
+        ResponseError responseError = new ResponseError("Falha na conexao com o banco de dados. Tente novamente mais tarde.");
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
     }
 
     @ExceptionHandler(DataAccessResourceFailureException.class)
     public ResponseEntity<?> tratarConexaoBancoDadosException(DataAccessResourceFailureException ex) {
-        ResponseError responseError = new ResponseError("Falha na conexão com o banco de dados. Tente novamente mais tarde.");
+        ResponseError responseError = new ResponseError("Falha na conexao com o banco de dados. Tente novamente mais tarde.");
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
 
     }
