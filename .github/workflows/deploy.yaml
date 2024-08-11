@@ -1,0 +1,87 @@
+name: Deploy no ambiente de desenvolvimento
+
+on: 
+  push:
+      branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fazendo configuracao do java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "17"
+      
+      - name: Fazendo build do projeto
+        run: mvn clean install && ls
+
+      - name: Build da imagem Docker
+        run: docker build -t accbank-api .
+
+      - name: Gerando .tar.gz da imagem
+        run: docker save accbank-api | gzip > accbank-api.tar.gz && ls
+        
+      - name: Parando a versao anterior da API
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_KEY_PAIR }}
+          port: 22
+          script: |
+              if [ "$(docker ps -q -f name=accbank-api)" ]; then
+                docker-compose down
+              else
+                echo "A API não está em execução, nenhum serviço foi interrompido."
+              fi
+      
+      - name: Removendo a imagem docker antiga
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_KEY_PAIR }}
+          port: 22
+          script: |
+              if docker image inspect accbank-api > /dev/null 2>&1; then
+                echo "Imagem accbank-api encontrada, removendo..."
+                docker rmi accbank-api
+              else
+                echo "Imagem accbank-api não encontrada, nada a remover."
+              fi
+
+      - name: Copiando imagem e docker-compose para EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_KEY_PAIR }}
+          port: 22
+          source: "accbank-api.tar.gz, docker-compose.yaml"
+          target: "/home/ubuntu"
+
+      - name: Carregando a nova imagem no docker
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_KEY_PAIR }}
+          port: 22
+          script: |
+              docker load < accbank-api.tar.gz 
+                
+      - name: Deploy no ambiente de desenvolvimento
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.AWS_KEY_PAIR }}
+          port: 22
+          script: |
+              nohup docker-compose up > /dev/null 2>&1 &

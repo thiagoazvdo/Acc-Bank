@@ -6,7 +6,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: mysql:8
     environment:
@@ -14,3 +15,9 @@ services:
       MYSQL_DATABASE: accbankdb
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
