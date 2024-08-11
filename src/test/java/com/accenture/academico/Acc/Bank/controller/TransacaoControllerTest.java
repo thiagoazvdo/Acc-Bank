@@ -84,7 +84,7 @@ class TransacaoControllerTest {
         transacao5 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(8.00), null, "Deposito 3", conta, null));
         transacao6 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(9.00), null, "Saque 3", conta, null));
 
-        transacao1.setDataHora(LocalDateTime.of(2023, 01, 31, 0, 0));
+        transacao1.setDataHora(LocalDateTime.of(2024, 01, 31, 0, 0));
         transacao2.setDataHora(LocalDateTime.of(2023, 02, 05, 0, 0));
         transacao3.setDataHora(LocalDateTime.of(2023, 02, 15, 0, 0));
         transacao4.setDataHora(LocalDateTime.of(2023, 03, 10, 0, 0));
@@ -100,6 +100,24 @@ class TransacaoControllerTest {
     	contaCorrenteRepository.deleteAll();
         clienteRepository.deleteAll();
         agenciaRepository.deleteAll();
+    }
+    
+    @Test
+    @DisplayName("Quando buscamos o extrato geral com dados válidos")
+    void quandoExtratoGeralValido() throws Exception {
+        // Arrange
+
+        // Act
+        String responseJsonString = mockMvc.perform(get("/contas-correntes/" + conta.getId() + "/extrato")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Transacao> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<Transacao>>() {});
+
+        // Assert
+        assertEquals(6, resultado.size());
+        assertEquals(List.of(transacao1, transacao2, transacao3, transacao4, transacao5, transacao6), resultado);
     }
 
     @Test
@@ -139,8 +157,8 @@ class TransacaoControllerTest {
         List<Transacao> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<Transacao>>() {});
 
         // Assert
-        assertEquals(6, resultado.size());
-        assertEquals(List.of(transacao1, transacao2, transacao3, transacao4, transacao5, transacao6), resultado);
+        assertEquals(5, resultado.size());
+        assertEquals(List.of(transacao2, transacao3, transacao4, transacao5, transacao6), resultado);
     }
 
 
