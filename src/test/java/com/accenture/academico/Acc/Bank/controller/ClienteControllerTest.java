@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
@@ -62,12 +63,14 @@ public class ClienteControllerTest {
 
     private Agencia agencia;
     private ClienteRequestDTO clienteRequestDTO;
+    private ClientePutRequestDTO clientePutRequestDTO;
 
     @BeforeEach
     void setUp() {
         agencia = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
         
         clienteRequestDTO = new ClienteRequestDTO("Cliente 1", "11122233345", "83988129070", agencia.getId());
+        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone());
         cliente = clienteService.criarCliente(clienteRequestDTO);
 
     }
@@ -365,14 +368,14 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com dados válidos")
         void quandoAtualizamosClienteValido() throws Exception {
             // Arrange
-            clienteRequestDTO.setNome("Cliente Novo");
-            clienteRequestDTO.setCpf("12345678901");
-            clienteRequestDTO.setTelefone("83988129070");
+    		clientePutRequestDTO.setNome("Cliente Novo");
+    		clientePutRequestDTO.setCpf("12345678901");
+    		clientePutRequestDTO.setTelefone("83988129070");
             
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -381,9 +384,9 @@ public class ClienteControllerTest {
 
             // Assert
             assertEquals(cliente.getId(), resultado.getId());
-            assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
-            assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
-            assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(clientePutRequestDTO.getNome(), resultado.getNome());
+            assertEquals(clientePutRequestDTO.getCpf(), resultado.getCpf());
+            assertEquals(clientePutRequestDTO.getTelefone(), resultado.getTelefone());
             assertEquals(cliente.getContaCorrente(), resultado.getContaCorrente());
         }
     	
@@ -396,7 +399,7 @@ public class ClienteControllerTest {
             // Act
         	String responseJsonString = mockMvc.perform(put("/clientes/" + idInexistente)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isNotFound())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -412,14 +415,14 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com campos nulos")
         void quandoAtualizamosClienteCamposNulos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setNome(null);
-        	clienteRequestDTO.setCpf(null);
-        	clienteRequestDTO.setTelefone(null);
+    		clientePutRequestDTO.setNome(null);
+    		clientePutRequestDTO.setCpf(null);
+    		clientePutRequestDTO.setTelefone(null);
         	
             // Act
         	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -440,14 +443,14 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com campos vazios")
         void quandoAtualizamosClienteCamposVazios() throws Exception {
             // Arrange
-        	clienteRequestDTO.setNome("");
-        	clienteRequestDTO.setCpf("");
-        	clienteRequestDTO.setTelefone("");
+        	clientePutRequestDTO.setNome("");
+        	clientePutRequestDTO.setCpf("");
+        	clientePutRequestDTO.setTelefone("");
         	
             // Act
         	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -470,12 +473,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com letras")
         void quandoAtualizamosClienteCpfComLetras() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("cpf22233300");
+        	clientePutRequestDTO.setCpf("cpf22233300");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -494,12 +497,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com 12 digitos")
         void quandoAtualizamosClienteCpfCom12Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("000222444666");
+        	clientePutRequestDTO.setCpf("000222444666");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -518,12 +521,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com 10 digitos")
         void quandoAtualizamosClienteCpfCom10Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("0002224446");
+        	clientePutRequestDTO.setCpf("0002224446");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -542,12 +545,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com telefone com letras")
         void quandoAtualizamosClienteTelefoneComLetras() throws Exception {
             // Arrange
-        	clienteRequestDTO.setTelefone("telefone123");
+        	clientePutRequestDTO.setTelefone("telefone123");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -566,12 +569,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com telefone com 12 digitos")
         void quandoAtualizamosClienteTelefoneCom12Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setTelefone("000222444666");
+        	clientePutRequestDTO.setTelefone("000222444666");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -590,12 +593,12 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com telefone com 10 digitos")
         void quandoAtualizamosClienteTelefoneCom10Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setTelefone("0002224446");
+        	clientePutRequestDTO.setTelefone("0002224446");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();

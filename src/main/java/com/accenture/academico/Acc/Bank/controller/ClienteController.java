@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.service.ClienteService;
@@ -40,8 +41,8 @@ public class ClienteController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
-		Cliente cliente = clienteService.atualizar(id, clienteRequestDTO);
+	public ResponseEntity<Cliente> atualizar(@PathVariable Long id, @Valid @RequestBody ClientePutRequestDTO clientePutRequestDTO) {
+		Cliente cliente = clienteService.atualizar(id, clientePutRequestDTO);
 		return ResponseEntity.ok(cliente);
 	}
 
