@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
@@ -42,6 +43,7 @@ class ClienteServiceTest {
 
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
+    private ClientePutRequestDTO clientePutRequestDTO;
 
     @BeforeEach
     void setUp() {
@@ -49,6 +51,7 @@ class ClienteServiceTest {
         Agencia agencia = new Agencia(1L, "Agencia 1", "Endereco 1", "123456789", null, null);
         cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null, agencia);
         clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "8355554444", agencia.getId());
+        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone());
     }
 
     @Test
@@ -105,7 +108,7 @@ class ClienteServiceTest {
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);
 
         // Act
-        Cliente result = clienteService.atualizar(1L, clienteRequestDTO);
+        Cliente result = clienteService.atualizar(1L, clientePutRequestDTO);
 
         // Assert
         assertNotNull(result);
@@ -123,7 +126,7 @@ class ClienteServiceTest {
         when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ClienteNaoEncontradoException.class, () -> clienteService.atualizar(1L, clienteRequestDTO));
+        assertThrows(ClienteNaoEncontradoException.class, () -> clienteService.atualizar(1L, clientePutRequestDTO));
         verify(clienteRepository, times(1)).findById(1L);
     }
 
