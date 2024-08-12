@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
@@ -28,9 +29,9 @@ public class ClienteService {
         return clienteRepository.findById(clienteId).orElseThrow(() -> new ClienteNaoEncontradoException(clienteId));
     }
 
-    public Cliente atualizar(Long clienteId, ClienteRequestDTO clienteRequestDTO){
+    public Cliente atualizar(Long clienteId, ClientePutRequestDTO clientePutRequestDTO){
         Cliente cliente = buscarCliente(clienteId);
-        BeanUtils.copyProperties(clienteRequestDTO, cliente);
+        BeanUtils.copyProperties(clientePutRequestDTO, cliente);
         return clienteRepository.save(cliente);
     }
 
