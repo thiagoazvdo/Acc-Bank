@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Acc Bank API</title>
+    <style>
+		:root{
+			--cor-principal:#324a5e;
+			--cor-secundaria: rgb(65 106 149);
+		}
+		
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f7;
+            color: #2d3e50;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--cor-principal);
+            color: #fff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            color: var(--cor-principal);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+		
+        pre {
+            background-color: #d0dce3;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            color: #2c3e50;
+        }
+
+        code {
+            background-color: #f0f3f7;
+            color: #c7254e;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+		
+        .expandable h2 {
+            cursor: pointer;
+            margin: 0;
+            padding: 10px;
+            background-color: var(--cor-principal);
+            color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+			margin-bottom: 5px;
+        }
+
+        .expandable h2:hover {
+            background-color: #3b4a5a;
+        }
+
+        .expandable-content {
+            margin-top: 10px;
+            display: none;
+            border-left: 4px solid #4e5d6c;
+            padding: 10px;
+            background-color: #f0f3f7;
+            border-radius: 0 4px 4px 4px;
+        }
+		
+		.expandable-content h2{
+			cursor: default;
+			background-color: var(--cor-secundaria);
+        }
+		
+		.expandable-content h2:hover{
+			background-color: var(--cor-secundaria);
+        }
+		
+		.expandable-content p{
+			margin-bottom: 5px;
+        }
+
+        .expandable-content.show {
+            display: block;
+        }
+
+        .arrow {
+            transition: transform 0.3s;
+        }
+
+        .arrow.rotate {
+            transform: rotate(-90deg);
+        }
+
+        .footer {
+            background-color: #324a5e;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Acc Bank API - Documentação</h1>
+    </div>
+
+    <div class="container">
+
+        <div class="content">
+
+            <h1 id="overview">Overview</h1>
+            <p>Bem-vindo à documentação da Acc Bank API. Esta API permite a integração com o sistema bancário da Acc Bank, oferecendo uma variedade de endpoints para gerenciar agências, contas, transações e muito mais.</p>
+
+            <h1>URL Base</h1>
+			<p>As requisições são feitas em uma URL base sob protocolo HTTPS.</p>
+            <p><strong>URL:</strong> <code>https://api.accbankbrasil.com.br/</code></p>
+            
+            <!--<h1>Autenticação</h1>
+            <p>A autenticação é feita por meio de tokens JWT (JSON Web Tokens). Você precisa incluir o token no cabeçalho de cada requisição.</p>
+            <pre><strong>Exemplo de cabeçalho:</strong>
+Authorization: Bearer {seu_token_aqui}
+            </pre>-->
+
+            <h1 id="swagger">Swagger</h1>
+            <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
+            <p>O Swagger pode ser acessado pelo seguinte link:</p>
+            <p><code><a href="https://api.accbankbrasil.com.br/swagger-ui/index.html#/" target="_blank">https://api.accbankbrasil.com.br/swagger-ui/index.html#/</a></code></p>
+
+			<h1 id="swagger">Documentação dos Endpoints</h1>
+            <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
+            <p>O Swagger pode ser acessado pelo seguinte link:</p>
+			
+            <!-- Endpoints - Agência -->
+            <div class="expandable">
+                <h2 onclick="toggleExpandableContent('agencia-content')">Agência<span class="arrow rotate">&#9662;</span></h2>
+                <div id="agencia-content" class="expandable-content">
+                    <h2 id="adicionar-agencia">Adicionar Nova Agência</h2>
+                    <p><strong>Endpoint:</strong> <code>POST /agencias</code></p>
+                    <p><strong>Descrição:</strong> Adiciona uma nova agência ao sistema.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>Os campos <code>nome</code>, <code>endereco</code> e <code>telefone</code> são obrigatórios no corpo da requisição.</li>
+					    <li>O campo <code>telefone</code> deve conter exatamente 11 dígitos numéricos.</li>
+					</ul>
+                    <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "nome": "Agência Sul",
+    "endereco": "Avenida Sul, 789",
+    "telefone": "83988776655"
+}</pre>
+                    <pre><strong>Exemplo de corpo da resposta:</strong>
+{
+    "id": 1,
+    "nome": "Agência Sul",
+    "endereco": "Avenida Sul, 789",
+    "telefone": "83988776655"
+}</pre>
+                    <hr>
+                    <h2 id="listar-agencias">Listar Agências</h2>
+                    <p><strong>Endpoint:</strong> <code>GET /agencias</code></p>
+                    <p><strong>Descrição:</strong> Retorna uma lista de todas as agências cadastradas.</p>
+                    <pre><strong>Exemplo de corpo da resposta:</strong>
+[
+    {
+        "id": 1,
+        "nome": "Agência Central",
+        "endereco": "Rua Principal, 123"
+    },
+    {
+        "id": 2,
+        "nome": "Agência Norte",
+        "endereco": "Avenida Norte, 456"
+    }
+]</pre>
+                    <hr>
+                    <h2 id="buscar-agencia">Buscar Agência por ID</h2>
+                    <p><strong>Endpoint:</strong> <code>GET /agencias/{id}</code></p>
+                    <p><strong>Descrição:</strong> Retorna os detalhes de uma agência específica com base no ID fornecido.</p>
+                    <pre><strong>Exemplo de corpo da resposta:</strong>
+{
+    "id": 1,
+    "nome": "Agência Central",
+    "endereco": "Rua Principal, 123"
+}</pre>
+                    <hr>
+                    <h2 id="atualizar-agencia">Atualizar Agência</h2>
+                    <p><strong>Endpoint:</strong> <code>PUT /agencias/{id}</code></p>
+                    <p><strong>Descrição:</strong> Atualiza os dados de uma agência específica com base no ID fornecido.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>Os campos <code>nome</code>, <code>endereco</code> e <code>telefone</code> são obrigatórios no corpo da requisição.</li>
+					    <li>O campo <code>telefone</code> deve conter exatamente 11 dígitos numéricos.</li>
+					</ul>
+                    <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "nome": "Agência Central",
+    "endereco": "Rua Principal, 123",
+    "telefone": "83998765432"
+}</pre>
+                    <pre><strong>Exemplo de corpo da resposta:</strong>
+{
+    "id": 1,
+    "nome": "Agência Central",
+    "endereco": "Rua Principal, 123",
+    "telefone": "83998765432"
+}</pre>
+                    <hr>
+                    <h2 id="remover-agencia">Remover Agência</h2>
+                    <p><strong>Endpoint:</strong> <code>DELETE /agencias/{id}</code></p>
+                    <p><strong>Descrição:</strong> Remove uma agência específica com base no ID fornecido.</p>
+                </div>
+            </div>
+			
+			
+							
+	      <!-- Endpoints - Cliente -->
+	        <div class="expandable">
+	            <h2 onclick="toggleExpandableContent('cliente-content', this)">Cliente<span class="arrow rotate">&#9662;</span></h2>
+	            <div id="cliente-content" class="expandable-content">
+					
+	 				<h2 id="adicionar-cliente">Adicionar Novo Cliente</h2>
+	                <p><strong>Endpoint:</strong> <code>POST /clientes</code></p>
+	                <p><strong>Descrição:</strong> Adiciona um novo cliente ao sistema.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>Os campos <code>nome</code>, <code>cpf</code> e <code>telefone</code> são obrigatórios no corpo da requisição.</li>
+						<li>O campo <code>cpf</code> deve ser no formato 111.222.333-45.</li>
+						<li>O campo <code>telefone</code> deve conter exatamente 11 dígitos numéricos.</li>
+					</ul>
+	                <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "nome": "Carlos Souza",
+    "cpf": "111.222.333-44",
+    "telefone": "839"
+}</pre>
+								
+					<hr>
+	                <h2 id="listar-clientes">Listar Clientes</h2>
+	                <p><strong>Endpoint:</strong> <code>GET /clientes</code></p>
+	                <p><strong>Descrição:</strong> Retorna uma lista de todos os clientes cadastrados.</p>
+	                <pre><strong>Exemplo de corpo da resposta:</strong>
+[
+    {
+        "id": 1,
+        "nome": "João Silva",
+        "cpf": "123.456.789-00"
+    },
+    {
+        "id": 2,
+        "nome": "Maria Oliveira",
+        "cpf": "987.654.321-00"
+    }
+]</pre>
+
+					<hr>
+	                <h2 id="buscar-cliente">Buscar Cliente por ID</h2>
+	                <p><strong>Endpoint:</strong> <code>GET /clientes/{id}</code></p>
+	                <p><strong>Descrição:</strong> Retorna os detalhes de um cliente específico com base no ID fornecido.</p>
+	                <pre><strong>Exemplo de corpo da resposta:</strong>
+{
+    "id": 1,
+    "nome": "João Silva",
+    "cpf": "123.456.789-00",
+    "endereco": "Rua Exemplo, 100"
+}</pre>
+
+					<hr>
+	                <h2 id="atualizar-cliente">Atualizar Cliente</h2>
+	                <p><strong>Endpoint:</strong> <code>PUT /clientes/{id}</code></p>
+	                <p><strong>Descrição:</strong> Atualiza as informações de um cliente existente com base no ID fornecido.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>Os campos <code>nome</code>, <code>cpf</code> e <code>telefone</code> são obrigatórios no corpo da requisição.</li>
+						<li>O campo <code>cpf</code> deve ser no formato 111.222.333-45.</li>
+						<li>O campo <code>telefone</code> deve conter exatamente 11 dígitos numéricos.</li>
+					</ul>
+	                <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "nome": "João da Silva",
+    "cpf": "123.456.789-00",
+    "endereco": "Rua Exemplo Atualizada, 100"
+}</pre>
+
+					<hr>
+	                <h2 id="remover-cliente">Remover Cliente</h2>
+	                <p><strong>Endpoint:</strong> <code>DELETE /clientes/{id}</code></p>
+	                <p><strong>Descrição:</strong> Remove um cliente existente com base no ID fornecido.</p>
+					<hr>
+	            </div>
+	        </div>
+			
+			 <!-- Endpoints - Conta Corrente -->
+	        <div class="expandable">
+	            <h2 onclick="toggleExpandableContent('conta-content', this)">Conta Corrente<span class="arrow rotate">&#9662;</span></h2>
+	            <div id="conta-content" class="expandable-content">
+					
+	                <h2 id="buscar-conta">Buscar Conta Corrente por ID</h2>
+	                <p><strong>Endpoint:</strong> <code>GET /contas/{id}</code></p>
+	                <p><strong>Descrição:</strong> Retorna os detalhes de uma conta corrente específica com base no ID fornecido.</p>
+	                <pre><strong>Exemplo de corpo da resposta:</strong>
+{
+    "id": 1,
+    "agenciaId": 1,
+    "clienteId": 1,
+    "saldo": 1000.00
+}</pre>
+	
+					<hr>
+	                <h2 id="listar-contas">Listar Contas Correntes</h2>
+	                <p><strong>Endpoint:</strong> <code>GET /contas</code></p>
+	                <p><strong>Descrição:</strong> Retorna uma lista de todas as contas correntes cadastradas.</p>
+	                <pre><strong>Exemplo de corpo da resposta:</strong>
+[
+	{
+	    "id": 1,
+	    "agenciaId": 1,
+	    "clienteId": 1,
+	    "saldo": 1000.00
+	},
+	{
+	    "id": 2,
+	    "agenciaId": 1,
+	    "clienteId": 2,
+	    "saldo": 2500.00
+	}
+]</pre>
+	
+					<hr>
+	                <h2 id="sacar">Sacar</h2>
+	                <p><strong>Endpoint:</strong> <code>POST /contas/{id}/sacar</code></p>
+	                <p><strong>Descrição:</strong> Realiza um saque de uma conta corrente específica.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>O campo <code>valor</code>é obrigatório e deve ser maior que zero.</li>
+					</ul>
+	                <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "valor": 200.00
+}</pre>
+	
+					<hr>
+	                <h2 id="depositar">Depositar</h2>
+	                <p><strong>Endpoint:</strong> <code>POST /contas/{id}/depositar</code></p>
+	                <p><strong>Descrição:</strong> Realiza um depósito em uma conta corrente específica.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>O campo <code>valor</code>é obrigatório e deve ser maior que zero.</li>
+					</ul>
+	                <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "valor": 500.00
+}</pre>
+	
+					<hr>
+	                <h2 id="transferir">Transferir</h2>
+	                <p><strong>Endpoint:</strong> <code>POST /contas/{id}/transferir</code></p>
+	                <p><strong>Descrição:</strong> Realiza uma transferência entre contas correntes.</p>
+					<p><strong>Validações:</strong></p>
+					<ul>
+					    <li>O campo <code>valor</code>é obrigatório e deve ser maior que zero.</li>
+						<li>O campo <code>numeroContaDestino</code>é obrigatório.</li>
+					</ul>
+	                <pre><strong>Exemplo de corpo da requisição:</strong>
+{
+    "valor": 300.00,
+    "numeroContaDestino": 10002,
+}</pre>
+					<hr>
+	            </div>
+	        </div>
+			
+			<!-- Endpoints - Transação -->
+	        <div class="expandable">
+	            <h2 onclick="toggleExpandableContent('transacao-content', this)">Transação<span class="arrow rotate">&#9662;</span></h2>
+	            <div id="transacao-content" class="expandable-content">
+	                <h3 id="extrato">Extrato Geral</h3>
+	                <p><strong>Endpoint:</strong> <code>GET /transacoes/extrato-geral</code></p>
+	                <p><strong>Descrição:</strong> Retorna o extrato geral de todas as transações.</p>
+	                <pre>Exemplo de resposta:
+[
+    {
+        "id": 1,
+        "contaId": 1,
+        "tipo": "SAQUE",
+        "valor": 200.00,
+        "data": "2024-08-13T12:34:56"
+    },
+    {
+        "id": 2,
+        "contaId": 1,
+        "tipo": "DEPOSITO",
+        "valor": 500.00,
+        "data": "2024-08-12T10:00:00"
+    }
+]</pre>
+					<hr>
+	                <h3 id="extrato-mensal">Extrato Mensal</h3>
+	                <p><strong>Endpoint:</strong> <code>GET /transacoes/extrato-mensal/{mes}</code></p>
+	                <p><strong>Descrição:</strong> Retorna o extrato das transações de um mês específico.</p>
+	                <pre>Exemplo de resposta:
+[
+    {
+        "id": 3,
+        "contaId": 2,
+        "tipo": "TRANSFERENCIA",
+        "valor": 300.00,
+        "data": "2024-07-15T09:00:00"
+    }
+]</pre>
+
+					<hr>
+	                <h3 id="extrato-anual">Extrato Anual</h3>
+	                <p><strong>Endpoint:</strong> <code>GET /transacoes/extrato-anual/{ano}</code></p>
+	                <p><strong>Descrição:</strong> Retorna o extrato das transações de um ano específico.</p>
+	                <pre>Exemplo de resposta:
+[
+    {
+        "id": 4,
+        "contaId": 1,
+        "tipo": "SAQUE",
+        "valor": 100.00,
+        "data": "2024-01-10T11:00:00"
+    }
+]</pre>
+
+					<hr>
+	                <h3 id="extrato-filtrado">Extrato Filtrado</h3>
+	                <p><strong>Endpoint:</strong> <code>GET /transacoes/extrato-filtrado</code></p>
+	                <p><strong>Descrição:</strong> Retorna o extrato das transações filtradas por tipo e/ou período.</p>
+	                <pre>Exemplo de corpo da requisição:
+{
+    "tipo": "DEPOSITO",
+    "dataInicio": "2024-01-01",
+    "dataFim": "2024-08-13"
+}</pre>
+	            </div>
+	        </div>
+			
+			
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Acc Bank &copy; 2024. Todos os direitos reservados. <a href="https://www.accbankbrasil.com.br">www.accbankbrasil.com.br</a></p>
+    </div>
+
+    <script>
+        function toggleExpandableContent(id) {
+            const content = document.getElementById(id);
+            const arrow = content.previousElementSibling.querySelector('.arrow');
+            content.classList.toggle('show');
+            arrow.classList.toggle('rotate');
+        }
+    </script>
+
+</body>
+</html>
