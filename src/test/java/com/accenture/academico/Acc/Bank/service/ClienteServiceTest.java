@@ -27,6 +27,7 @@ import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoExc
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 
 @DisplayName("Testes do service de Clientes")
@@ -40,6 +41,9 @@ class ClienteServiceTest {
     
     @Mock
     private AgenciaService agenciaService;
+    
+    @Mock
+    private ContaCorrenteService contaCorrenteService;
 
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
@@ -48,10 +52,12 @@ class ClienteServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        Agencia agencia = new Agencia(1L, "Agencia 1", "Endereco 1", "123456789", null, null);
-        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null, null, null, agencia);
-        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "8355554444", agencia.getId());
-        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone());
+        Agencia agencia = new Agencia(1L, "Agencia 1", "Endereco 1", "83123456789", null, null);
+        ContaCorrente conta = new ContaCorrente();
+        conta.setId(1L);
+        cliente = new Cliente(1L, "Cliente 1", "123.456.789-10", "8311118888", "cliente1@email.com", null, null, conta, agencia);
+        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "83955554444", "joao@email.com", agencia.getId());
+        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone(), clienteRequestDTO.getEmail());
     }
 
     @Test
@@ -102,7 +108,7 @@ class ClienteServiceTest {
     @Test
     void testAtualizarCliente_Sucesso() {
         // Arrange
-        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente 1", "88615266473", "98886-7878", null, null, null, null);
+        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente Atualizado 1", "886.152.664-73", "98886-7878", "emailnovo@email.com", null, null, null, null);
 
         when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);
@@ -158,6 +164,7 @@ class ClienteServiceTest {
         // Arrange
         when(clienteRepository.findById(anyLong())).thenReturn(Optional.of(cliente));
         doNothing().when(clienteRepository).delete(cliente);
+        doNothing().when(contaCorrenteService).removerContaCorrente(anyLong());
 
         // Act
         clienteService.removerCliente(1L);

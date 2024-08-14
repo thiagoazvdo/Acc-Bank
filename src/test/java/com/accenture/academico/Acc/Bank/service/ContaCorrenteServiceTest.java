@@ -56,8 +56,8 @@ class ContaCorrenteServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222", null, null);
-        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null, null, null, agencia);
+        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "83933332222", null, null);
+        cliente = new Cliente(1L, "Raphael Agra", "111.222.333-45", "83988888888", "raphael@email.com", null, null, null, agencia);
         
         conta = new ContaCorrente(cliente);
         conta.setId(1L);

@@ -20,6 +20,7 @@ class ClienteTest {
 		assertNull(clienteNovo.getNome());
 		assertNull(clienteNovo.getCpf());
 		assertNull(clienteNovo.getTelefone());
+		assertNull(clienteNovo.getEmail());
 		assertNull(clienteNovo.getDataCriacao());
 	    assertNull(clienteNovo.getDataAtualizacao());
 		assertNull(clienteNovo.getContaCorrente());
@@ -34,16 +35,18 @@ class ClienteTest {
 
 		clienteNovo.setId(2L);
 		clienteNovo.setNome("João Silva");
-		clienteNovo.setCpf("12345678901");
-		clienteNovo.setTelefone("1111-8888");
+		clienteNovo.setCpf("123.456.789-01");
+		clienteNovo.setTelefone("8311118888");
+		clienteNovo.setEmail("joao@email.com");
 		clienteNovo.setDataCriacao(data);
 		clienteNovo.setDataAtualizacao(data);
 		clienteNovo.setContaCorrente(conta);
 
 		assertEquals(2L, clienteNovo.getId());
 		assertEquals("João Silva", clienteNovo.getNome());
-		assertEquals("12345678901", clienteNovo.getCpf());
-		assertEquals("1111-8888", clienteNovo.getTelefone());
+		assertEquals("123.456.789-01", clienteNovo.getCpf());
+		assertEquals("8311118888", clienteNovo.getTelefone());
+		assertEquals("joao@email.com", clienteNovo.getEmail());
 		assertEquals(data, clienteNovo.getDataCriacao());
 		assertEquals(data, clienteNovo.getDataAtualizacao());
 		assertEquals(conta, clienteNovo.getContaCorrente());
@@ -55,14 +58,14 @@ class ClienteTest {
 		Cliente cliente1 = new Cliente();
 		cliente1.setId(1L);
 		cliente1.setNome("João Silva");
-		cliente1.setCpf("12345678901");
-		cliente1.setTelefone("1111-8888");
+		cliente1.setCpf("123.456.789-01");
+		cliente1.setTelefone("8311118888");
 
 		Cliente cliente2 = new Cliente();
 		cliente2.setId(1L);
 		cliente2.setNome("João Silva");
-		cliente2.setCpf("12345678901");
-		cliente2.setTelefone("1111-8888");
+		cliente2.setCpf("123.456.789-01");
+		cliente2.setTelefone("8311118888");
 
 		assertEquals(cliente1, cliente2);
 
@@ -70,8 +73,8 @@ class ClienteTest {
 		Cliente cliente3 = new Cliente();
 		cliente3.setId(2L);
 		cliente3.setNome("João Silva");
-		cliente3.setCpf("12345678901");
-		cliente3.setTelefone("1111-8888");
+		cliente3.setCpf("123.456.789-01");
+		cliente3.setTelefone("8311118888");
 
 		assertNotEquals(cliente1, cliente3);
 		
@@ -85,12 +88,12 @@ class ClienteTest {
 	@Test
     void testEqualsNulo() {
         // Teste de igualdade quando ambos os IDs são null
-		Cliente cliente1 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null, null);
-		Cliente cliente2 = new Cliente(null, "João Silva", "12345678901", "1111-8888", null, null, null, null);
+		Cliente cliente1 = new Cliente(null, "João Silva", "123.456.789-01", "8311118888", "joao@email.com", null, null, null, null);
+		Cliente cliente2 = new Cliente(null, "João Silva", "123.456.789-01", "8311118888", "joao@email.com", null, null, null, null);
         assertEquals(cliente1, cliente2);
 
         // Teste de desigualdade quando um ID é null e o outro não
-        Cliente cliente3 = new Cliente(1L, "João Silva", "12345678901", "1111-8888", null, null, null, null);
+        Cliente cliente3 = new Cliente(1L, "João Silva", "123.456.789-01", "8311118888", "joao@email.com", null, null, null, null);
         assertNotEquals(cliente1, cliente3);
     }
 
@@ -99,8 +102,8 @@ class ClienteTest {
 		Cliente cliente1 = new Cliente();
 		cliente1.setId(1L);
 		cliente1.setNome("João Silva");
-		cliente1.setCpf("12345678901");
-		cliente1.setTelefone("1111-8888");
+		cliente1.setCpf("123.456.789-01");
+		cliente1.setTelefone("8311118888");
 
 		// Criar uma subclasse de Cliente que retorna false para canEqual
 		Cliente clienteSubclass = new Cliente() {
@@ -111,8 +114,8 @@ class ClienteTest {
 		};
 		clienteSubclass.setId(1L);
 		clienteSubclass.setNome("João Silva");
-		clienteSubclass.setCpf("12345678901");
-		clienteSubclass.setTelefone("1111-8888");
+		clienteSubclass.setCpf("123.456.789-01");
+		clienteSubclass.setTelefone("8311118888");
 
 		// O equals deve retornar false quando canEqual retornar false
 		assertNotEquals(cliente1, clienteSubclass);
@@ -124,14 +127,14 @@ class ClienteTest {
 		Cliente cliente1 = new Cliente();
 		cliente1.setId(1L);
 		cliente1.setNome("João Silva");
-		cliente1.setCpf("12345678901");
-		cliente1.setTelefone("1111-8888");
+		cliente1.setCpf("123.456.789-01");
+		cliente1.setTelefone("8311118888");
 
 		Cliente cliente2 = new Cliente();
 		cliente2.setId(1L);
 		cliente2.setNome("João Silva");
-		cliente2.setCpf("12345678901");
-		cliente2.setTelefone("1111-8888");
+		cliente2.setCpf("123.456.789-01");
+		cliente2.setTelefone("8311118888");
 
 		assertEquals(cliente1.hashCode(), cliente2.hashCode());
 
@@ -139,8 +142,8 @@ class ClienteTest {
 		Cliente cliente3 = new Cliente();
 		cliente3.setId(2L);
 		cliente3.setNome("João Silva");
-		cliente3.setCpf("12345678901");
-		cliente3.setTelefone("1111-8888");
+		cliente3.setCpf("123.456.789-01");
+		cliente3.setTelefone("8311118888");
 
 		assertNotEquals(cliente1.hashCode(), cliente3.hashCode());
 	}

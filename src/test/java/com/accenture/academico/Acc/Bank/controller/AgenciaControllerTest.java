@@ -136,9 +136,9 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
             );
 
         }
@@ -164,11 +164,10 @@ class AgenciaControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertEquals(3, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
             );
         }
         
@@ -192,7 +191,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -216,7 +215,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -240,7 +239,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
     }
@@ -296,9 +295,9 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
             );
         }
         
@@ -323,11 +322,10 @@ class AgenciaControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertEquals(3, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
             );
         }
         
@@ -351,7 +349,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -375,7 +373,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -399,7 +397,7 @@ class AgenciaControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
     }
