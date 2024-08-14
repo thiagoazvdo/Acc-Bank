@@ -2,7 +2,7 @@ package com.accenture.academico.Acc.Bank.handler;
 
 import java.util.List;
 
-import com.accenture.academico.Acc.Bank.exception.BancoException;
+import com.accenture.academico.Acc.Bank.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class ResponseError {
     	this.message = message;
     }
     
-    public ResponseError(BancoException bancoException) {
-    	this(bancoException.getMessage());
+    public ResponseError(NegocioException negocioException) {
+    	this(negocioException.getMessage());
     }
 }
