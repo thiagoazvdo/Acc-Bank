@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisplayName("Testes do controller de Transações")
-class TransacaoControllerTest {
+class ExtratoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

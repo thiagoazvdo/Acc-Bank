@@ -21,10 +21,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
 
+@Tag(name = "Conta Corrente")
 @RestController
 @RequestMapping(value = "/contas-correntes", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ContaCorrenteController {

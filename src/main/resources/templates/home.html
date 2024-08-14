@@ -171,7 +171,7 @@
 
             <h1>URL Base</h1>
 			<p>As requisições são feitas em uma URL base sob protocolo HTTPS.</p>
-            <p><strong>URL:</strong> <code>https://api.accbankbrasil.com.br/</code></p>
+            <p><strong>URL:</strong> <code th:text="${serverUrl}"></code></p>
             
             <!--<h1>Autenticação</h1>
             <p>A autenticação é feita por meio de tokens JWT (JSON Web Tokens). Você precisa incluir o token no cabeçalho de cada requisição.</p>
@@ -182,7 +182,7 @@ Authorization: Bearer {seu_token_aqui}
             <h1 id="swagger">Swagger</h1>
             <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
             <p>O Swagger pode ser acessado pelo seguinte link:</p>
-            <p><code><a href="https://api.accbankbrasil.com.br/swagger-ui/index.html#/" target="_blank">https://api.accbankbrasil.com.br/swagger-ui/index.html#/</a></code></p>
+            <p><code><a th:href="@{${serverUrl} + '/swagger-ui/index.html#/'}" target="_blank" th:text="@{${serverUrl} + '/swagger-ui/index.html#/'}"></a></code></p>
 
 			<h1 id="swagger">Documentação dos Endpoints</h1>
             <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
