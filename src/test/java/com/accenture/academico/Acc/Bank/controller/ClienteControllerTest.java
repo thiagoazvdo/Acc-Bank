@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -29,6 +30,7 @@ import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
 import com.accenture.academico.Acc.Bank.handler.ResponseError;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
@@ -69,8 +71,8 @@ public class ClienteControllerTest {
     void setUp() {
         agencia = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
         
-        clienteRequestDTO = new ClienteRequestDTO("Cliente 1", "11122233345", "83988129070", agencia.getId());
-        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone());
+        clienteRequestDTO = new ClienteRequestDTO("Cliente 1", "111.222.333-45", "83988129070", "cliente1@email.com", agencia.getId());
+        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone(), clienteRequestDTO.getEmail());
         cliente = clienteService.criarCliente(clienteRequestDTO);
 
     }
@@ -90,8 +92,9 @@ public class ClienteControllerTest {
         void quandoCriarClienteValido() throws Exception {
             // Arrange
         	clienteRequestDTO.setNome("Raphael");
-        	clienteRequestDTO.setCpf("77788899900");
+        	clienteRequestDTO.setCpf("777.888.999-00");
         	clienteRequestDTO.setTelefone("83911112222");
+        	clienteRequestDTO.setEmail("raphael@email.com");
         	
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
@@ -108,6 +111,7 @@ public class ClienteControllerTest {
             assertEquals(clienteRequestDTO.getNome(), resultado.getNome());
             assertEquals(clienteRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clienteRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(clienteRequestDTO.getEmail(), resultado.getEmail());
             assertNotNull(resultado.getContaCorrente());
             assertNotNull(resultado.getDataCriacao());
             assertNotNull(resultado.getDataAtualizacao());
@@ -138,7 +142,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um cliente com telefone ja cadastrado")
         void quandoCriarClienteComTelefoneJaCadastrado() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("66655544499");
+        	clienteRequestDTO.setCpf("666.555.444-99");
         	
             // Act
         	String responseJsonString = mockMvc.perform(post("/clientes")
@@ -162,6 +166,7 @@ public class ClienteControllerTest {
         	clienteRequestDTO.setNome(null);
         	clienteRequestDTO.setCpf(null);
         	clienteRequestDTO.setTelefone(null);
+        	clienteRequestDTO.setEmail(null);
         	clienteRequestDTO.setIdAgencia(null);
         	
             // Act
@@ -177,11 +182,12 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("idAgencia e obrigatorio"))
+                    () -> assertEquals(5, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("ID da Agencia e obrigatorio."))
             );
         }
         
@@ -192,6 +198,7 @@ public class ClienteControllerTest {
         	clienteRequestDTO.setNome("");
         	clienteRequestDTO.setCpf("");
         	clienteRequestDTO.setTelefone("");
+        	clienteRequestDTO.setEmail("");
         	
             // Act
         	String responseJsonString = mockMvc.perform(post("/clientes")
@@ -206,12 +213,35 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(5, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com CPF invalido")
+        void quandoCriarClienteCpfInvalido() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("00022244466");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
 
@@ -219,7 +249,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um novo cliente com CPF com letras")
         void quandoCriarClienteCpfComLetras() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("cpf22233300");
+        	clienteRequestDTO.setCpf("cpf.222.333-00");
         	
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
@@ -235,7 +265,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -243,7 +273,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um novo cliente com CPF com 12 digitos")
         void quandoCriarClienteCpfCom12Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("000222444666");
+        	clienteRequestDTO.setCpf("000.222.444-666");
         	
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
@@ -259,7 +289,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -267,7 +297,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando criamos um novo cliente com CPF com 10 digitos")
         void quandoCriarClienteCpfCom10Digitos() throws Exception {
             // Arrange
-        	clienteRequestDTO.setCpf("0002224446");
+        	clienteRequestDTO.setCpf("000.222.444-6");
         	
             // Act
             String responseJsonString = mockMvc.perform(post("/clientes")
@@ -283,7 +313,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -307,7 +337,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -331,7 +361,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -355,7 +385,79 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com email invalido 1")
+        void quandoCriarClienteComEmailInvalido1() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setEmail("clienteemail.com");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com email invalido 2")
+        void quandoCriarClienteComEmailInvalido2() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setEmail("client@eemailcom");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando criamos um novo cliente com email invalido 3")
+        void quandoCriarClienteComEmailInvalido3() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setEmail("clienteemailcom");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
             );
         }
     }
@@ -369,8 +471,9 @@ public class ClienteControllerTest {
         void quandoAtualizamosClienteValido() throws Exception {
             // Arrange
     		clientePutRequestDTO.setNome("Cliente Novo");
-    		clientePutRequestDTO.setCpf("12345678901");
+    		clientePutRequestDTO.setCpf("123.456.789-01");
     		clientePutRequestDTO.setTelefone("83988129070");
+    		clientePutRequestDTO.setEmail("emailnovo@gmail.com");
             
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -387,6 +490,7 @@ public class ClienteControllerTest {
             assertEquals(clientePutRequestDTO.getNome(), resultado.getNome());
             assertEquals(clientePutRequestDTO.getCpf(), resultado.getCpf());
             assertEquals(clientePutRequestDTO.getTelefone(), resultado.getTelefone());
+            assertEquals(clientePutRequestDTO.getEmail(), resultado.getEmail());
             assertEquals(cliente.getContaCorrente(), resultado.getContaCorrente());
         }
     	
@@ -418,6 +522,7 @@ public class ClienteControllerTest {
     		clientePutRequestDTO.setNome(null);
     		clientePutRequestDTO.setCpf(null);
     		clientePutRequestDTO.setTelefone(null);
+    		clientePutRequestDTO.setEmail(null);
         	
             // Act
         	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -432,10 +537,11 @@ public class ClienteControllerTest {
             // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
             );
         }
         
@@ -446,6 +552,7 @@ public class ClienteControllerTest {
         	clientePutRequestDTO.setNome("");
         	clientePutRequestDTO.setCpf("");
         	clientePutRequestDTO.setTelefone("");
+        	clientePutRequestDTO.setEmail("");
         	
             // Act
         	String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -458,14 +565,37 @@ public class ClienteControllerTest {
         	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
             
             // Assert
+        	assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(4, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
+                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com CPF invalido")
+        void quandoAtualizamosClienteCpfInvalido() throws Exception {
+            // Arrange
+        	clientePutRequestDTO.setCpf("00022244466");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(5, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio")),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos e obrigatorio"))
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
 
@@ -473,7 +603,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com letras")
         void quandoAtualizamosClienteCpfComLetras() throws Exception {
             // Arrange
-        	clientePutRequestDTO.setCpf("cpf22233300");
+        	clientePutRequestDTO.setCpf("cpf.222.333-00");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -489,7 +619,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -497,7 +627,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com 12 digitos")
         void quandoAtualizamosClienteCpfCom12Digitos() throws Exception {
             // Arrange
-        	clientePutRequestDTO.setCpf("000222444666");
+        	clientePutRequestDTO.setCpf("000.222.444-666");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -513,7 +643,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -521,7 +651,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando atualizamos um cliente com CPF com 10 digitos")
         void quandoAtualizamosClienteCpfCom10Digitos() throws Exception {
             // Arrange
-        	clientePutRequestDTO.setCpf("0002224446");
+        	clientePutRequestDTO.setCpf("000.222.444-6");
         	
             // Act
             String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
@@ -537,7 +667,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Cpf deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -561,7 +691,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -585,7 +715,7 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
             );
         }
         
@@ -609,7 +739,79 @@ public class ClienteControllerTest {
             assertAll(
                     () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos"))
+                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com email invalido 1")
+        void quandoAtualizamosClienteComEmailInvalido1() throws Exception {
+            // Arrange
+        	clientePutRequestDTO.setEmail("emailnovoemail.com");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com email invalido 2")
+        void quandoAtualizamosClienteComEmailInvalido2() throws Exception {
+            // Arrange
+        	clientePutRequestDTO.setEmail("emailnovo@emailcom");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+            );
+        }
+        
+        @Test
+        @DisplayName("Quando atualizamos um cliente com telefone com email invalido 3")
+        void quandoAtualizamosClienteComEmailInvalido3() throws Exception {
+            // Arrange
+        	clientePutRequestDTO.setEmail("emailnovoemailcom");
+        	
+            // Act
+            String responseJsonString = mockMvc.perform(put("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clientePutRequestDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+            
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals(1, resultado.getErrors().size()),
+                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
             );
         }
     }
@@ -699,6 +901,27 @@ public class ClienteControllerTest {
             // Assert
             assertEquals(exception.getMessage(), resultado.getMessage());
         }
+        
+        @Test
+        @DisplayName("Quando removemos um cliente que possui conta com saldo")
+        void quandoRemovemosClienteContaComSaldo() throws Exception {
+            // Arrange
+        	cliente.getContaCorrente().depositar(BigDecimal.valueOf(10));
+        	clienteRepository.save(cliente);
+
+            // Act
+            String responseJsonString = mockMvc.perform(delete("/clientes/" + cliente.getId())
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isConflict())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            ContaCorrenteComSaldoException exception = new ContaCorrenteComSaldoException();
+        	
+            // Assert
+            assertEquals(exception.getMessage(), resultado.getMessage());
+        }
 
     }
 
@@ -710,7 +933,7 @@ public class ClienteControllerTest {
         @DisplayName("Quando listamos todos cliente salvos")
         void quandoListamosTodosClientes() throws Exception {
             // Arrange
-        	ClienteRequestDTO clienteRequestDTO2 = new ClienteRequestDTO("Cliente 2", "12345678810", "83987654321", agencia.getId());
+        	ClienteRequestDTO clienteRequestDTO2 = new ClienteRequestDTO("Cliente 2", "12345678810", "83987654321", "cliente2@email.com", agencia.getId());
             Cliente cliente2 = clienteService.criarCliente(clienteRequestDTO2);
         	
             // Act

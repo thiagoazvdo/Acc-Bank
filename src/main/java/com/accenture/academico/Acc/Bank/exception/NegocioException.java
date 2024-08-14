@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import lombok.Getter;
 
 @Getter
-public class BancoException extends RuntimeException {
+public class NegocioException extends RuntimeException {
     
 	protected HttpStatus httpStatus;
 
-    public BancoException(String message) {
+    public NegocioException(String message) {
         super(message);
     }
 }

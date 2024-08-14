@@ -1,7 +1,10 @@
 package com.accenture.academico.Acc.Bank.dto;
 
+import com.accenture.academico.Acc.Bank.validation.ValidCPF;
+import com.accenture.academico.Acc.Bank.validation.ValidEmail;
+import com.accenture.academico.Acc.Bank.validation.ValidTelefone;
+
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,11 +19,15 @@ public class ClientePutRequestDTO {
 	@NotBlank
 	private String nome;
 
+	@ValidCPF
 	@NotBlank
-	@Pattern(regexp = "\\d{11}", message = "Cpf deve ter exatamente 11 digitos numericos")
-	private String cpf;
+    private String cpf;
 
+	@ValidTelefone
 	@NotBlank
-	@Pattern(regexp = "\\d{11}", message = "Telefone deve ter exatamente 11 digitos numericos")
 	private String telefone;
+	
+	@ValidEmail
+    @NotBlank
+    private String email;
 }

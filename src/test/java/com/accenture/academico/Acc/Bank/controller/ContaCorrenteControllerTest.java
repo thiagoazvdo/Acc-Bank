@@ -2,14 +2,15 @@ package com.accenture.academico.Acc.Bank.controller;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
@@ -38,6 +38,7 @@ import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 import com.accenture.academico.Acc.Bank.repository.ContaCorrenteRepository;
 import com.accenture.academico.Acc.Bank.service.ClienteService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
@@ -79,8 +80,8 @@ class ContaCorrenteControllerTest {
     void setUp() {
     	agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
 
-    	clienteDto1 = new ClienteRequestDTO("Thiago", "11122233345", "83911112222", agencia1.getId());
-    	clienteDto2 = new ClienteRequestDTO("Jessika", "07830898765", "83944445555", agencia1.getId());
+    	clienteDto1 = new ClienteRequestDTO("Thiago", "11122233345", "83911112222", "cliente1@email.com", agencia1.getId());
+    	clienteDto2 = new ClienteRequestDTO("Jessika", "07830898765", "83944445555", "cliente2@email.com", agencia1.getId());
     	
     	cliente1 = clienteService.criarCliente(clienteDto1);
     	cliente2 = clienteService.criarCliente(clienteDto2);
@@ -702,5 +703,46 @@ class ContaCorrenteControllerTest {
                 assertEquals(exception.getMessage(), resultado.getMessage());
             }
         }
+        
+    @Nested
+    @DisplayName("Conjunto casos de teste do endpoint Listar")
+    class ContaCorrenteFluxosBasicosListar {
+
+        private ContaCorrente conta2;
+
+        @BeforeEach
+        void setUp() {
+            conta2 = cliente2.getContaCorrente();
+        }
+
+        @Test
+        @DisplayName("Quando realizamos uma transferencia valida")
+        void quandoListamosTodasContas() throws Exception {
+            // Arrange
+
+            // Act
+            String responseJsonString = mockMvc.perform(get("/contas-correntes")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            List<ContaCorrente> resultado = objectMapper.readValue(responseJsonString, new TypeReference<List<ContaCorrente>>() {});
+            
+            // Assert
+            assertEquals(2, resultado.size());
+            assertEquals(conta1.getId(), resultado.get(0).getId());
+            assertEquals(conta1.getNumero(), resultado.get(0).getNumero());
+            assertEquals(0, conta1.getSaldo().compareTo(resultado.get(0).getSaldo()));
+//            assertEquals(conta1.getCliente(), resultado.get(0).getCliente());
+            assertNotNull(resultado.get(0).getDataCriacao());
+            
+            assertEquals(conta2.getId(), resultado.get(1).getId());
+            assertEquals(conta2.getNumero(), resultado.get(1).getNumero());
+            assertEquals(0, conta2.getSaldo().compareTo(resultado.get(1).getSaldo()));
+//            assertEquals(conta2.getCliente(), resultado.get(1).getCliente());
+            assertNotNull(resultado.get(1).getDataCriacao());
+        }
     }
+}
 

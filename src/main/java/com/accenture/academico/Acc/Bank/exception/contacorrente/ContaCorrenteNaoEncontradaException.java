@@ -2,9 +2,9 @@ package com.accenture.academico.Acc.Bank.exception.contacorrente;
 
 import org.springframework.http.HttpStatus;
 
-import com.accenture.academico.Acc.Bank.exception.BancoException;
+import com.accenture.academico.Acc.Bank.exception.NegocioException;
 
-public class ContaCorrenteNaoEncontradaException extends BancoException{
+public class ContaCorrenteNaoEncontradaException extends NegocioException{
 
 	public ContaCorrenteNaoEncontradaException(Long idConta) {
 		super(String.format("Nao existe uma conta corrente cadastrada com o id %d", idConta));

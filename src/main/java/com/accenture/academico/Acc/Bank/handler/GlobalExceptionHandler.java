@@ -1,6 +1,5 @@
 package com.accenture.academico.Acc.Bank.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.accenture.academico.Acc.Bank.exception.BancoException;
+import com.accenture.academico.Acc.Bank.exception.NegocioException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,10 +30,10 @@ public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    @ExceptionHandler(BancoException.class)
-    public ResponseEntity<ResponseError> onBusinessException(BancoException bancoException) {
-    	ResponseError responseError = new ResponseError(bancoException);
-    	return ResponseEntity.status(bancoException.getHttpStatus()).body(responseError);
+    @ExceptionHandler(NegocioException.class)
+    public ResponseEntity<ResponseError> onBusinessException(NegocioException negocioException) {
+    	ResponseError responseError = new ResponseError(negocioException);
+    	return ResponseEntity.status(negocioException.getHttpStatus()).body(responseError);
     }
 
     /*

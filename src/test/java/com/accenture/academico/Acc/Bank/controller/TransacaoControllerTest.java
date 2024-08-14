@@ -72,7 +72,7 @@ class TransacaoControllerTest {
     void setUp() {
         Agencia agencia1 = agenciaRepository.save(new Agencia(null, "Agencia 1", "Endereco 1", "123456789", null, null));
         
-        ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Raphael Agra", "11122233345", "83988129070", agencia1.getId());
+        ClienteRequestDTO clienteRequestDTO = new ClienteRequestDTO("Raphael Agra", "111.222.333-45", "83988129070", "raphael@email.com", agencia1.getId());
         Cliente cliente = clienteService.criarCliente(clienteRequestDTO);
 
         conta = cliente.getContaCorrente();
