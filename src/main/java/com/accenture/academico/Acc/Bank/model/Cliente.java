@@ -29,11 +29,14 @@ public class Cliente {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
 
     @Column(nullable = false, unique = true, length = 11)
     private String telefone;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
 
     @Column(name = "data_criacao", nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")

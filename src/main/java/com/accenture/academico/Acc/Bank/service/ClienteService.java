@@ -21,6 +21,9 @@ public class ClienteService {
 
     @Autowired
     private AgenciaService agenciaService;
+    
+    @Autowired
+    private ContaCorrenteService contaCorrenteService;
 
     @Autowired
     private ClienteRepository clienteRepository;
@@ -53,7 +56,10 @@ public class ClienteService {
     }
 
     public void removerCliente(Long id) {
-        clienteRepository.delete(buscarCliente(id));
+    	Cliente cliente = buscarCliente(id);
+    	contaCorrenteService.removerContaCorrente(cliente.getContaCorrente().getId());
+    	
+        clienteRepository.delete(cliente);
     }
 
     public List<Cliente> listarClientes(){
