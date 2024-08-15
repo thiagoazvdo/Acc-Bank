@@ -16,4 +16,6 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long>{
 	
 	List<Transacao> findByContaCorrenteAndDataHoraBetween(ContaCorrente contaCorrente, LocalDateTime dataInicio, LocalDateTime dataFim);
 	
+	void deleteByContaCorrente(ContaCorrente contaCorrente);
+	
 }

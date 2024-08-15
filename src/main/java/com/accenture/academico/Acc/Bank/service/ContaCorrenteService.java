@@ -40,12 +40,14 @@ public class ContaCorrenteService {
 		return contaCorrenteRepository.findByNumero(numeroConta).orElseThrow(() -> new ContaCorrenteNaoEncontradaException(numeroConta));
 	}
 	
+	@Transactional
 	public void removerContaCorrente(Long id) {
 		ContaCorrente conta = buscarContaCorrente(id);
 		
 		if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) 
 			throw new ContaCorrenteComSaldoException();
 		
+		transacaoRepository.deleteByContaCorrente(conta);
 		contaCorrenteRepository.delete(conta);
 	}
 	
@@ -55,7 +57,7 @@ public class ContaCorrenteService {
 		verificaSeContaPossuiSaldoSuficiente(conta, saqueDTO.getValor());
 		conta.sacar(saqueDTO.getValor());
 		
-		registrarTransacao(conta, null, TipoTransacao.SAQUE, saqueDTO.getValor(), saqueDTO.getDescricao());
+		registrarTransacao(conta, TipoTransacao.SAQUE, saqueDTO.getValor(), saqueDTO.getDescricao());
 		contaCorrenteRepository.save(conta);
     }
 
@@ -64,7 +66,7 @@ public class ContaCorrenteService {
     	ContaCorrente conta = buscarContaCorrente(id);
     	conta.depositar(depositoDTO.getValor());
     	
-    	registrarTransacao(conta, null, TipoTransacao.DEPOSITO, depositoDTO.getValor(), depositoDTO.getDescricao());
+    	registrarTransacao(conta, TipoTransacao.DEPOSITO, depositoDTO.getValor(), depositoDTO.getDescricao());
     	contaCorrenteRepository.save(conta);
     }
 
@@ -83,14 +85,13 @@ public class ContaCorrenteService {
         contaCorrenteRepository.save(contaOrigem);
         contaCorrenteRepository.save(contaDestino);
         
-        registrarTransacao(contaOrigem, contaDestino, TipoTransacao.TRANSFERENCIA_ENVIADA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
-        registrarTransacao(contaDestino, contaOrigem, TipoTransacao.TRANSFERENCIA_RECEBIDA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
+        registrarTransacao(contaOrigem, TipoTransacao.TRANSFERENCIA_ENVIADA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
+        registrarTransacao(contaDestino, TipoTransacao.TRANSFERENCIA_RECEBIDA, transferenciaDTO.getValor(), transferenciaDTO.getDescricao());
 	}
     
-    private void registrarTransacao(ContaCorrente contaOrigem, ContaCorrente contaDestino, TipoTransacao tipo, BigDecimal valor, String descricao) {
+    private void registrarTransacao(ContaCorrente contaOrigem, TipoTransacao tipo, BigDecimal valor, String descricao) {
         Transacao transacao = new Transacao();
         transacao.setContaCorrente(contaOrigem);
-        transacao.setContaCorrenteRelacionada(contaDestino);
         transacao.setTipo(tipo);
         transacao.setValor(valor);
         transacao.setDescricao(descricao);

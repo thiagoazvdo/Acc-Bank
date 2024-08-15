@@ -183,12 +183,11 @@ Authorization: Bearer {seu_token_aqui}
             <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
             <p>O Swagger pode ser acessado pelo seguinte link:</p>
             <p><code><a th:href="@{${serverUrl} + '/swagger-ui/index.html#/'}" target="_blank" th:text="@{${serverUrl} + '/swagger-ui/index.html#/'}"></a></code></p>
-
+			<!--
 			<h1 id="swagger">Documentação dos Endpoints</h1>
             <p>A API possui uma interface Swagger, onde é possível explorar todos os endpoints disponíveis e testar as requisições diretamente.</p>
             <p>O Swagger pode ser acessado pelo seguinte link:</p>
 			
-            <!-- Endpoints - Agência -->
             <div class="expandable">
                 <h2 onclick="toggleExpandableContent('agencia-content')">Agência<span class="arrow rotate">&#9662;</span></h2>
                 <div id="agencia-content" class="expandable-content">
@@ -271,7 +270,6 @@ Authorization: Bearer {seu_token_aqui}
 			
 			
 							
-	      <!-- Endpoints - Cliente -->
 	        <div class="expandable">
 	            <h2 onclick="toggleExpandableContent('cliente-content', this)">Cliente<span class="arrow rotate">&#9662;</span></h2>
 	            <div id="cliente-content" class="expandable-content">
@@ -347,7 +345,6 @@ Authorization: Bearer {seu_token_aqui}
 	            </div>
 	        </div>
 			
-			 <!-- Endpoints - Conta Corrente -->
 	        <div class="expandable">
 	            <h2 onclick="toggleExpandableContent('conta-content', this)">Conta Corrente<span class="arrow rotate">&#9662;</span></h2>
 	            <div id="conta-content" class="expandable-content">
@@ -427,7 +424,6 @@ Authorization: Bearer {seu_token_aqui}
 	            </div>
 	        </div>
 			
-			<!-- Endpoints - Transação -->
 	        <div class="expandable">
 	            <h2 onclick="toggleExpandableContent('transacao-content', this)">Transação<span class="arrow rotate">&#9662;</span></h2>
 	            <div id="transacao-content" class="expandable-content">
@@ -492,7 +488,7 @@ Authorization: Bearer {seu_token_aqui}
     "dataFim": "2024-08-13"
 }</pre>
 	            </div>
-	        </div>
+	        </div>-->
 			
 			
         </div>

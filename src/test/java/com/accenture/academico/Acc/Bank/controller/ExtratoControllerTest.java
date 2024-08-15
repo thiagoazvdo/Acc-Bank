@@ -77,12 +77,12 @@ class ExtratoControllerTest {
 
         conta = cliente.getContaCorrente();
         
-        transacao1 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), null, "Deposito Inicial", conta, null));
-        transacao2 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(5.00), null, "Saque 1", conta, null));
-        transacao3 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(6.00), null, "Deposito 2", conta, null));
-        transacao4 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(7.00), null, "Saque 2", conta, null));
-        transacao5 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(8.00), null, "Deposito 3", conta, null));
-        transacao6 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(9.00), null, "Saque 3", conta, null));
+        transacao1 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(100.00), null, "Deposito Inicial", conta));
+        transacao2 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(5.00), null, "Saque 1", conta));
+        transacao3 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(6.00), null, "Deposito 2", conta));
+        transacao4 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(7.00), null, "Saque 2", conta));
+        transacao5 = transacaoRepository.save(new Transacao(null, TipoTransacao.DEPOSITO, BigDecimal.valueOf(8.00), null, "Deposito 3", conta));
+        transacao6 = transacaoRepository.save(new Transacao(null, TipoTransacao.SAQUE, BigDecimal.valueOf(9.00), null, "Saque 3", conta));
 
         transacao1.setDataHora(LocalDateTime.of(2024, 01, 31, 0, 0));
         transacao2.setDataHora(LocalDateTime.of(2023, 02, 05, 0, 0));
