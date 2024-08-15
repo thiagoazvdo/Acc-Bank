@@ -6,7 +6,7 @@ import com.accenture.academico.Acc.Bank.exception.NegocioException;
 public class AgenciaNaoEncontradaException extends NegocioException {
 	
     public AgenciaNaoEncontradaException(Long id) {
-    	super(String.format("Nao existe uma agencia cadastrada com o id %d", id));
+    	super(String.format("Não existe uma agencia cadastrada com o id %d.", id));
         this.httpStatus = HttpStatus.NOT_FOUND;
     }
 }

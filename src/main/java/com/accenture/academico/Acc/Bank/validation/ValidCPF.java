@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidCPF {
-    String message() default "CPF invalido. O formato deve ser 000.000.000-00";
+    String message() default "CPF inválido. O formato deve ser 000.000.000-00";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

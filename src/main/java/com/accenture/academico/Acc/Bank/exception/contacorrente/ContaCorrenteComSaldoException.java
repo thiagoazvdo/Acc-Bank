@@ -7,7 +7,7 @@ import com.accenture.academico.Acc.Bank.exception.NegocioException;
 public class ContaCorrenteComSaldoException extends NegocioException{
 
 	public ContaCorrenteComSaldoException() {
-		super("Nao eh possivel remover uma conta que possui saldo");
+		super("Não é possível remover uma conta que possui saldo.");
         this.httpStatus = HttpStatus.CONFLICT;
 	}
 }

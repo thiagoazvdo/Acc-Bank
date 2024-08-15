@@ -7,7 +7,7 @@ import com.accenture.academico.Acc.Bank.exception.NegocioException;
 public class SaldoInsuficienteException extends NegocioException{
 
 	public SaldoInsuficienteException() {
-		super("Saldo insuficiente para realizar essa operacao");
+		super("Saldo insuficiente para realizar essa operação.");
         this.httpStatus = HttpStatus.BAD_REQUEST;
 	}
 }

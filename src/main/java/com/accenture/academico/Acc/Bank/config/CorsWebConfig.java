@@ -1,5 +1,7 @@
 package com.accenture.academico.Acc.Bank.config;
 
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -22,9 +24,13 @@ public class CorsWebConfig implements Filter,WebMvcConfigurer {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) {
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws UnsupportedEncodingException {
       HttpServletResponse response = (HttpServletResponse) res;
       HttpServletRequest request = (HttpServletRequest) req;
+      
+      request.setCharacterEncoding("UTF-8");
+      response.setCharacterEncoding("UTF-8");
+      
       System.out.println("WebConfig; "+request.getRequestURI());
       response.setHeader("Access-Control-Allow-Origin", "*");
       response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");

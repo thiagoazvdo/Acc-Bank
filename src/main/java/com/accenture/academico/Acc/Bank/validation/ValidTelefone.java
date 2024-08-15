@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidTelefone {
-    String message() default "Telefone deve ter exatamente 11 digitos numericos.";
+    String message() default "Telefone deve ter exatamente 11 dígitos numéricos.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
