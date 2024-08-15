@@ -27,7 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaJaCadastradaException;
-import com.accenture.academico.Acc.Bank.handler.ResponseError;
+import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
+import com.accenture.academico.Acc.Bank.exceptionhandler.ResponseError;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -111,7 +112,7 @@ class AgenciaControllerTest {
             AgenciaJaCadastradaException exception = new AgenciaJaCadastradaException("telefone", agencia.getTelefone());
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
         
         @Test
@@ -134,11 +135,11 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(3, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Endereço da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone da agência não pode estar em branco."))
             );
 
         }
@@ -163,11 +164,11 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(3, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Endereço da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone da agência não pode estar em branco."))
             );
         }
         
@@ -189,9 +190,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -213,9 +214,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -237,9 +238,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
     }
@@ -293,11 +294,11 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(3, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Endereço da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone da agência não pode estar em branco."))
             );
         }
         
@@ -321,11 +322,11 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(3, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Endereco da agencia nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone da agencia nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(3, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Endereço da agência não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone da agência não pode estar em branco."))
             );
         }
         
@@ -347,9 +348,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -371,9 +372,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -395,9 +396,9 @@ class AgenciaControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
     }
@@ -441,9 +442,10 @@ class AgenciaControllerTest {
                 .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            AgenciaNaoEncontradaException exception = new AgenciaNaoEncontradaException(idInexistente);
             
             // Assert
-            assertEquals(String.format("Nao existe uma agencia cadastrada com o id %d", idInexistente) , resultado.getMessage());
+            assertEquals(exception.getMessage() , resultado.getMensagem());
         }
     }
     
@@ -481,9 +483,10 @@ class AgenciaControllerTest {
                 .andReturn().getResponse().getContentAsString();
             
             ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            AgenciaNaoEncontradaException exception = new AgenciaNaoEncontradaException(idInexistente);
             
             // Assert
-            assertEquals(String.format("Nao existe uma agencia cadastrada com o id %d", idInexistente) , resultado.getMessage());
+            assertEquals(exception.getMessage() , resultado.getMensagem());
         }
     }
     

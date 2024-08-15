@@ -1,4 +1,4 @@
-package com.accenture.academico.Acc.Bank.handler;
+package com.accenture.academico.Acc.Bank.exceptionhandler;
 
 import java.util.List;
 
@@ -8,66 +8,84 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.accenture.academico.Acc.Bank.exception.NegocioException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * Define o "manuseador" para quando, de qualquer parte da
-     * Aplicação Web, uma exceção do tipo BancoException
-     * for lançada.
-     * 
-     * @param bancoException
-     * @return ResponseEntity
-     */
     @Autowired
     private MessageSource messageSource;
 
     @ExceptionHandler(NegocioException.class)
-    public ResponseEntity<ResponseError> onBusinessException(NegocioException negocioException) {
+    public ResponseEntity<ResponseError> handleBusinessException(NegocioException negocioException) {
+    	
     	ResponseError responseError = new ResponseError(negocioException);
-    	return ResponseEntity.status(negocioException.getHttpStatus()).body(responseError);
+    	return ResponseEntity.status(responseError.getStatus()).body(responseError);
     }
-
-    /*
-    Daqui, abaixo, seguem os tratamentos dos erros oriundos das
-    validações nos controladores: @Valid (jakarta.validation)
-     */
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseError> onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        BindingResult bindingResult = e.getBindingResult();
-
+    public ResponseEntity<ResponseError> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        
+    	HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    	String mensagem = "Erros de validação encontrados.";
+    	
+    	BindingResult bindingResult = ex.getBindingResult();
         List<String> erros = bindingResult.getFieldErrors().stream()
-                .map(fieldError -> {
-                    return messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
-                })
+                .map(fieldError -> messageSource.getMessage(fieldError, LocaleContextHolder.getLocale()))
                 .toList();
 
-        ResponseError responseError = new ResponseError("Erros de validacao encontrados", erros);
+        ResponseError responseError = new ResponseError(httpStatus, mensagem, erros);
+        return ResponseEntity.status(httpStatus).body(responseError);
+    }
+    
+    @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
+    public ResponseEntity<ResponseError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        
+    	HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    	String mensagem = ex.getLocalizedMessage();
+    	String erro = ex.getName() + " deve ser do tipo " + ex.getRequiredType().getName();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseError);
+        ResponseError responseError = new ResponseError(httpStatus, mensagem, erro);
+        return ResponseEntity.status(httpStatus).body(responseError);
+    }
+    
+    @ExceptionHandler({ HttpMessageNotReadableException.class })
+    public ResponseEntity<ResponseError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        String mensagem = "O corpo da requisição não pode ser lido.";
+        String erro = ex.getMessage();
+
+        ResponseError responseError = new ResponseError(httpStatus, mensagem, erro);
+        return ResponseEntity.status(httpStatus).body(responseError);
     }
 
-    @ExceptionHandler(CannotCreateTransactionException.class)
-    public ResponseEntity<?> tratarConexaoBancoDadosException(CannotCreateTransactionException e) {
-        ResponseError responseError = new ResponseError("Falha na conexao com o banco de dados. Tente novamente mais tarde.");
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
+    @ExceptionHandler({CannotCreateTransactionException.class, DataAccessResourceFailureException.class})
+    public ResponseEntity<ResponseError> handleConexaoBancoDadosException(RuntimeException ex) {
+
+    	HttpStatus httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+    	String mensagem = "Falha na conexão com o banco de dados. Tente novamente mais tarde.";
+    	ex.printStackTrace();
+        ResponseError responseError = new ResponseError(httpStatus, mensagem);
+        return ResponseEntity.status(httpStatus).body(responseError);
     }
 
-    @ExceptionHandler(DataAccessResourceFailureException.class)
-    public ResponseEntity<?> tratarConexaoBancoDadosException(DataAccessResourceFailureException ex) {
-        ResponseError responseError = new ResponseError("Falha na conexao com o banco de dados. Tente novamente mais tarde.");
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(responseError);
-
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<ResponseError> handleAll(Exception ex) {
+    	
+    	HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    	String mensagem = ex.getMessage();
+    	
+    	ResponseError responseError = new ResponseError(httpStatus, mensagem);
+        return ResponseEntity.status(httpStatus).body(responseError);
     }
-
 
 }

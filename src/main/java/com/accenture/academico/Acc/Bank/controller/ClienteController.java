@@ -40,7 +40,7 @@ public class ClienteController {
 	@Operation(summary = "Adiciona um novo cliente.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Cliente criado com sucesso", content = @Content(schema = @Schema(implementation = Cliente.class))),
-	        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))) 
+	        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))) 
 	})
 	@PostMapping
 	public ResponseEntity<Cliente> adicionarCliente(@Valid @RequestBody ClienteRequestDTO clienteRequestDTO) {
@@ -63,7 +63,7 @@ public class ClienteController {
 	@Operation(summary = "Busca um cliente pelo ID.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Cliente retornado com sucesso", content = @Content(schema = @Schema(implementation = Cliente.class))),
-			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Cliente não encontrado\"}"))) 
+			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Cliente não encontrado\"}"))) 
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<Cliente> buscar(@PathVariable Long id) {
@@ -74,8 +74,8 @@ public class ClienteController {
 	@Operation(summary = "Atualiza as informações de um cliente.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))),
-			@ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
-			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Cliente não encontrado\"}")))  
+			@ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
+			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Cliente não encontrado\"}")))  
 	})
 	@PutMapping("/{id}")
 	public ResponseEntity<Cliente> atualizar(@PathVariable Long id,
@@ -87,7 +87,7 @@ public class ClienteController {
 	@Operation(summary = "Remove um cliente pelo ID.")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "204", description = "Cliente removido com sucesso", content = @Content),
-			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Cliente não encontrado\"}"))) 
+			@ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Cliente não encontrado\"}"))) 
 	})
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> remover(@PathVariable Long id) {

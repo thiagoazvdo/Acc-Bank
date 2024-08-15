@@ -37,7 +37,7 @@ public class ExtratoController {
                description = "Retorna todas as transações associadas a uma conta corrente específica.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna uma lista de todas as transações da conta corrente."),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @GetMapping("/{idConta}/extrato")
     public ResponseEntity<List<Transacao>> extrato(@Parameter(description = "ID da conta corrente") @PathVariable Long idConta) {
@@ -49,7 +49,7 @@ public class ExtratoController {
                description = "Retorna as transações de uma conta corrente específica para um determinado mês e ano.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna uma lista de transações do mês especificado."),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @GetMapping("/{idConta}/extrato-mensal")
     public ResponseEntity<List<Transacao>> extratoMensal(
@@ -63,7 +63,7 @@ public class ExtratoController {
                description = "Retorna as transações de uma conta corrente específica para um determinado ano.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna uma lista de transações do ano especificado."),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @GetMapping("/{idConta}/extrato-anual")
     public ResponseEntity<List<Transacao>> extratoAnual(
@@ -77,7 +77,7 @@ public class ExtratoController {
                description = "Retorna as transações de uma conta corrente específica entre duas datas.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna uma lista de transações dentro do intervalo de datas especificado."),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @GetMapping("/{idConta}/extrato-filtrado")
     public ResponseEntity<List<Transacao>> extratoFiltrado(

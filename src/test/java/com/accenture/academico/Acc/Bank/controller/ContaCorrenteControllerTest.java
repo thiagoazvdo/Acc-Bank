@@ -30,7 +30,7 @@ import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
-import com.accenture.academico.Acc.Bank.handler.ResponseError;
+import com.accenture.academico.Acc.Bank.exceptionhandler.ResponseError;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -141,7 +141,7 @@ class ContaCorrenteControllerTest {
 //            ContaCorrenteJaCadastradoException exception = new ContaCorrenteJaCadastradoException(contaRequestDTO.getIdCliente());
 //
 //            // Assert
-//            assertEquals(exception.getMessage(), resultado.getMessage());
+//            assertEquals(exception.getMessage(), resultado.getMensagem());
 //        }
 //
 //        @Test
@@ -162,8 +162,8 @@ class ContaCorrenteControllerTest {
 //
 //            // Assert
 //            assertAll(
-//                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-//                    () -> assertEquals("Campo idCliente obrigatorio", resultado.getErrors().get(0))
+//                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+//                    () -> assertEquals("Campo idCliente obrigatorio", resultado.getErros().get(0))
 //            );
 //        }
 //
@@ -185,8 +185,8 @@ class ContaCorrenteControllerTest {
 //
 //            // Assert
 //            assertAll(
-//                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-//                    () -> assertEquals("Campo idAgencia obrigatorio", resultado.getErrors().get(0))
+//                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+//                    () -> assertEquals("Campo idAgencia obrigatorio", resultado.getErros().get(0))
 //            );
 //        }
 //    }
@@ -233,7 +233,7 @@ class ContaCorrenteControllerTest {
             ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
             
             // Assert
-            assertEquals(exception.getMessage() , resultado.getMessage());
+            assertEquals(exception.getMessage() , resultado.getMensagem());
         }
     }
     
@@ -275,7 +275,7 @@ class ContaCorrenteControllerTest {
 //            ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
 //
 //            // Assert
-//            assertEquals(exception.getMessage() , resultado.getMessage());
+//            assertEquals(exception.getMessage() , resultado.getMensagem());
 //        }
 
 //    	@Test
@@ -297,7 +297,7 @@ class ContaCorrenteControllerTest {
 //            ContaCorrenteComSaldoException exception = new ContaCorrenteComSaldoException();
 //
 //            // Assert
-//            assertEquals(exception.getMessage() , resultado.getMessage());
+//            assertEquals(exception.getMessage() , resultado.getMensagem());
 //        }
 //    }
 
@@ -355,7 +355,7 @@ class ContaCorrenteControllerTest {
                 ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
 
             @Test
@@ -376,9 +376,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
 
@@ -400,9 +400,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
 
@@ -424,7 +424,7 @@ class ContaCorrenteControllerTest {
                 SaldoInsuficienteException exception = new SaldoInsuficienteException();
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
         }
 
@@ -478,7 +478,7 @@ class ContaCorrenteControllerTest {
                 ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
 
             @Test
@@ -499,9 +499,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
 
@@ -523,9 +523,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
         }
@@ -588,7 +588,7 @@ class ContaCorrenteControllerTest {
                 ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(idInexistente);
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
 
             @Test
@@ -610,7 +610,7 @@ class ContaCorrenteControllerTest {
                 ContaCorrenteNaoEncontradaException exception = new ContaCorrenteNaoEncontradaException(numeroInexistente);
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
 
             @Test
@@ -631,9 +631,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
 
@@ -655,9 +655,9 @@ class ContaCorrenteControllerTest {
 
                 // Assert
                 assertAll(
-                        () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                        () -> assertEquals(1, resultado.getErrors().size()),
-                        () -> assertTrue(resultado.getErrors().contains("O valor deve ser maior que zero"))
+                        () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                        () -> assertEquals(1, resultado.getErros().size()),
+                        () -> assertTrue(resultado.getErros().contains("O valor deve ser maior que zero"))
                 );
             }
 
@@ -679,7 +679,7 @@ class ContaCorrenteControllerTest {
                 TransferenciaEntreContasIguaisException exception = new TransferenciaEntreContasIguaisException();
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
 
             @Test
@@ -700,7 +700,7 @@ class ContaCorrenteControllerTest {
                 SaldoInsuficienteException exception = new SaldoInsuficienteException();
 
                 // Assert
-                assertEquals(exception.getMessage(), resultado.getMessage());
+                assertEquals(exception.getMessage(), resultado.getMensagem());
             }
         }
         

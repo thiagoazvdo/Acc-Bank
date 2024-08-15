@@ -39,7 +39,7 @@ public class AgenciaController {
     @Operation(summary = "Adiciona uma nova agência.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Agência criada com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
+        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
     })
     @PostMapping
     public ResponseEntity<Agencia> adicionar(@Valid @RequestBody AgenciaRequestDTO agenciaDTO) {
@@ -61,7 +61,7 @@ public class AgenciaController {
     @Operation(summary = "Busca uma agência por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna uma Agência pelo ID."),
-        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Agencia nao encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Agencia nao encontrada\"}")))
     })
     @GetMapping("/{id}")
     public ResponseEntity<Agencia> buscar(@Parameter(description = "ID da Agência a ser buscada") @PathVariable Long id) {
@@ -72,8 +72,8 @@ public class AgenciaController {
     @Operation(summary = "Atualiza as informações de uma agência.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Agência atualizada com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
-        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Agencia nao encontrada\"}")))
+        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
+        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Agencia nao encontrada\"}")))
     })
     @PutMapping("/{id}")
     public ResponseEntity<Agencia> atualizar(@PathVariable Long id, @Valid @RequestBody AgenciaRequestDTO agenciaDTO) {
@@ -84,7 +84,7 @@ public class AgenciaController {
     @Operation(summary = "Remove uma agência por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Agência removida com sucesso."),
-        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Agencia nao encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Agência não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Agencia nao encontrada\"}")))
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> remover(@PathVariable Long id) {

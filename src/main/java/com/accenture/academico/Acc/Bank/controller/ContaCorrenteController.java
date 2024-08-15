@@ -37,7 +37,7 @@ public class ContaCorrenteController {
     @Operation(summary = "Busca uma conta corrente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Retorna a conta corrente com o ID especificado."),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @GetMapping("/{id}")
     public ResponseEntity<ContaCorrente> buscarContaCorrente(
@@ -59,8 +59,8 @@ public class ContaCorrenteController {
     @Operation(summary = "Realiza um saque na conta corrente.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @PostMapping("/{id}/sacar")
     public ResponseEntity<Void> sacar(
@@ -73,8 +73,8 @@ public class ContaCorrenteController {
     @Operation(summary = "Realiza um depósito na conta corrente.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
-        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
+        @ApiResponse(responseCode = "404", description = "Conta corrente não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @PostMapping("/{id}/depositar")
     public ResponseEntity<Void> depositar(
@@ -87,8 +87,8 @@ public class ContaCorrenteController {
     @Operation(summary = "Realiza uma transferência entre contas correntes.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Erro na requisição\", \"errors\": [\"Erro 01\", \"Erro 02\"]}"))),
-        @ApiResponse(responseCode = "404", description = "Conta corrente de origem ou destino não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"message\": \"Conta corrente não encontrada\"}")))
+        @ApiResponse(responseCode = "400", description = "Requisição inválida.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Erro na requisição\", \"erros\": [\"Erro 01\", \"Erro 02\"]}"))),
+        @ApiResponse(responseCode = "404", description = "Conta corrente de origem ou destino não encontrada.", content = @Content(examples = @ExampleObject(value = "{\"mensagem\": \"Conta corrente não encontrada\"}")))
     })
     @PostMapping("/{id}/transferir")
     public ResponseEntity<Void> transferir(

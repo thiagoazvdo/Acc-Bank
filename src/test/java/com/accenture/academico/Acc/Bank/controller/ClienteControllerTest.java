@@ -31,7 +31,7 @@ import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
-import com.accenture.academico.Acc.Bank.handler.ResponseError;
+import com.accenture.academico.Acc.Bank.exceptionhandler.ResponseError;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
@@ -135,7 +135,7 @@ public class ClienteControllerTest {
             ClienteJaCadastradoException exception = new ClienteJaCadastradoException("cpf", cliente.getCpf());
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
         
         @Test
@@ -156,7 +156,7 @@ public class ClienteControllerTest {
             ClienteJaCadastradoException exception = new ClienteJaCadastradoException("telefone", cliente.getTelefone());
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
 
         @Test
@@ -181,13 +181,13 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(5, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("ID da Agencia e obrigatorio."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(5, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("CPF do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Email do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("ID da agência é obrigatório."))
             );
         }
         
@@ -212,12 +212,12 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(4, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("CPF do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Email do cliente não pode estar em branco."))
             );
         }
         
@@ -239,9 +239,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
 
@@ -263,9 +263,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -287,9 +287,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -311,9 +311,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -335,9 +335,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -359,9 +359,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -383,9 +383,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -407,9 +407,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
         
@@ -431,9 +431,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
         
@@ -455,9 +455,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
     }
@@ -512,7 +512,7 @@ public class ClienteControllerTest {
             ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
 
     	@Test
@@ -536,12 +536,12 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(4, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("CPF do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Email do cliente não pode estar em branco."))
             );
         }
         
@@ -566,12 +566,12 @@ public class ClienteControllerTest {
             
             // Assert
         	assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(4, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Nome do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("CPF do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone do cliente nao pode estar em branco.")),
-                    () -> assertTrue(resultado.getErrors().contains("Email do cliente nao pode estar em branco."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(4, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Nome do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("CPF do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Telefone do cliente não pode estar em branco.")),
+                    () -> assertTrue(resultado.getErros().contains("Email do cliente não pode estar em branco."))
             );
         }
         
@@ -593,9 +593,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
 
@@ -617,9 +617,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -641,9 +641,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -665,9 +665,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("CPF invalido. O formato deve ser 000.000.000-00"))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("CPF inválido. O formato deve ser 000.000.000-00"))
             );
         }
         
@@ -689,9 +689,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -713,9 +713,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -737,9 +737,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Telefone deve ter exatamente 11 digitos numericos."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Telefone deve ter exatamente 11 dígitos numéricos."))
             );
         }
         
@@ -761,9 +761,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
         
@@ -785,9 +785,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
         
@@ -809,9 +809,9 @@ public class ClienteControllerTest {
             
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals(1, resultado.getErrors().size()),
-                    () -> assertTrue(resultado.getErrors().contains("Email invalido."))
+                    () -> assertEquals("Erros de validação encontrados.", resultado.getMensagem()),
+                    () -> assertEquals(1, resultado.getErros().size()),
+                    () -> assertTrue(resultado.getErros().contains("Email inválido."))
             );
         }
     }
@@ -858,7 +858,7 @@ public class ClienteControllerTest {
             ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
     }
 
@@ -899,7 +899,7 @@ public class ClienteControllerTest {
             ClienteNaoEncontradoException exception = new ClienteNaoEncontradoException(idInexistente);
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
         
         @Test
@@ -920,7 +920,7 @@ public class ClienteControllerTest {
             ContaCorrenteComSaldoException exception = new ContaCorrenteComSaldoException();
         	
             // Assert
-            assertEquals(exception.getMessage(), resultado.getMessage());
+            assertEquals(exception.getMessage(), resultado.getMensagem());
         }
 
     }
