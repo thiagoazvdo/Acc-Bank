@@ -135,7 +135,7 @@ class ContaCorrenteTest {
 		ContaCorrente conta = new ContaCorrente();
 		conta.setTransacoes(new ArrayList<Transacao>());
 
-		Transacao transacao = new Transacao(1L, TipoTransacao.DEPOSITO, BigDecimal.valueOf(10), LocalDateTime.now(), null, conta, null);
+		Transacao transacao = new Transacao(1L, TipoTransacao.DEPOSITO, BigDecimal.valueOf(10), LocalDateTime.now(), null, conta);
 		conta.adicionarTransacao(transacao);
 
 		assertTrue(conta.getTransacoes().contains(transacao));

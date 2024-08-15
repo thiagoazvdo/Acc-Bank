@@ -158,6 +158,28 @@ public class ClienteControllerTest {
             // Assert
             assertEquals(exception.getMessage(), resultado.getMensagem());
         }
+        
+        @Test
+        @DisplayName("Quando criamos um cliente com email ja cadastrado")
+        void quandoCriarClienteComEmailJaCadastrado() throws Exception {
+            // Arrange
+        	clienteRequestDTO.setCpf("666.555.444-99");
+        	clienteRequestDTO.setTelefone("11987234811");
+        	
+            // Act
+        	String responseJsonString = mockMvc.perform(post("/clientes")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(clienteRequestDTO)))
+                    .andExpect(status().isConflict())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+        	
+        	ResponseError resultado = objectMapper.readValue(responseJsonString, ResponseError.class);
+            ClienteJaCadastradoException exception = new ClienteJaCadastradoException("email", cliente.getEmail());
+        	
+            // Assert
+            assertEquals(exception.getMessage(), resultado.getMensagem());
+        }
 
         @Test
         @DisplayName("Quando criamos um novo cliente com campos nulos")

@@ -125,6 +125,7 @@ class ContaCorrenteServiceTest {
     void testRemoverContaCorrente_Sucesso() {
         // Arrange
         when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.of(conta));
+        doNothing().when(transacaoRepository).deleteByContaCorrente(conta);
         doNothing().when(contaCorrenteRepository).delete(conta);
         
         // Act
@@ -132,6 +133,7 @@ class ContaCorrenteServiceTest {
 
         // Assert
         verify(contaCorrenteRepository, times(1)).findById(1L);
+        verify(transacaoRepository, times(1)).deleteByContaCorrente(conta);
         verify(contaCorrenteRepository, times(1)).delete(conta);
     }
     

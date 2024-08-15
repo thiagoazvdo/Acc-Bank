@@ -54,10 +54,6 @@ public class Transacao {
     @ManyToOne
     @JoinColumn(name = "conta_corrente_id", nullable = false)
     private ContaCorrente contaCorrente;
-
-    @ManyToOne
-    @JoinColumn(name = "conta_corrente_relacionada_id")
-    private ContaCorrente contaCorrenteRelacionada;
     
     @PrePersist
     public void prePersist() {

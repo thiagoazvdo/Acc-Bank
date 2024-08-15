@@ -42,6 +42,7 @@ public class ClienteService {
     public Cliente criarCliente(ClienteRequestDTO clienteRequestDTO) {
     	verificaSeCpfJaCadastrado(clienteRequestDTO.getCpf());
     	verificaSeTelefoneJaCadastrado(clienteRequestDTO.getTelefone());
+    	verificaSeEmailJaCadastrado(clienteRequestDTO.getEmail());
     	
         Agencia agencia = agenciaService.buscarAgencia(clienteRequestDTO.getIdAgencia());
         
@@ -55,6 +56,7 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    @Transactional
     public void removerCliente(Long id) {
     	Cliente cliente = buscarCliente(id);
     	contaCorrenteService.removerContaCorrente(cliente.getContaCorrente().getId());
@@ -74,5 +76,10 @@ public class ClienteService {
     private void verificaSeTelefoneJaCadastrado(String telefone) {
     	if (clienteRepository.existsByTelefone(telefone)) 
 			throw new ClienteJaCadastradoException("telefone", telefone);
+    }
+    
+    private void verificaSeEmailJaCadastrado(String email) {
+    	if (clienteRepository.existsByEmail(email)) 
+			throw new ClienteJaCadastradoException("email", email);
     }
 }
