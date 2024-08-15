@@ -1,0 +1,45 @@
+services:
+  accbank-api:
+    image: accbank-api
+    environment:
+      spring.profiles.active: prod
+    ports:
+      - "8443:8443"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - orion-connect
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: accbankdb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+    networks:
+      - orion-connect
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: ./Dockerfile
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: unless-stopped
+    networks:
+      - orion-connect
+
+networks:
+  orion-connect:
+    driver: bridge

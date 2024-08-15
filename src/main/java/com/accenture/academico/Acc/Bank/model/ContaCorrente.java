@@ -1,13 +1,14 @@
 package com.accenture.academico.Acc.Bank.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,9 +16,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -45,22 +46,24 @@ public class ContaCorrente {
 	@Column(nullable = false)
 	private BigDecimal saldo;
 
-	@ManyToOne
-	@JoinColumn(name = "id_agencia")
-	private Agencia agencia;
+    @Column(name = "data_criacao", nullable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dataCriacao;
+
 
 	@OneToOne
-	@JoinColumn(name = "id_cliente")
+	@JoinColumn(name = "id_cliente", nullable = false)
 	@JsonBackReference
 	private Cliente cliente;
-	
+
+	@JsonIgnore
 	@OneToMany(mappedBy = "contaCorrente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transacao> transacoes;
 	
-	public ContaCorrente(Agencia agencia, Cliente cliente) {
-		this.saldo = BigDecimal.ZERO;
-		this.agencia = agencia;
+	public ContaCorrente(Cliente cliente) {
 		this.cliente = cliente;
+		this.numero = Long.toString(cliente.getId() + 10000);
+		this.saldo = BigDecimal.ZERO;
 		this.transacoes = new ArrayList<>();
 	}
 
@@ -84,4 +87,9 @@ public class ContaCorrente {
         transacao.setContaCorrente(this);
     }
 
+    @PrePersist
+    public void prePersist() {
+        final LocalDateTime atual = LocalDateTime.now();
+        this.dataCriacao = atual;
+    }
 }

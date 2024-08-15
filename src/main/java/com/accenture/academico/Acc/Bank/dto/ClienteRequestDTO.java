@@ -1,8 +1,12 @@
 package com.accenture.academico.Acc.Bank.dto;
 
 
+import com.accenture.academico.Acc.Bank.validation.ValidCPF;
+import com.accenture.academico.Acc.Bank.validation.ValidEmail;
+import com.accenture.academico.Acc.Bank.validation.ValidTelefone;
+
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,14 +18,22 @@ import lombok.Setter;
 @Setter
 public class ClienteRequestDTO {
 
-    @NotBlank(message = "Campo nome obrigatorio")
+    @NotBlank
     private String nome;
 
-    @Pattern(regexp = "\\d{11}", message = "Cpf deve ter exatamente 11 digitos numericos")
-    @NotBlank(message = "Campo cpf obrigatorio")
+    @ValidCPF
+    @NotBlank
     private String cpf;
 
-    @NotBlank(message = "Campo telefone obrigatorio")
+    @ValidTelefone
+    @NotBlank
     private String telefone;
+    
+    @ValidEmail
+    @NotBlank
+    private String email;
+
+    @NotNull
+    private Long idAgencia;
 
 }

@@ -1,5 +1,7 @@
 package com.accenture.academico.Acc.Bank.dto;
 
+import com.accenture.academico.Acc.Bank.validation.ValidTelefone;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,13 +14,14 @@ import lombok.Setter;
 @Setter
 public class AgenciaRequestDTO {
 
-    @NotBlank(message = "Campo nome obrigatorio")
+    @NotBlank
     private String nome;
 
-    @NotBlank(message = "Campo endereco obrigatorio")
+    @NotBlank
     private String endereco;
 
-    @NotBlank(message = "Campo telefone obrigatorio")
+    @ValidTelefone
+    @NotBlank
     private String telefone;
 
 }

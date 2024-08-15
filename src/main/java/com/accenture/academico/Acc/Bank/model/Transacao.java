@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -44,7 +45,7 @@ public class Transacao {
     private BigDecimal valor;
 
     @Column(nullable = false)
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataHora;
 
     private String descricao;
@@ -57,4 +58,9 @@ public class Transacao {
     @ManyToOne
     @JoinColumn(name = "conta_corrente_relacionada_id")
     private ContaCorrente contaCorrenteRelacionada;
+    
+    @PrePersist
+    public void prePersist() {
+        this.dataHora = LocalDateTime.now();
+    }
 }

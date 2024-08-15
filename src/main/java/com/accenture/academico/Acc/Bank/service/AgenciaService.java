@@ -1,11 +1,12 @@
 package com.accenture.academico.Acc.Bank.service;
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.accenture.academico.Acc.Bank.dto.AgenciaRequestDTO;
+import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaJaCadastradaException;
 import com.accenture.academico.Acc.Bank.exception.agencia.AgenciaNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
@@ -13,9 +14,6 @@ import com.accenture.academico.Acc.Bank.repository.AgenciaRepository;
 @Service
 public class AgenciaService {
 
-    @Autowired
-    private ModelMapper modelMapper;
-	
     @Autowired
     private AgenciaRepository agenciaRepository;
 
@@ -25,15 +23,15 @@ public class AgenciaService {
 
     public Agencia atualizarAgencia(Long agenciaId, AgenciaRequestDTO agenciaDTO){
         Agencia agencia = buscarAgencia(agenciaId);
-        
-        Agencia agenciaAtualizada = converterParaAgencia(agenciaDTO);
-        agenciaAtualizada.setId(agencia.getId());
-        
-        return agenciaRepository.save(agenciaAtualizada);
+        BeanUtils.copyProperties(agenciaDTO, agencia);
+        return agenciaRepository.save(agencia);
     }
 
     public Agencia criarAgencia(AgenciaRequestDTO agenciaDTO) {
-    	Agencia agencia = converterParaAgencia(agenciaDTO);
+    	verificaSeTelefoneJaCadastrado(agenciaDTO.getTelefone());
+    	
+    	Agencia agencia = new Agencia();
+    	BeanUtils.copyProperties(agenciaDTO, agencia);
         return agenciaRepository.save(agencia);
     }
 
@@ -45,7 +43,8 @@ public class AgenciaService {
         return agenciaRepository.findAll();
     }
     
-    private Agencia converterParaAgencia(AgenciaRequestDTO agenciaDTO) {
-    	return modelMapper.map(agenciaDTO, Agencia.class);
+    private void verificaSeTelefoneJaCadastrado(String telefone) {
+    	if (agenciaRepository.existsByTelefone(telefone)) 
+			throw new AgenciaJaCadastradaException("telefone", telefone);
     }
 }

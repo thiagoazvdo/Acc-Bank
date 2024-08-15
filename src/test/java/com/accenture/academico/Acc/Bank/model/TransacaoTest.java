@@ -8,13 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class TransacaoTest {
 
     @Test
-    @DisplayName("Testa o construtor padr�o")
     void testConstrutorPadrao() {
         Transacao transacao = new Transacao();
         assertNull(transacao.getId());
@@ -27,7 +25,6 @@ class TransacaoTest {
     }
 
     @Test
-    @DisplayName("Testa os getters e setters")
     void testGettersAndSetters() {
         Transacao transacao = new Transacao();
         ContaCorrente conta = new ContaCorrente(1L, "10001", BigDecimal.ZERO, null, null, null);
@@ -37,7 +34,7 @@ class TransacaoTest {
         transacao.setTipo(TipoTransacao.DEPOSITO);
         transacao.setValor(BigDecimal.valueOf(100.00));
         transacao.setDataHora(LocalDateTime.now());
-        transacao.setDescricao("Dep�sito inicial");
+        transacao.setDescricao("Deposito inicial");
         transacao.setContaCorrente(conta);
         transacao.setContaCorrenteRelacionada(contaRelacionada);
 
@@ -45,13 +42,12 @@ class TransacaoTest {
         assertEquals(TipoTransacao.DEPOSITO, transacao.getTipo());
         assertEquals(BigDecimal.valueOf(100.00), transacao.getValor());
         assertNotNull(transacao.getDataHora());
-        assertEquals("Dep�sito inicial", transacao.getDescricao());
+        assertEquals("Deposito inicial", transacao.getDescricao());
         assertEquals(conta, transacao.getContaCorrente());
         assertEquals(contaRelacionada, transacao.getContaCorrenteRelacionada());
     }
 
     @Test
-    @DisplayName("Testa equals e hashCode")
     void testEqualsAndHashCode() {
         // Teste básico de igualdade
         Transacao transacao1 = new Transacao(1L, TipoTransacao.SAQUE, BigDecimal.valueOf(50), LocalDateTime.now(), "Saque automático", null, null);

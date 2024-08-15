@@ -19,6 +19,16 @@ public class TransacaoService {
 	
 	@Autowired
 	private TransacaoRepository transacaoRepository;
+
+	public List<Transacao> obterExtratoGeral(Long contaId){
+    	ContaCorrente conta = contaCorrenteService.buscarContaCorrente(contaId);
+    	return transacaoRepository.findByContaCorrente(conta);
+    }
+	
+	public List<Transacao> obterExtratoFiltrado(Long contaId, LocalDateTime dataInicio, LocalDateTime dataFim){
+		ContaCorrente conta = contaCorrenteService.buscarContaCorrente(contaId);
+		return transacaoRepository.findByContaCorrenteAndDataHoraBetween(conta, dataInicio, dataFim);
+	}
     
     public List<Transacao> obterExtratoMensal(Long contaId, YearMonth mesAno){
     	LocalDateTime mesInicio = mesAno.atDay(1).atStartOfDay();
@@ -34,8 +44,4 @@ public class TransacaoService {
     	return obterExtratoFiltrado(contaId, anoInicio, anoFim);
     }
     
-    public List<Transacao> obterExtratoFiltrado(Long contaId, LocalDateTime dataInicio, LocalDateTime dataFim){
-    	ContaCorrente conta = contaCorrenteService.buscarContaCorrente(contaId);
-    	return transacaoRepository.findByContaCorrenteAndDataHoraBetween(conta, dataInicio, dataFim);
-    }
 }

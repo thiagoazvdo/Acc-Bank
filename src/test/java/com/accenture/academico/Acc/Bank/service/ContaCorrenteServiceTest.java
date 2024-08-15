@@ -18,18 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteRequestDTO;
-import com.accenture.academico.Acc.Bank.dto.ContaCorrenteResponseDTO;
 import com.accenture.academico.Acc.Bank.dto.SaqueDepositoRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.TransferenciaRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteComSaldoException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.ContaCorrenteNaoEncontradaException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.SaldoInsuficienteException;
 import com.accenture.academico.Acc.Bank.exception.contacorrente.TransferenciaEntreContasIguaisException;
-import com.accenture.academico.Acc.Bank.exception.contacorrente.ValorInvalidoException;
 import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
 import com.accenture.academico.Acc.Bank.model.ContaCorrente;
@@ -53,104 +48,21 @@ class ContaCorrenteServiceTest {
     @Mock
     private TransacaoRepository transacaoRepository;
     
-    @Mock
-    private ModelMapper modelMapper;
-    
     private Agencia agencia;
     private Cliente cliente;
     private ContaCorrente conta;
-    private ContaCorrenteResponseDTO contaResponseDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         
-        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "3333-2222");
-        cliente = new Cliente(1L, "Raphael Agra", "11122233345", "83 8888-8888", null);
+        agencia = new Agencia(1L, "Banco do Brasil UFCG", "UFCG", "83933332222", null, null);
+        cliente = new Cliente(1L, "Raphael Agra", "111.222.333-45", "83988888888", "raphael@email.com", null, null, null, agencia);
         
-        conta = new ContaCorrente(agencia, cliente);
+        conta = new ContaCorrente(cliente);
         conta.setId(1L);
-        conta.setNumero("10001");
-        
-        contaResponseDTO = new ContaCorrenteResponseDTO(1L, "10001", BigDecimal.ZERO, agencia);
-    }
-
-    @Test
-    void testCriarContaCorrente_Sucesso() {
-        // Arrange
-        ContaCorrenteRequestDTO contaRequestDTO = new ContaCorrenteRequestDTO();
-        contaRequestDTO.setIdAgencia(1L);
-        contaRequestDTO.setIdCliente(1L);
-
-    	when(agenciaService.buscarAgencia(1L)).thenReturn(agencia);
-    	when(clienteService.buscarCliente(1L)).thenReturn(cliente);
-        when(contaCorrenteRepository.findByClienteId(1L)).thenReturn(Optional.empty());
-        when(contaCorrenteRepository.save(any(ContaCorrente.class))).thenReturn(conta);
-        when(modelMapper.map(conta, ContaCorrenteResponseDTO.class)).thenReturn(contaResponseDTO);
-
-        // Act
-        ContaCorrenteResponseDTO result = contaCorrenteService.criarContaCorrente(contaRequestDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("10001", result.getNumero());
-        assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
-//        assertEquals(cliente, result.getCliente());
-//        assertEquals(new ArrayList<>(), result.getTransacoes());
-        
-        verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
-        verify(agenciaService, times(1)).buscarAgencia(1L);
-        verify(clienteService, times(1)).buscarCliente(1L);
-        verify(contaCorrenteRepository, times(1)).save(any(ContaCorrente.class));
     }
     
-    @Test
-    void testCriarContaCorrente_ClienteJaPossuiConta() {
-        // Arrange
-        ContaCorrenteRequestDTO contaRequestDTO = new ContaCorrenteRequestDTO();
-        contaRequestDTO.setIdAgencia(1L);
-        contaRequestDTO.setIdCliente(1L);
-
-        when(contaCorrenteRepository.findByClienteId(1L)).thenReturn(Optional.of(conta));
-
-        // Act & Assert
-        assertThrows(ContaCorrenteJaCadastradoException.class, () -> contaCorrenteService.criarContaCorrente(contaRequestDTO));
-        verify(contaCorrenteRepository, times(1)).findByClienteId(1L);
-    }
-    
-    @Test
-    void testBuscarContaCorrenteResponseDTO_Sucesso() {
-        // Arrange
-        when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.of(conta));
-        when(modelMapper.map(conta, ContaCorrenteResponseDTO.class)).thenReturn(contaResponseDTO);
-
-        // Act
-        ContaCorrenteResponseDTO result = contaCorrenteService.buscarContaCorrenteResponseDTO(1L);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
-        assertEquals("10001", result.getNumero());
-        assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
-//        assertEquals(cliente, result.getCliente());
-//        assertEquals(new ArrayList<>(), result.getTransacoes());
-        
-        verify(contaCorrenteRepository, times(1)).findById(1L);
-    }
-    
-    @Test
-    void testBuscarContaCorrenteResponseDTO_ContaNaoEncontrada() {
-        // Arrange
-        when(contaCorrenteRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ContaCorrenteNaoEncontradaException.class, () -> contaCorrenteService.buscarContaCorrente(1L));
-        verify(contaCorrenteRepository, times(1)).findById(1L);
-    }
-
     @Test
     void testBuscarContaCorrente_Sucesso() {
         // Arrange
@@ -164,7 +76,6 @@ class ContaCorrenteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("10001", result.getNumero());
         assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
         assertEquals(cliente, result.getCliente());
         assertEquals(new ArrayList<>(), result.getTransacoes());
         
@@ -194,7 +105,6 @@ class ContaCorrenteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("10001", result.getNumero());
         assertEquals(BigDecimal.ZERO, result.getSaldo());
-        assertEquals(agencia, result.getAgencia());
         assertEquals(cliente, result.getCliente());
         assertEquals(new ArrayList<>(), result.getTransacoes());
         
@@ -282,33 +192,6 @@ class ContaCorrenteServiceTest {
     }
     
     @Test
-    void testSacar_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO saqueDTO = new SaqueDepositoRequestDTO();
-        saqueDTO.setValor(BigDecimal.ZERO);
-        saqueDTO.setDescricao("descricao para o saque");
-
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.sacar(1L, saqueDTO));
-    }
-    
-    @Test
-    void testSacar_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO saqueDTO = new SaqueDepositoRequestDTO();
-        saqueDTO.setValor(BigDecimal.valueOf(-1));
-        saqueDTO.setDescricao("descricao para o saque");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.sacar(1L, saqueDTO));
-    }
-    
-    @Test
     void testSacar_SaldoInsuficienteException() {
         // Arrange
     	conta.setSaldo(BigDecimal.valueOf(200.0));
@@ -361,32 +244,6 @@ class ContaCorrenteServiceTest {
     }
     
     @Test
-    void testDepositar_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO depositoDTO = new SaqueDepositoRequestDTO();
-        depositoDTO.setValor(BigDecimal.ZERO);
-        depositoDTO.setDescricao("descricao para o deposito");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.depositar(1L, depositoDTO));
-    }
-    
-    @Test
-    void testDepositar_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-    	
-        SaqueDepositoRequestDTO depositoDTO = new SaqueDepositoRequestDTO();
-        depositoDTO.setValor(BigDecimal.valueOf(-1));
-        depositoDTO.setDescricao("descricao para o deposito");
-
-        // Act & Assert
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.depositar(1L, depositoDTO));
-    }
-    
-    @Test
     void testTransferir_Sucesso() {
         // Arrange
     	conta.setSaldo(BigDecimal.valueOf(200.0));
@@ -416,48 +273,6 @@ class ContaCorrenteServiceTest {
         verify(contaCorrenteRepository, times(1)).save(conta);
         verify(contaCorrenteRepository, times(1)).save(contaDestino);
         verify(transacaoRepository, times(2)).save(any(Transacao.class));
-    }
-    
-    @Test
-    void testTransferir_ValorIgualAZero() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-
-        ContaCorrente contaDestino = new ContaCorrente();
-        contaDestino.setId(2L);
-        contaDestino.setNumero("10002");
-        contaDestino.setSaldo(BigDecimal.valueOf(36.00));
-
-        TransferenciaRequestDTO transferenciaDTO = new TransferenciaRequestDTO();
-        transferenciaDTO.setNumeroContaDestino("10002");
-        transferenciaDTO.setValor(BigDecimal.valueOf(0));
-
-        // Act & Assert
-        
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.transferir(1L, transferenciaDTO));
-        assertEquals(BigDecimal.valueOf(200.0), conta.getSaldo());
-        assertEquals(BigDecimal.valueOf(36.0), contaDestino.getSaldo());
-    }
-    
-    @Test
-    void testTransferir_ValorNegativo() {
-        // Arrange
-    	conta.setSaldo(BigDecimal.valueOf(200.0));
-
-        ContaCorrente contaDestino = new ContaCorrente();
-        contaDestino.setId(2L);
-        contaDestino.setNumero("10002");
-        contaDestino.setSaldo(BigDecimal.valueOf(36.00));
-
-        TransferenciaRequestDTO transferenciaDTO = new TransferenciaRequestDTO();
-        transferenciaDTO.setNumeroContaDestino("10002");
-        transferenciaDTO.setValor(BigDecimal.valueOf(-1));
-
-        // Act & Assert
-        
-        assertThrows(ValorInvalidoException.class, () -> contaCorrenteService.transferir(1L, transferenciaDTO));
-        assertEquals(BigDecimal.valueOf(200.0), conta.getSaldo());
-        assertEquals(BigDecimal.valueOf(36.0), contaDestino.getSaldo());
     }
     
     @Test

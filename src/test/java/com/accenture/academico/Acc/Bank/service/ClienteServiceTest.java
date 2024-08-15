@@ -20,12 +20,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 
+import com.accenture.academico.Acc.Bank.dto.ClientePutRequestDTO;
 import com.accenture.academico.Acc.Bank.dto.ClienteRequestDTO;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteJaCadastradoException;
 import com.accenture.academico.Acc.Bank.exception.cliente.ClienteNaoEncontradoException;
+import com.accenture.academico.Acc.Bank.model.Agencia;
 import com.accenture.academico.Acc.Bank.model.Cliente;
+import com.accenture.academico.Acc.Bank.model.ContaCorrente;
 import com.accenture.academico.Acc.Bank.repository.ClienteRepository;
 
 @DisplayName("Testes do service de Clientes")
@@ -36,27 +38,39 @@ class ClienteServiceTest {
 
     @Mock
     private ClienteRepository clienteRepository;
-
+    
     @Mock
-    private ModelMapper modelMapper;
+    private AgenciaService agenciaService;
+    
+    @Mock
+    private ContaCorrenteService contaCorrenteService;
 
     private Cliente cliente;
     private ClienteRequestDTO clienteRequestDTO;
+    private ClientePutRequestDTO clientePutRequestDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        cliente = new Cliente(1L, "Cliente 1", "1234567896910", "1111-8888", null);
-        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "5555-5555");
+        Agencia agencia = new Agencia(1L, "Agencia 1", "Endereco 1", "83123456789", null, null);
+        ContaCorrente conta = new ContaCorrente();
+        conta.setId(1L);
+        cliente = new Cliente(1L, "Cliente 1", "123.456.789-10", "8311118888", "cliente1@email.com", null, null, conta, agencia);
+        clienteRequestDTO = new ClienteRequestDTO("João da Silva", "12345678900", "83955554444", "joao@email.com", agencia.getId());
+        clientePutRequestDTO = new ClientePutRequestDTO(clienteRequestDTO.getNome(), clienteRequestDTO.getCpf(), clienteRequestDTO.getTelefone(), clienteRequestDTO.getEmail());
     }
 
     @Test
     void testCriarCliente_Sucesso() {
         // Arrange
-        when(modelMapper.map(clienteRequestDTO, Cliente.class)).thenReturn(cliente);
-        when(clienteRepository.findByCpf(clienteRequestDTO.getCpf())).thenReturn(Optional.empty());
-        when(clienteRepository.save(any(Cliente.class))).thenReturn(cliente);
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(false);
+        when(clienteRepository.existsByTelefone(clienteRequestDTO.getTelefone())).thenReturn(false);
+        when(agenciaService.buscarAgencia(clienteRequestDTO.getIdAgencia())).thenReturn(new Agencia());
+        when(clienteRepository.save(any(Cliente.class))).thenAnswer(invocation -> {
+            Cliente cliente = invocation.getArgument(0);
+            cliente.setId(1L); // Defina um ID se necessário para simular o comportamento de salvar no banco
+            return cliente;
+        });
 
         // Act
         Cliente result = clienteService.criarCliente(clienteRequestDTO);
@@ -64,32 +78,43 @@ class ClienteServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(cliente, result);
-        verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
-        verify(modelMapper, times(1)).map(clienteRequestDTO, Cliente.class);
-        verify(clienteRepository, times(1)).save(cliente);
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByTelefone(clienteRequestDTO.getTelefone());
+        verify(clienteRepository, times(2)).save(any(Cliente.class));
     }
 
     @Test
     void testCriarCliente_CpfJaCadastrado() {
         // Arrange
-        when(clienteRepository.findByCpf(clienteRequestDTO.getCpf())).thenReturn(Optional.of(cliente));
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(true);
 
         // Act & Assert
         assertThrows(ClienteJaCadastradoException.class, () -> clienteService.criarCliente(clienteRequestDTO));
-        verify(clienteRepository, times(1)).findByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+    }
+    
+    @Test
+    void testCriarCliente_TelefoneJaCadastrado() {
+        // Arrange
+        when(clienteRepository.existsByCpf(clienteRequestDTO.getCpf())).thenReturn(false);
+        when(clienteRepository.existsByTelefone(clienteRequestDTO.getTelefone())).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(ClienteJaCadastradoException.class, () -> clienteService.criarCliente(clienteRequestDTO));
+        verify(clienteRepository, times(1)).existsByCpf(clienteRequestDTO.getCpf());
+        verify(clienteRepository, times(1)).existsByTelefone(clienteRequestDTO.getTelefone());
     }
 
     @Test
     void testAtualizarCliente_Sucesso() {
         // Arrange
-        Cliente clienteAtualizado = new Cliente(1L, "Cliente 1", "88615266473", "98886-7878", null);
+        Cliente clienteAtualizado = new Cliente(cliente.getId(), "Cliente Atualizado 1", "886.152.664-73", "98886-7878", "emailnovo@email.com", null, null, null, null);
 
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
-        when(modelMapper.map(clienteRequestDTO, Cliente.class)).thenReturn(clienteAtualizado);
+        when(clienteRepository.findById(cliente.getId())).thenReturn(Optional.of(cliente));
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteAtualizado);
 
         // Act
-        Cliente result = clienteService.atualizar(1L, clienteRequestDTO);
+        Cliente result = clienteService.atualizar(1L, clientePutRequestDTO);
 
         // Assert
         assertNotNull(result);
@@ -97,7 +122,7 @@ class ClienteServiceTest {
         assertEquals(1L, result.getId());
         assertEquals("98886-7878", result.getTelefone());
 
-        verify(modelMapper, times(1)).map(clienteRequestDTO, Cliente.class);
+        verify(clienteRepository, times(1)).findById(cliente.getId());
         verify(clienteRepository, times(1)).save(clienteAtualizado);
     }
 
@@ -107,7 +132,7 @@ class ClienteServiceTest {
         when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(ClienteNaoEncontradoException.class, () -> clienteService.atualizar(1L, clienteRequestDTO));
+        assertThrows(ClienteNaoEncontradoException.class, () -> clienteService.atualizar(1L, clientePutRequestDTO));
         verify(clienteRepository, times(1)).findById(1L);
     }
 
@@ -139,6 +164,7 @@ class ClienteServiceTest {
         // Arrange
         when(clienteRepository.findById(anyLong())).thenReturn(Optional.of(cliente));
         doNothing().when(clienteRepository).delete(cliente);
+        doNothing().when(contaCorrenteService).removerContaCorrente(anyLong());
 
         // Act
         clienteService.removerCliente(1L);

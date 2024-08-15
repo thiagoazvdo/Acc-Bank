@@ -1,14 +1,11 @@
 package com.accenture.academico.Acc.Bank.model;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,13 +29,40 @@ public class Cliente {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false, unique = true, length = 11)
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true, length = 11)
     private String telefone;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @OneToOne(mappedBy = "cliente")
+    @Column(name = "data_criacao", nullable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dataCriacao;
+
+    @Column(name = "data_atualizacao", nullable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+    private LocalDateTime dataAtualizacao;
+    
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
     @JsonManagedReference
     private ContaCorrente contaCorrente;
+
+    @ManyToOne
+    @JoinColumn(name = "id_agencia", nullable = false)
+    private Agencia agencia;
+
+    @PreUpdate
+    public void preUpdate() {
+    	this.dataAtualizacao = LocalDateTime.now();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        final LocalDateTime atual = LocalDateTime.now();
+        this.dataCriacao = atual;
+        this.dataAtualizacao = atual;
+    }
 }

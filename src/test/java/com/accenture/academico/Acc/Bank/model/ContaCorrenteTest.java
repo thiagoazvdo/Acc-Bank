@@ -30,7 +30,7 @@ class ContaCorrenteTest {
     	cliente.setCpf("11122233345");
     	cliente.setTelefone("83 8888-8888");
 		
-		contaCorrente = new ContaCorrente(agencia, cliente);
+		contaCorrente = new ContaCorrente(cliente);
 		contaCorrente.setId(1l);
 		contaCorrente.setNumero("10001");
 	}
@@ -41,29 +41,30 @@ class ContaCorrenteTest {
 	    assertNull(conta.getId());
 	    assertNull(conta.getNumero());
 	    assertNull(conta.getSaldo());
-	    assertNull(conta.getAgencia());
+	    assertNull(conta.getDataCriacao());
 	    assertNull(conta.getCliente());
 	    assertNull(conta.getTransacoes());
 	}
 
 	@Test
 	void testGettersAndSetters() {
-		Agencia agencia = new Agencia();
+		LocalDateTime data = LocalDateTime.of(2023, 01, 31, 0, 0);
+		
 		Cliente cliente = new Cliente();
 		
 		ContaCorrente conta = new ContaCorrente();
 		conta.setId(2L);
 		conta.setNumero("10002");
 		conta.setSaldo(BigDecimal.ZERO);
+		conta.setDataCriacao(data);
 		conta.setTransacoes(new ArrayList<>());
-		conta.setAgencia(agencia);
 		conta.setCliente(cliente);
 		
 		assertEquals(2L, conta.getId());
 		assertEquals("10002", conta.getNumero());
 		assertEquals(BigDecimal.ZERO, conta.getSaldo());
+		assertEquals(data, conta.getDataCriacao());
 		assertEquals(new ArrayList<>(), conta.getTransacoes());
-		assertEquals(agencia, conta.getAgencia());
 		assertEquals(cliente, conta.getCliente());
 	}
 
